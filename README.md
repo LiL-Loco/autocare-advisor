@@ -81,7 +81,7 @@ AutoCare Advisor is a B2B SaaS platform that provides rule-based car care produc
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/CLEANtastic/autocare-advisor.git
+git clone https://github.com/COLORtastic/autocare-advisor.git
 cd autocare-advisor
 npm install
 ```

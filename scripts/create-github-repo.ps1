@@ -7,7 +7,7 @@ param(
     [string]$RepoName = "autocare-advisor",
     
     [Parameter(Mandatory=$false)]
-    [string]$Organization = "CLEANtastic",
+    [string]$Organization = "COLORtastic",
     
     [Parameter(Mandatory=$false)]
     [string]$Description = "AutoCare Advisor - Rule-based Car Care Product Recommendation SaaS Platform",

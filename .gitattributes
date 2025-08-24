@@ -1,9 +1,7 @@
-# AutoCare Advisor Git Attributes
-# Handle line endings automatically for files detected as text
+# AutoCare Advisor Git Attributes - COLORtastic
 * text=auto
 
-# Explicitly declare text files you want to always be normalized and converted 
-# to native line endings on checkout.
+# Text files
 *.js text
 *.jsx text
 *.ts text
@@ -18,39 +16,21 @@
 *.scss text
 *.sql text
 
-# Declare files that will always have CRLF line endings on checkout.
+# Line endings
+*.sh text eol=lf
 *.sln text eol=crlf
 
-# Declare files that will always have LF line endings on checkout.
-*.sh text eol=lf
-
-# Denote all files that are truly binary and should not be modified.
+# Binary files
 *.png binary
 *.jpg binary
 *.jpeg binary
 *.gif binary
 *.ico binary
-*.mov binary
-*.mp4 binary
-*.mp3 binary
-*.flv binary
-*.fla binary
-*.swf binary
-*.gz binary
-*.zip binary
-*.7z binary
-*.ttf binary
-*.eot binary
-*.woff binary
-*.woff2 binary
-*.pyc binary
 *.pdf binary
-*.ez binary
-*.bz2 binary
-*.swp binary
+*.zip binary
 *.jar binary
 
-# GitHub Linguist overrides
+# GitHub Linguist
 docs/* linguist-documentation
 *.md linguist-detectable=true
 *.sql linguist-detectable=true

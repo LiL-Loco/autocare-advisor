@@ -12,13 +12,13 @@
     "nodejs",
     "typescript"
   ],
-  "homepage": "https://github.com/CLEANtastic/autocare-advisor",
+  "homepage": "https://github.com/COLORtastic/autocare-advisor",
   "bugs": {
-    "url": "https://github.com/CLEANtastic/autocare-advisor/issues"
+    "url": "https://github.com/COLORtastic/autocare-advisor/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CLEANtastic/autocare-advisor.git"
+    "url": "git+https://github.com/COLORtastic/autocare-advisor.git"
   },
   "license": "MIT",
   "author": "CLEANtastic Team",
