@@ -1,12 +1,16 @@
 ## 📋 Summary
+
 Brief description of changes made in this PR.
 
 ## 🔗 Linear Issue
+
 Closes: CL-[issue-number]
 Related: CL-[other-issue-numbers]
 
 ## 🎯 Type of Change
+
 What type of change does this PR introduce?
+
 - [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
 - [ ] ✨ New feature (non-breaking change which adds functionality)
 - [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
@@ -17,7 +21,9 @@ What type of change does this PR introduce?
 - [ ] 🔒 Security improvements
 
 ## 🏗️ Components Changed
+
 Which components are affected by this change?
+
 - [ ] Frontend (Customer App)
 - [ ] Backend (API)
 - [ ] Partner Dashboard
@@ -28,7 +34,9 @@ Which components are affected by this change?
 - [ ] CI/CD Pipeline
 
 ## 🧪 Testing
+
 How has this been tested?
+
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
 - [ ] Manual testing completed
@@ -36,7 +44,9 @@ How has this been tested?
 - [ ] Cross-browser testing (if frontend changes)
 
 ## 📊 Performance Impact
+
 Does this change affect performance?
+
 - [ ] ✅ No performance impact
 - [ ] ⚡ Performance improvement
 - [ ] ⚠️ Potential performance impact (details below)
@@ -46,14 +56,18 @@ Does this change affect performance?
 [If applicable, describe performance impact and benchmarks]
 
 ## 🗄️ Database Changes
+
 Are there any database changes?
+
 - [ ] ✅ No database changes
 - [ ] 📊 Schema changes (migrations included)
 - [ ] 🗄️ Data changes (seed data updated)
 - [ ] 🔍 Index changes (performance optimization)
 
 ## 🤖 Recommendation Engine Impact
+
 Does this affect the recommendation engine?
+
 - [ ] ✅ No impact on recommendation engine
 - [ ] 🎯 Improves recommendation accuracy
 - [ ] ⚡ Improves recommendation performance
@@ -63,19 +77,25 @@ Does this affect the recommendation engine?
 [If applicable, describe changes to recommendation logic]
 
 ## 🔒 Security Considerations
+
 Are there any security implications?
+
 - [ ] ✅ No security impact
 - [ ] 🔐 Security improvement
 - [ ] ⚠️ Potential security impact (reviewed and mitigated)
 
 ## 📱 Mobile/Responsive
+
 For frontend changes, has mobile responsiveness been tested?
+
 - [ ] ✅ No frontend changes
 - [ ] 📱 Mobile responsive testing completed
 - [ ] 💻 Desktop only (mobile not applicable)
 
 ## 🚀 Deployment Notes
+
 Any special deployment considerations?
+
 - [ ] ✅ Standard deployment
 - [ ] 🗄️ Requires database migration
 - [ ] ⚙️ Requires environment variable changes
@@ -83,16 +103,19 @@ Any special deployment considerations?
 - [ ] 📦 Requires dependency updates
 
 ## 📸 Screenshots (if applicable)
+
 For UI changes, include before/after screenshots:
 
 **Before:**
 [Screenshot]
 
-**After:** 
+**After:**
 [Screenshot]
 
 ## ✅ Checklist
+
 Please check all that apply:
+
 - [ ] Code follows the style guidelines of this project
 - [ ] Self-review of code completed
 - [ ] Code is commented, particularly in hard-to-understand areas
@@ -106,7 +129,9 @@ Please check all that apply:
 - [ ] Linear issue status updated
 
 ## 🧪 Test Coverage
+
 Current test coverage for changed files:
+
 - [ ] ✅ 90%+ coverage maintained
 - [ ] ⚠️ Coverage below 90% (explanation below)
 
@@ -114,7 +139,9 @@ Current test coverage for changed files:
 [If coverage is below 90%, explain why and provide plan to improve]
 
 ## 🔄 Breaking Changes
+
 Does this introduce any breaking changes?
+
 - [ ] ✅ No breaking changes
 - [ ] 💥 Breaking changes (details below)
 
@@ -122,10 +149,13 @@ Does this introduce any breaking changes?
 [Describe what breaks and migration path for users]
 
 ## 📝 Additional Notes
+
 Any additional information that reviewers should know:
 
 ## 🎯 Review Focus
+
 Please pay special attention to:
+
 - [ ] Recommendation engine logic
 - [ ] Performance implications
 - [ ] Security considerations
@@ -134,7 +164,9 @@ Please pay special attention to:
 - [ ] Test coverage and quality
 
 ---
+
 **Team CLEANtastic Internal Checklist:**
+
 - [ ] Aligns with project phase goals
 - [ ] B2B SaaS model compatibility
 - [ ] Rule-based approach maintained

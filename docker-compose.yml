@@ -10,14 +10,14 @@ services:
       POSTGRES_USER: autocare_user
       POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - autocare-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U autocare_user -d autocare_dev"]
+      test: ['CMD-SHELL', 'pg_isready -U autocare_user -d autocare_dev']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,14 +29,14 @@ services:
     environment:
       MONGO_INITDB_DATABASE: autocare_products_dev
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - mongodb_data:/data/db
       - ./scripts/mongodb/init.js:/docker-entrypoint-initdb.d/init.js:ro
     networks:
       - autocare-network
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -46,14 +46,14 @@ services:
     image: redis:7-alpine
     container_name: autocare-redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     networks:
       - autocare-network
     command: redis-server --appendonly yes
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -65,10 +65,10 @@ services:
     environment:
       CLICKHOUSE_DB: autocare_analytics
       CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: ""
+      CLICKHOUSE_PASSWORD: ''
     ports:
-      - "8123:8123"
-      - "9000:9000"
+      - '8123:8123'
+      - '9000:9000'
     volumes:
       - clickhouse_data:/var/lib/clickhouse
       - ./scripts/clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -77,7 +77,7 @@ services:
     profiles:
       - analytics
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "localhost:8123/ping"]
+      test: ['CMD', 'wget', '--spider', '-q', 'localhost:8123/ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -96,7 +96,7 @@ services:
       - REDIS_URL=redis://redis:6379
       - PORT=3000
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -125,7 +125,7 @@ services:
       - REACT_APP_ENV=development
       - PORT=3001
     ports:
-      - "3001:3001"
+      - '3001:3001'
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -149,7 +149,7 @@ services:
       - REACT_APP_ENV=development
       - PORT=3002
     ports:
-      - "3002:3002"
+      - '3002:3002'
     volumes:
       - ./admin:/app
       - /app/node_modules
@@ -170,7 +170,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin123
       PGADMIN_LISTEN_PORT: 80
     ports:
-      - "5050:80"
+      - '5050:80'
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
@@ -190,7 +190,7 @@ services:
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: admin123
     ports:
-      - "8081:8081"
+      - '8081:8081'
     networks:
       - autocare-network
     depends_on:
@@ -203,11 +203,11 @@ services:
     image: rediscommander/redis-commander:latest
     container_name: autocare-redis-commander
     environment:
-      REDIS_HOSTS: "local:redis:6379"
+      REDIS_HOSTS: 'local:redis:6379'
       HTTP_USER: admin
       HTTP_PASSWORD: admin123
     ports:
-      - "8082:8081"
+      - '8082:8081'
     networks:
       - autocare-network
     depends_on:
@@ -230,7 +230,6 @@ volumes:
 networks:
   autocare-network:
     driver: bridge
-
 # Usage Examples:
 #
 # Start only databases for local development:

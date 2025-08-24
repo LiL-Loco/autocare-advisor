@@ -27,21 +27,26 @@ SOFTWARE.
 This software is part of the AutoCare Advisor SaaS platform developed by Team CLEANtastic.
 
 ### Business Use
+
 - This software is designed for B2B SaaS car care product recommendation services
 - Commercial use is permitted under the MIT License terms
 - Attribution to CLEANtastic team is appreciated but not required
 
 ### Technical Constraints
+
 - The recommendation engine is intentionally rule-based (no AI/ML)
 - Database schemas are optimized for car care product catalog management
 - Performance requirements: <100ms recommendation response time
 
 ### Linear Integration
+
 - This project is managed through Linear project management
 - Issue tracking and development workflow references may be included in commits
 - Linear workspace: https://linear.app/cleantastic
 
 ### Contact
+
 For questions about licensing or commercial partnerships:
+
 - GitHub Issues: For technical questions
 - Linear Workspace: For project management and business inquiries

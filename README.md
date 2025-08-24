@@ -43,6 +43,7 @@ AutoCare Advisor is a B2B SaaS platform that provides rule-based car care produc
 ## 🚀 Features
 
 ### Core Functionality
+
 - **Rule-Based Recommendations** - No AI/ML, transparent product matching
 - **Vehicle-Specific Filtering** - Match products to car brand, paint type, age
 - **Problem-Solution Mapping** - Target specific car care issues
@@ -50,6 +51,7 @@ AutoCare Advisor is a B2B SaaS platform that provides rule-based car care produc
 - **Revenue Optimization** - Multiple monetization streams
 
 ### Technical Highlights
+
 - **TypeScript-First** development approach
 - **Microservices Architecture** ready for scaling
 - **Rule Engine** with weighted scoring system
@@ -58,16 +60,16 @@ AutoCare Advisor is a B2B SaaS platform that provides rule-based car care produc
 
 ## 🛠️ Technology Stack
 
-| Component | Technology | Version |
-|-----------|------------|---------|
-| **Frontend** | React + TypeScript | 18+ |
-| **Backend** | Node.js + Express | 18+ |
-| **Database** | PostgreSQL | 15+ |
-| **Product Catalog** | MongoDB | 6+ |
-| **Cache** | Redis | 7+ |
-| **Infrastructure** | AWS (EKS, RDS, S3) | Latest |
-| **Containerization** | Docker + Kubernetes | Latest |
-| **Analytics** | ClickHouse | Latest |
+| Component            | Technology          | Version |
+| -------------------- | ------------------- | ------- |
+| **Frontend**         | React + TypeScript  | 18+     |
+| **Backend**          | Node.js + Express   | 18+     |
+| **Database**         | PostgreSQL          | 15+     |
+| **Product Catalog**  | MongoDB             | 6+      |
+| **Cache**            | Redis               | 7+      |
+| **Infrastructure**   | AWS (EKS, RDS, S3)  | Latest  |
+| **Containerization** | Docker + Kubernetes | Latest  |
+| **Analytics**        | ClickHouse          | Latest  |
 
 ## 📋 Prerequisites
 
@@ -80,13 +82,15 @@ AutoCare Advisor is a B2B SaaS platform that provides rule-based car care produc
 ## ⚡ Quick Start
 
 ### 1. Clone & Install
+
 ```bash
-git clone https://github.com/COLORtastic/autocare-advisor.git
+git clone https://github.com/LiL-Loco/autocare-advisor.git
 cd autocare-advisor
 npm install
 ```
 
 ### 2. Environment Setup
+
 ```bash
 # Copy environment templates
 cp .env.example .env.local
@@ -96,17 +100,19 @@ docker-compose up -d postgres mongodb redis
 ```
 
 ### 3. Development Servers
+
 ```bash
 # Start all development servers (uses VS Code tasks)
 npm run dev:all
 
 # Or individually:
 npm run dev:backend    # Port 3000
-npm run dev:frontend   # Port 3001  
+npm run dev:frontend   # Port 3001
 npm run dev:admin      # Port 3002
 ```
 
 ### 4. Database Setup
+
 ```bash
 # Initialize databases
 npm run db:migrate
@@ -135,6 +141,7 @@ npm run test:integration
 ## 🗄️ Database Schema
 
 ### MongoDB Product Schema (Core Recommendation Engine)
+
 ```javascript
 {
   _id: ObjectId,
@@ -142,7 +149,7 @@ npm run test:integration
   brand: "Chemical Guys",
   category: "Autoshampoo",
   price: 24.99,
-  
+
   // MATCHING CRITERIA
   suitableFor: {
     vehicleTypes: ["PKW", "SUV", "Limousine"],
@@ -151,14 +158,14 @@ npm run test:integration
     paintColors: ["Schwarz", "Dunkelblau", "ALL"],
     vehicleAge: { min: 0, max: 20 }
   },
-  
+
   // PROBLEM SOLVING
   solves: {
     problems: ["Wasserflecken", "Kalkflecken", "Lackpflege"],
     applications: ["Handwäsche", "2-Eimer-Methode"],
     careAreas: ["Außenlack", "Plastikteile"]
   },
-  
+
   // USAGE CONTEXT
   usage: {
     experienceLevel: ["Anfänger", "Fortgeschritten"],
@@ -174,38 +181,42 @@ npm run test:integration
 The core of AutoCare Advisor is a **rule-based recommendation system** that matches customers with products based on structured criteria:
 
 ### Scoring Algorithm
+
 ```javascript
 // Weighted scoring factors (total 100 points)
 - Exact vehicle match: 40 points
-- Solves primary problem: 30 points  
+- Solves primary problem: 30 points
 - Price category match: 15 points
 - Experience level match: 10 points
 - Product rating ≥4.0: 5 points
 ```
 
 ### Matching Rules
+
 - **Hard Filters**: Product MUST meet basic criteria
 - **Soft Scoring**: Additional points for better matches
 - **Exclusion Criteria**: Incompatible products are filtered out
 
 ## 📊 Development Phases
 
-| Phase | Duration | Focus | Key Deliverables |
-|-------|----------|-------|------------------|
-| **Phase 1** | 3 months | MVP Foundation | Backend, Database, Basic UI |
-| **Phase 2** | 5 months | Core Features | Recommendation Engine, Payments |
-| **Phase 3** | 6 months | Scale & Optimize | Performance, Mobile, Analytics |
-| **Phase 4** | 4 months | Launch & Growth | Production, Marketing, Expansion |
+| Phase       | Duration | Focus            | Key Deliverables                 |
+| ----------- | -------- | ---------------- | -------------------------------- |
+| **Phase 1** | 3 months | MVP Foundation   | Backend, Database, Basic UI      |
+| **Phase 2** | 5 months | Core Features    | Recommendation Engine, Payments  |
+| **Phase 3** | 6 months | Scale & Optimize | Performance, Mobile, Analytics   |
+| **Phase 4** | 4 months | Launch & Growth  | Production, Marketing, Expansion |
 
 ## 📈 Business Model
 
 ### Revenue Streams
+
 1. **Subscription Fees** - Monthly partner subscriptions (€99-€999)
 2. **Commission** - % of sales through recommendations (2-5%)
 3. **Pay-per-Click** - Partner pays for product clicks
 4. **Premium Listings** - Enhanced product placement
 
 ### Target Metrics
+
 - **Partner Onboarding**: 10+ partners in Year 1
 - **Conversion Rate**: >15% click-through to partner shops
 - **Revenue Target**: €50k MRR after 18 months
@@ -214,13 +225,16 @@ The core of AutoCare Advisor is a **rule-based recommendation system** that matc
 ## 🔧 Development Setup
 
 ### VS Code Configuration
+
 This project includes comprehensive VS Code settings:
+
 - Pre-configured debugging for Frontend + Backend
 - Automated task runners for development servers
 - Terminal templates for different services
 - Extension recommendations for the full stack
 
 ### Git Workflow
+
 ```bash
 # Feature branches
 git checkout -b feature/CL-{issue-number}-{description}
@@ -256,11 +270,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙋‍♂️ Support
 
 ### Team CLEANtastic
+
 - **Project Management**: [Linear Workspace](https://linear.app/cleantastic)
 - **Development Questions**: Create an issue in this repository
 - **Business Inquiries**: Contact via Linear project
 
 ### Development Resources
+
 - **VS Code Setup**: Use provided `.vscode/` configuration
 - **Database Tools**: MongoDB Compass, pgAdmin recommended
 - **API Testing**: Use Thunder Client or Postman collections

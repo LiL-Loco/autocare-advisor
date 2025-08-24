@@ -1,7 +1,9 @@
 # Contributing to AutoCare Advisor
 
 🎉 ```bash
+
 # Clone repository
+
 git clone https://github.com/COLORtastic/autocare-advisor.git
 cd autocare-advisork you for contributing to AutoCare Advisor! This document provides guidelines for team CLEANtastic and external contributors.
 
@@ -9,7 +11,7 @@ cd autocare-advisork you for contributing to AutoCare Advisor! This document pro
 
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
-- [Development Workflow](#development-workflow)  
+- [Development Workflow](#development-workflow)
 - [Linear Integration](#linear-integration)
 - [Code Standards](#code-standards)
 - [Testing Requirements](#testing-requirements)
@@ -19,12 +21,14 @@ cd autocare-advisork you for contributing to AutoCare Advisor! This document pro
 ## 📜 Code of Conduct
 
 ### Our Standards
+
 - **Professional Communication** - Constructive feedback and respectful discussions
 - **Collaborative Spirit** - Help team members and share knowledge
 - **Quality Focus** - Prioritize code quality and user experience
 - **Business Awareness** - Understand the B2B SaaS context and revenue implications
 
 ### What's Not Allowed
+
 - ❌ **AI/ML Libraries** - Only rule-based recommendations allowed
 - ❌ **Widget Development** - This is a standalone platform, not embeddable widgets
 - ❌ **Shortcuts on Testing** - 90% coverage minimum required
@@ -33,6 +37,7 @@ cd autocare-advisork you for contributing to AutoCare Advisor! This document pro
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 ```bash
 # Required software
 Node.js >= 18.0.0
@@ -42,6 +47,7 @@ VS Code (recommended)
 ```
 
 ### First-Time Setup
+
 ```bash
 # 1. Clone repository
 git clone https://github.com/CLEANtastic/autocare-advisor.git
@@ -59,7 +65,9 @@ cp .env.example .env.local
 ```
 
 ### VS Code Configuration
+
 This project includes comprehensive VS Code settings:
+
 ```bash
 # Install recommended extensions (VS Code will prompt)
 # Use predefined terminal setup
@@ -69,11 +77,12 @@ This project includes comprehensive VS Code settings:
 ## 🔄 Development Workflow
 
 ### Branch Strategy
+
 ```bash
 # Feature development
 git checkout -b feature/CL-{issue-number}-{short-description}
 
-# Bug fixes  
+# Bug fixes
 git checkout -b bugfix/CL-{issue-number}-{bug-description}
 
 # Epic work
@@ -81,6 +90,7 @@ git checkout -b epic/CL-{issue-number}-{epic-name}
 ```
 
 ### Daily Development Flow
+
 1. **Check Linear** - Pick up assigned issues from AutoCare Advisor project
 2. **Create Branch** - Use Linear issue number in branch name
 3. **Write Tests First** - TDD approach for new features
@@ -92,12 +102,14 @@ git checkout -b epic/CL-{issue-number}-{epic-name}
 ## 📊 Linear Integration
 
 ### Issue Management
+
 - **All work** must be tracked in Linear issues
 - **Branch names** must include Linear issue numbers
 - **Commit messages** must reference Linear issues
 - **PR descriptions** must link to Linear issues
 
 ### Commit Message Format
+
 ```bash
 # Format: type(scope): description
 feat(CL-123): implement vehicle-specific product filtering
@@ -109,7 +121,8 @@ test(CL-126): add integration tests for recommendation engine
 ```
 
 ### Linear Labels Usage
-- **Phase 1-4** - Development phase tracking  
+
+- **Phase 1-4** - Development phase tracking
 - **Frontend/Backend/Database** - Component classification
 - **🚨 Critical/✨ Feature/🐛 Bug** - Priority and type
 - **🧪 Testing** - Testing-related tasks
@@ -117,6 +130,7 @@ test(CL-126): add integration tests for recommendation engine
 ## 💻 Code Standards
 
 ### TypeScript Requirements
+
 ```typescript
 // ✅ Always use strict typing
 interface ProductRecommendation {
@@ -144,6 +158,7 @@ class RecommendationEngine {
 ```
 
 ### Code Organization
+
 ```
 src/
 ├── components/          # React components
@@ -156,6 +171,7 @@ src/
 ```
 
 ### Naming Conventions
+
 ```typescript
 // Components: PascalCase
 const RecommendationEngine = () => { ... }
@@ -174,12 +190,14 @@ const MAX_RECOMMENDATIONS = 20;
 ## 🧪 Testing Requirements
 
 ### Coverage Requirements
+
 - **Minimum 90%** code coverage
 - **100% coverage** for recommendation engine logic
 - **Integration tests** for all API endpoints
 - **E2E tests** for critical user flows
 
 ### Test Structure
+
 ```typescript
 // Unit tests
 describe('RecommendationEngine', () => {
@@ -188,20 +206,23 @@ describe('RecommendationEngine', () => {
       // Arrange
       const products = createTestProducts();
       const answers = { vehicleBrand: 'BMW', paintType: 'Metallic' };
-      
+
       // Act
       const recommendations = engine.generateRecommendations(answers, products);
-      
+
       // Assert
-      expect(recommendations.every(r => 
-        r.product.suitableFor.vehicleBrands.includes('BMW')
-      )).toBe(true);
+      expect(
+        recommendations.every((r) =>
+          r.product.suitableFor.vehicleBrands.includes('BMW')
+        )
+      ).toBe(true);
     });
   });
 });
 ```
 
 ### Performance Testing
+
 ```typescript
 // Performance requirements
 describe('RecommendationEngine Performance', () => {
@@ -209,7 +230,7 @@ describe('RecommendationEngine Performance', () => {
     const startTime = performance.now();
     await engine.generateRecommendations(testAnswers, largeProductSet);
     const endTime = performance.now();
-    
+
     expect(endTime - startTime).toBeLessThan(100);
   });
 });
@@ -218,6 +239,7 @@ describe('RecommendationEngine Performance', () => {
 ## 📝 Pull Request Process
 
 ### PR Checklist
+
 - [ ] **Linear Issue** - Linked in PR description
 - [ ] **Tests Added** - New functionality has tests
 - [ ] **Tests Passing** - All tests pass locally
@@ -228,28 +250,35 @@ describe('RecommendationEngine Performance', () => {
 - [ ] **Linting Passed** - ESLint + Prettier applied
 
 ### PR Template
+
 ```markdown
 ## Linear Issue
+
 Closes: CL-{issue-number}
 
 ## Changes
+
 - Implemented rule-based product filtering for vehicle brands
 - Added MongoDB indexes for improved query performance
 - Created unit tests with 95% coverage
 
 ## Testing
+
 - [ ] Unit tests added and passing
 - [ ] Integration tests updated
 - [ ] Performance benchmarks meet requirements (<100ms)
 
 ## Screenshots (if UI changes)
+
 [Add screenshots for UI changes]
 
 ## Breaking Changes
+
 None / [Describe breaking changes]
 ```
 
 ### Review Process
+
 1. **Automated Checks** - CI/CD pipeline must pass
 2. **Code Review** - At least 1 team member approval
 3. **Performance Review** - Recommendation engine benchmarks
@@ -258,44 +287,51 @@ None / [Describe breaking changes]
 ## ⚡ Performance Guidelines
 
 ### Recommendation Engine
+
 ```typescript
 // ✅ Optimized database queries
 const products = await ProductModel.find({
   'suitableFor.vehicleBrands': { $in: [vehicleBrand, 'ALL'] },
-  'solves.problems': { $in: customerProblems }
+  'solves.problems': { $in: customerProblems },
 }).lean(); // Use lean() for performance
 
 // ✅ Efficient scoring algorithm
-const calculateMatchScore = (product: Product, answers: CustomerAnswers): number => {
+const calculateMatchScore = (
+  product: Product,
+  answers: CustomerAnswers
+): number => {
   let score = 0;
-  
+
   // Early returns for performance
   if (!matchesBasicCriteria(product, answers)) return 0;
-  
+
   // Weighted scoring
-  if (product.suitableFor.vehicleBrands.includes(answers.vehicleBrand)) score += 40;
+  if (product.suitableFor.vehicleBrands.includes(answers.vehicleBrand))
+    score += 40;
   if (product.solves.problems.includes(answers.primaryProblem)) score += 30;
-  
+
   return score;
 };
 ```
 
 ### Database Optimization
+
 ```javascript
 // MongoDB indexes for recommendation queries
-db.products.createIndex({ 
-  "suitableFor.vehicleBrands": 1, 
-  "suitableFor.paintTypes": 1,
-  "inStock": 1 
+db.products.createIndex({
+  'suitableFor.vehicleBrands': 1,
+  'suitableFor.paintTypes': 1,
+  inStock: 1,
 });
 
-db.products.createIndex({ 
-  "solves.problems": 1, 
-  "priceCategory": 1 
+db.products.createIndex({
+  'solves.problems': 1,
+  priceCategory: 1,
 });
 ```
 
 ### Caching Strategy
+
 ```typescript
 // Redis caching for frequently requested recommendations
 const cacheKey = `recommendations:${hashAnswers(customerAnswers)}`;
@@ -312,18 +348,20 @@ await redis.setex(cacheKey, 3600, JSON.stringify(recommendations)); // 1 hour TT
 ## 🚫 What NOT to Contribute
 
 ### Forbidden Technologies
+
 - **AI/ML Libraries** - TensorFlow, PyTorch, scikit-learn, etc.
 - **Machine Learning** - Neural networks, training algorithms
 - **Widget Systems** - Embeddable components for external sites
 - **Generic Solutions** - Must be car care specific
 
 ### Code Patterns to Avoid
+
 ```typescript
 // ❌ Don't use AI/ML for recommendations
 import * as tf from '@tensorflow/tfjs';
 const model = await tf.loadModel('recommendation-model');
 
-// ❌ Don't create embeddable widgets  
+// ❌ Don't create embeddable widgets
 const AutoCareWidget = ({ embedId }: { embedId: string }) => {
   // This conflicts with our standalone app model
 };
@@ -340,18 +378,21 @@ const slowRecommendationEngine = async () => {
 ## 📚 Resources
 
 ### Documentation
+
 - **API Docs**: `/docs/api.md`
-- **Database Schema**: `/docs/database.md`  
+- **Database Schema**: `/docs/database.md`
 - **Deployment Guide**: `/docs/deployment.md`
 - **Copilot Instructions**: `.copilot-instructions.md`
 
 ### Development Tools
+
 - **VS Code Extensions**: Auto-installed from `.vscode/extensions.json`
 - **Database Tools**: MongoDB Compass, pgAdmin
 - **API Testing**: Thunder Client collections included
 - **Performance Monitoring**: Built-in metrics dashboard
 
 ### Getting Help
+
 - **Linear Comments** - Ask questions on specific issues
 - **Team Discussions** - Use GitHub Discussions for broader topics
 - **Code Reviews** - Learn from PR feedback and discussions
