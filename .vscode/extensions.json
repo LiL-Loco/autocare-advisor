@@ -1,0 +1,74 @@
+{
+  "recommendations": [
+    // Essential Development Extensions
+    "ms-vscode.vscode-typescript-next",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-json",
+
+    // React & Frontend Development
+    "ms-vscode.vscode-react-refactor",
+    "formulahendry.auto-rename-tag",
+    "burkeholland.simple-react-snippets",
+    "steoates.autoimport-es6-ts",
+
+    // Database & Backend
+    "ms-mssql.mssql",
+    "mongodb.mongodb-vscode",
+    "cweijan.vscode-redis-client",
+    "ms-vscode.vscode-node-debug2",
+
+    // Docker & DevOps
+    "ms-vscode-remote.remote-containers",
+    "ms-azuretools.vscode-docker",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+
+    // Git & Version Control
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+    "github.copilot",
+    "github.copilot-chat",
+
+    // Testing & Quality
+    "orta.vscode-jest",
+    "hbenl.vscode-test-explorer",
+    "ryanluker.vscode-coverage-gutters",
+    "ms-playwright.playwright",
+
+    // API Development
+    "humao.rest-client",
+    "42crunch.vscode-openapi",
+    "rangav.vscode-thunder-client",
+
+    // Productivity & UI
+    "pkief.material-icon-theme",
+    "github.github-vscode-theme",
+    "ms-vscode.vscode-color-info",
+    "alefragnani.bookmarks",
+
+    // Linear Integration
+    "linear.linear-vscode",
+
+    // Environment & Config
+    "mikestead.dotenv",
+    "redhat.vscode-yaml",
+    "ms-vscode.vscode-env-files",
+
+    // Code Quality & Documentation
+    "streetsidesoftware.code-spell-checker",
+    "yzhang.markdown-all-in-one",
+    "shd101wyy.markdown-preview-enhanced",
+    "davidanson.vscode-markdownlint",
+
+    // AutoCare Advisor Specific Extensions
+    "ms-vscode.vscode-mongodb-snippets",
+    "ms-vscode.vscode-postgresql-snippets"
+  ],
+  "unwantedRecommendations": [
+    // Extensions that might conflict with our setup
+    "ms-vscode.vscode-typescript",
+    "hookyqr.beautify",
+    "formulahendry.code-runner"
+  ]
+}

@@ -1,0 +1,250 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (User management, subscriptions)
+  postgres:
+    image: postgres:15-alpine
+    container_name: autocare-postgres
+    environment:
+      POSTGRES_DB: autocare_dev
+      POSTGRES_USER: autocare_user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - autocare-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autocare_user -d autocare_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB (Product catalog, recommendations)
+  mongodb:
+    image: mongo:6-jammy
+    container_name: autocare-mongodb
+    environment:
+      MONGO_INITDB_DATABASE: autocare_products_dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/mongodb/init.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - autocare-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis (Caching, sessions)
+  redis:
+    image: redis:7-alpine
+    container_name: autocare-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - autocare-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ClickHouse (Analytics - optional for development)
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: autocare-clickhouse
+    environment:
+      CLICKHOUSE_DB: autocare_analytics
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ""
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./scripts/clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - autocare-network
+    profiles:
+      - analytics
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "localhost:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: autocare-backend
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://autocare_user:password@postgres:5432/autocare_dev
+      - MONGODB_URI=mongodb://mongodb:27017/autocare_products_dev
+      - REDIS_URL=redis://redis:6379
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - autocare-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles:
+      - full-stack
+    command: npm run dev
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: autocare-frontend
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000
+      - REACT_APP_ENV=development
+      - PORT=3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - autocare-network
+    depends_on:
+      - backend
+    profiles:
+      - full-stack
+    command: npm start
+
+  # Admin Dashboard
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+      target: development
+    container_name: autocare-admin
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000
+      - REACT_APP_ENV=development
+      - PORT=3002
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./admin:/app
+      - /app/node_modules
+    networks:
+      - autocare-network
+    depends_on:
+      - backend
+    profiles:
+      - full-stack
+    command: npm start
+
+  # Database Administration (pgAdmin)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: autocare-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@autocare-advisor.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - autocare-network
+    depends_on:
+      - postgres
+    profiles:
+      - admin-tools
+
+  # MongoDB Administration (Mongo Express)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: autocare-mongo-express
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+    ports:
+      - "8081:8081"
+    networks:
+      - autocare-network
+    depends_on:
+      - mongodb
+    profiles:
+      - admin-tools
+
+  # Redis Administration (Redis Commander)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: autocare-redis-commander
+    environment:
+      REDIS_HOSTS: "local:redis:6379"
+      HTTP_USER: admin
+      HTTP_PASSWORD: admin123
+    ports:
+      - "8082:8081"
+    networks:
+      - autocare-network
+    depends_on:
+      - redis
+    profiles:
+      - admin-tools
+
+volumes:
+  postgres_data:
+    driver: local
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  clickhouse_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  autocare-network:
+    driver: bridge
+
+# Usage Examples:
+#
+# Start only databases for local development:
+# docker-compose up -d postgres mongodb redis
+#
+# Start full stack (requires Dockerfiles in backend/frontend/admin):
+# docker-compose --profile full-stack up -d
+#
+# Start with admin tools:
+# docker-compose --profile admin-tools up -d
+#
+# Start everything including analytics:
+# docker-compose --profile full-stack --profile admin-tools --profile analytics up -d
+#
+# Development workflow:
+# docker-compose up -d postgres mongodb redis  # Start databases
+# # Then run backend/frontend locally with npm run dev

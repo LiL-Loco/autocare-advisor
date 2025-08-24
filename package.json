@@ -1,0 +1,120 @@
+{
+  "name": "autocare-advisor",
+  "version": "1.0.0", 
+  "description": "AutoCare Advisor - Rule-based Car Care Product Recommendation SaaS Platform",
+  "keywords": [
+    "autocare",
+    "car-care",
+    "product-recommendations", 
+    "b2b-saas",
+    "rule-based-engine",
+    "react",
+    "nodejs",
+    "typescript"
+  ],
+  "homepage": "https://github.com/CLEANtastic/autocare-advisor",
+  "bugs": {
+    "url": "https://github.com/CLEANtastic/autocare-advisor/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CLEANtastic/autocare-advisor.git"
+  },
+  "license": "MIT",
+  "author": "CLEANtastic Team",
+  "contributors": [
+    {
+      "name": "CLEANtastic Development Team",
+      "url": "https://linear.app/cleantastic"
+    }
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "// Development": "",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:admin\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "dev:admin": "cd admin && npm start",
+    
+    "// Installation": "",
+    "install:all": "npm install && npm run install:backend && npm run install:frontend && npm run install:admin",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install", 
+    "install:admin": "cd admin && npm install",
+    
+    "// Building": "",
+    "build": "npm run build:backend && npm run build:frontend && npm run build:admin",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:admin": "cd admin && npm run build",
+    
+    "// Testing": "",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:watch": "concurrently \"npm run test:backend:watch\" \"npm run test:frontend:watch\"",
+    "test:coverage": "npm run test:backend:coverage && npm run test:frontend:coverage",
+    "test:backend": "cd backend && npm test",
+    "test:backend:watch": "cd backend && npm run test:watch",
+    "test:backend:coverage": "cd backend && npm run test:coverage",
+    "test:frontend": "cd frontend && npm test -- --coverage --watchAll=false",
+    "test:frontend:watch": "cd frontend && npm test",
+    "test:frontend:coverage": "cd frontend && npm run test:coverage",
+    "test:integration": "cd backend && npm run test:integration",
+    "test:e2e": "cd e2e && npm test",
+    
+    "// Database": "",
+    "db:migrate": "cd backend && npm run db:migrate",
+    "db:seed": "cd backend && npm run db:seed", 
+    "db:reset": "cd backend && npm run db:reset",
+    "db:generate-test-data": "cd backend && npm run scripts:generate-test-data",
+    
+    "// Docker": "",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:dev": "docker-compose up -d postgres mongodb redis",
+    "docker:full": "docker-compose --profile full-stack up -d",
+    "docker:admin": "docker-compose --profile admin-tools up -d",
+    
+    "// Linting & Formatting": "",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:fix": "npm run lint:backend:fix && npm run lint:frontend:fix",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:backend:fix": "cd backend && npm run lint:fix",
+    "lint:frontend": "cd frontend && npm run lint", 
+    "lint:frontend:fix": "cd frontend && npm run lint:fix",
+    
+    "// Production": "",
+    "start": "cd backend && npm start",
+    "start:prod": "NODE_ENV=production npm start",
+    
+    "// Utilities": "",
+    "clean": "npm run clean:deps && npm run clean:build",
+    "clean:deps": "rm -rf node_modules backend/node_modules frontend/node_modules admin/node_modules",
+    "clean:build": "rm -rf backend/dist frontend/build admin/build",
+    "setup:dev": "powershell ./scripts/setup-terminals.ps1 -Action start",
+    "setup:install": "powershell ./scripts/setup-terminals.ps1 -Action install",
+    "postinstall": "echo '🚀 AutoCare Advisor setup complete! Use npm run dev to start development servers.'"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "cross-env": "^7.0.3"
+  },
+  "workspaces": [
+    "backend",
+    "frontend", 
+    "admin"
+  ],
+  "private": true,
+  "config": {
+    "autocare": {
+      "projectId": "6fa9d986-c3cf-4e35-97ba-97b29e999c53",
+      "team": "CLEANtastic",
+      "linearWorkspace": "https://linear.app/cleantastic"
+    }
+  }
+}

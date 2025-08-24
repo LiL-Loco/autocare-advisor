@@ -1,0 +1,230 @@
+{
+  "_comment_header": "AutoCare Advisor - VS Code Settings for Team CLEANtastic",
+
+  // TypeScript & JavaScript Settings
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.suggest.autoImports": true,
+  "javascript.preferences.quoteStyle": "single",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+
+  "// Editor Settings": "",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.rulers": [80, 120],
+  "editor.wordWrap": "bounded",
+  "editor.wordWrapColumn": 120,
+
+  "// File Associations": "",
+  "files.associations": {
+    "*.env.example": "dotenv",
+    "*.env.local": "dotenv",
+    "*.env.development": "dotenv",
+    "*.env.production": "dotenv",
+    ".copilot-instructions.md": "markdown"
+  },
+
+  "// Files to Exclude from Explorer": "",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/coverage": true,
+    "**/.nyc_output": true,
+    "**/logs": true
+  },
+
+  "// Search Exclusions": "",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/coverage": true,
+    "**/.git": true,
+    "**/package-lock.json": true,
+    "**/yarn.lock": true
+  },
+
+  "// Git Settings": "",
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "git.postCommitCommand": "sync",
+  "scm.defaultViewMode": "tree",
+
+  "// Terminal Settings": "",
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell",
+      "args": ["-NoLogo"]
+    },
+    "Command Prompt": {
+      "path": [
+        "${env:windir}\\Sysnative\\cmd.exe",
+        "${env:windir}\\System32\\cmd.exe"
+      ],
+      "args": [],
+      "icon": "terminal-cmd"
+    }
+  },
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.fontFamily": "'Cascadia Code', 'Consolas', monospace",
+
+  "// Multi-Terminal Setup": "",
+  "terminal.integrated.tabs.enabled": true,
+  "terminal.integrated.tabs.showActions": "always",
+  "terminal.integrated.tabs.title": "${process}",
+  "terminal.integrated.persistentSessionReviveProcess": "onExit",
+
+  "// Prettier Configuration": "",
+  "prettier.semi": true,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "es5",
+  "prettier.printWidth": 80,
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": false,
+
+  "// ESLint Settings": "",
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.format.enable": true,
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  },
+
+  "// MongoDB & Database": "",
+  "mongodb.connectionSaveLocation": "Workspace",
+  "mongodb.showMongoDBConnectionExplorer": true,
+
+  "// Docker Settings": "",
+  "docker.showStartPage": false,
+  "docker.defaultRegistryPath": "autocare",
+
+  "// Extension Settings": "",
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
+  },
+
+  "// Auto Save": "",
+  "files.autoSave": "onFocusChange",
+  "files.autoSaveDelay": 1000,
+
+  "// Bracket Pair Colorization": "",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+
+  "// IntelliSense Settings": "",
+  "editor.suggestSelection": "first",
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+
+  "// Project-Specific Language Settings": "",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+
+  "// Testing Framework": "",
+  "jest.autoRun": "off",
+  "jest.showCoverageOnLoad": true,
+  "jest.coverageFormatter": "DefaultFormatter",
+
+  "// Debugging Configuration": "",
+  "debug.console.fontSize": 14,
+  "debug.console.fontFamily": "Cascadia Code, Consolas, monospace",
+  "debug.internalConsoleOptions": "openOnSessionStart",
+
+  "// Workspace Configuration": "",
+  "extensions.ignoreRecommendations": false,
+
+  "// Color Theme": "",
+  "workbench.colorTheme": "Bearded Theme Black & Amethyst",
+  "workbench.iconTheme": "vs-minimal",
+
+  "// Copilot Settings": "",
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "scminput": false,
+    "yaml": true
+  },
+  "github.copilot.editor.enableAutoCompletions": true,
+
+  "// Linear Integration": "",
+  "gitCommitTemplate.template": [
+    "feat(CL-{issue}): {description}",
+    "",
+    "# Type: feat|fix|docs|style|refactor|perf|test|chore",
+    "# Linear Issue: CL-{issue-number}",
+    "# Phase: {Phase 1|Phase 2|Phase 3|Phase 4}",
+    "",
+    "# Changes:",
+    "# - ",
+    "# - ",
+    "",
+    "# Closes: CL-{issue-number}"
+  ],
+
+  "// Performance Monitoring": "",
+  "workbench.settings.enableNaturalLanguageSearch": false,
+  "workbench.enableExperiments": false,
+
+  "// AutoCare Advisor Specific": "",
+  "// Database Connection Strings (use environment variables)": "",
+  "autocare.database.postgresql": "postgresql://localhost:5432/autocare_dev",
+  "autocare.database.mongodb": "mongodb://localhost:27017/products_dev",
+  "autocare.database.redis": "redis://localhost:6379",
+
+  "// Development Server Ports": "",
+  "autocare.ports.backend": 3000,
+  "autocare.ports.frontend": 3001,
+  "autocare.ports.admin": 3002,
+
+  "// Test Configuration": "",
+  "autocare.testing.coverage.threshold": 90,
+  "autocare.testing.timeout": 10000
+}

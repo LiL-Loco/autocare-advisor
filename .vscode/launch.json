@@ -1,0 +1,194 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🚀 Debug Backend Server",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/src/server.ts",
+      "outFiles": ["${workspaceFolder}/backend/dist/**/*.js"],
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "env": {
+        "NODE_ENV": "development",
+        "DEBUG": "*"
+      },
+      "console": "integratedTerminal",
+      "restart": true,
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/backend",
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/backend/**",
+        "!**/node_modules/**"
+      ],
+      "skipFiles": ["<node_internals>/**"],
+      "presentation": {
+        "group": "backend",
+        "order": 1
+      }
+    },
+    {
+      "name": "🧪 Debug Backend Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/node_modules/.bin/jest",
+      "args": ["--runInBand", "--detectOpenHandles", "--forceExit"],
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "presentation": {
+        "group": "testing",
+        "order": 1
+      }
+    },
+    {
+      "name": "🧪 Debug Single Test File",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "--detectOpenHandles",
+        "--forceExit",
+        "${relativeFile}"
+      ],
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "presentation": {
+        "group": "testing",
+        "order": 2
+      }
+    },
+    {
+      "name": "🤖 Debug Recommendation Engine",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/src/services/RecommendationEngine.ts",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "env": {
+        "NODE_ENV": "development",
+        "DEBUG": "recommendation:*"
+      },
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/backend",
+      "presentation": {
+        "group": "backend",
+        "order": 2
+      }
+    },
+    {
+      "name": "🌐 Debug React Frontend",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "presentation": {
+        "group": "frontend",
+        "order": 1
+      }
+    },
+    {
+      "name": "🌐 Debug Chrome (Frontend)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3001",
+      "webRoot": "${workspaceFolder}/frontend/src",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}/*"
+      },
+      "userDataDir": false,
+      "presentation": {
+        "group": "frontend",
+        "order": 2
+      }
+    },
+    {
+      "name": "📱 Debug Partner Dashboard",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3001/partner-dashboard",
+      "webRoot": "${workspaceFolder}/frontend/src",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}/*"
+      },
+      "userDataDir": false,
+      "presentation": {
+        "group": "frontend",
+        "order": 3
+      }
+    },
+    {
+      "name": "⚡ Debug API Integration Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "--testPathPattern=integration",
+        "--detectOpenHandles",
+        "--forceExit"
+      ],
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "env": {
+        "NODE_ENV": "test",
+        "TEST_TYPE": "integration"
+      },
+      "presentation": {
+        "group": "testing",
+        "order": 3
+      }
+    },
+    {
+      "name": "🗄️ Debug Database Scripts",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/scripts/database-setup.ts",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "env": {
+        "NODE_ENV": "development",
+        "DEBUG": "db:*"
+      },
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/backend",
+      "presentation": {
+        "group": "backend",
+        "order": 3
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "🚀 Full Stack Debug",
+      "configurations": [
+        "🚀 Debug Backend Server",
+        "🌐 Debug Chrome (Frontend)"
+      ],
+      "presentation": {
+        "group": "compound",
+        "order": 1
+      },
+      "stopAll": true
+    },
+    {
+      "name": "🧪 Complete Test Suite",
+      "configurations": [
+        "🧪 Debug Backend Tests",
+        "⚡ Debug API Integration Tests"
+      ],
+      "presentation": {
+        "group": "compound",
+        "order": 2
+      }
+    }
+  ]
+}

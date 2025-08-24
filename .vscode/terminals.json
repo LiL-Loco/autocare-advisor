@@ -1,0 +1,57 @@
+{
+  "_comment": "AutoCare Advisor - Predefined Terminal Configuration",
+  "terminals": [
+    {
+      "name": "🚀 Backend Server",
+      "cwd": "${workspaceFolder}/backend",
+      "icon": "server-environment",
+      "color": "terminal.ansiBlue",
+      "shellIntegration.enabled": true,
+      "description": "Node.js Backend Development Server (Port 3000)"
+    },
+    {
+      "name": "🌐 Frontend Server",
+      "cwd": "${workspaceFolder}/frontend",
+      "icon": "browser",
+      "color": "terminal.ansiCyan",
+      "shellIntegration.enabled": true,
+      "description": "React Frontend Development Server (Port 3001)"
+    },
+    {
+      "name": "🧪 Test Runner",
+      "cwd": "${workspaceFolder}",
+      "icon": "beaker",
+      "color": "terminal.ansiGreen",
+      "shellIntegration.enabled": true,
+      "description": "Jest Test Suite & Coverage Reports"
+    },
+    {
+      "name": "🗄️ Database",
+      "cwd": "${workspaceFolder}",
+      "icon": "database",
+      "color": "terminal.ansiYellow",
+      "shellIntegration.enabled": true,
+      "description": "Database Management & Docker Services"
+    },
+    {
+      "name": "🐳 Docker",
+      "cwd": "${workspaceFolder}",
+      "icon": "vm",
+      "color": "terminal.ansiMagenta",
+      "shellIntegration.enabled": true,
+      "description": "Docker Compose & Container Management"
+    },
+    {
+      "name": "📦 Package Manager",
+      "cwd": "${workspaceFolder}",
+      "icon": "package",
+      "color": "terminal.ansiRed",
+      "shellIntegration.enabled": true,
+      "description": "NPM/Yarn Package Installation & Management"
+    }
+  ],
+  "defaultTerminal": {
+    "name": "🚀 Backend Server",
+    "focus": true
+  }
+}
