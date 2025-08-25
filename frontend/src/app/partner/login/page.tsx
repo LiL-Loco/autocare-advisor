@@ -10,14 +10,36 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 
 export default function PartnerLoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('partner@autocare.de');
+  const [password, setPassword] = useState('partner123!');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const { loginPartner } = useAuth(); // Use enhanced partner login
   const router = useRouter();
+
+  // SEO Protection - Add meta tags dynamically
+  useEffect(() => {
+    document.title = 'AutoCare Advisor';
+
+    // Add meta tags for SEO protection
+    const metaTags = [
+      { name: 'robots', content: 'noindex, nofollow, nosnippet, noarchive' },
+      { name: 'googlebot', content: 'noindex, nofollow' },
+      { name: 'bingbot', content: 'noindex, nofollow' },
+    ];
+
+    metaTags.forEach((tag) => {
+      const existingTag = document.querySelector(`meta[name="${tag.name}"]`);
+      if (!existingTag) {
+        const metaTag = document.createElement('meta');
+        metaTag.name = tag.name;
+        metaTag.content = tag.content;
+        document.head.appendChild(metaTag);
+      }
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

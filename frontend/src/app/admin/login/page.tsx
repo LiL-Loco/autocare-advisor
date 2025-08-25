@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('admin@autocare.de');
@@ -9,6 +9,28 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // SEO Protection - Add meta tags dynamically
+  useEffect(() => {
+    document.title = 'AutoCare Advisor';
+
+    // Add meta tags for SEO protection
+    const metaTags = [
+      { name: 'robots', content: 'noindex, nofollow, nosnippet, noarchive' },
+      { name: 'googlebot', content: 'noindex, nofollow' },
+      { name: 'bingbot', content: 'noindex, nofollow' },
+    ];
+
+    metaTags.forEach((tag) => {
+      const existingTag = document.querySelector(`meta[name="${tag.name}"]`);
+      if (!existingTag) {
+        const metaTag = document.createElement('meta');
+        metaTag.name = tag.name;
+        metaTag.content = tag.content;
+        document.head.appendChild(metaTag);
+      }
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

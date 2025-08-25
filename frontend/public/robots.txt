@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Allow: /api/recommendations
+Allow: /api/products
+
+# Block Admin/Partner areas from search engines
+Disallow: /admin
+Disallow: /partner
+Disallow: /admin/*
+Disallow: /partner/*
+
+# Additional security
+Disallow: /api/auth
+Disallow: /api/admin
+Disallow: /_next/
+Disallow: /favicon.ico
+
+Sitemap: https://autocare-advisor.com/sitemap.xml
