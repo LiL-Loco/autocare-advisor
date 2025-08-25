@@ -38,7 +38,7 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:admin\"",
     "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm start",
+    "dev:frontend": "cd frontend && npm run dev",
     "dev:admin": "cd admin && npm start",
     "// Installation": "",
     "install:all": "npm install && npm run install:backend && npm run install:frontend && npm run install:admin",
@@ -93,7 +93,7 @@
     "postinstall": "echo '🚀 AutoCare Advisor setup complete! Use npm run dev to start development servers.'"
   },
   "devDependencies": {
-    "concurrently": "^8.2.0",
+    "concurrently": "^8.2.2",
     "cross-env": "^7.0.3"
   },
   "workspaces": [
@@ -108,5 +108,9 @@
       "team": "CLEANtastic",
       "linearWorkspace": "https://linear.app/cleantastic"
     }
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "pg": "^8.16.3"
   }
 }

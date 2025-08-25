@@ -1,0 +1,76 @@
+# AutoCare Advisor - Development with Shared Services
+# Uses existing PostgreSQL (port 5432) and Redis (port 6379) from other projects
+# Only starts MongoDB if needed
+
+version: '3.8'
+
+services:
+  # Only MongoDB if needed (but it's already running)
+  mongodb:
+    image: mongo:6-jammy
+    container_name: autocare-mongodb-backup
+    environment:
+      MONGO_INITDB_DATABASE: autocare_products_dev
+    ports:
+      - '27018:27017' # Different port to avoid conflict
+    volumes:
+      - mongodb_backup_data:/data/db
+    networks:
+      - autocare-network
+    profiles:
+      - backup-services
+
+  # ClickHouse for Analytics (optional)
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: autocare-clickhouse
+    environment:
+      CLICKHOUSE_DB: autocare_analytics
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ''
+    ports:
+      - '8123:8123'
+      - '9000:9000'
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - autocare-network
+    profiles:
+      - analytics
+
+  # Development Tools - MongoDB Admin
+  mongo-express:
+    image: mongo-express:latest
+    container_name: autocare-mongo-express
+    environment:
+      ME_CONFIG_MONGODB_SERVER: autocare-mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+    ports:
+      - '8081:8081'
+    networks:
+      - autocare-network
+    profiles:
+      - admin-tools
+
+volumes:
+  mongodb_backup_data:
+    driver: local
+  clickhouse_data:
+    driver: local
+
+networks:
+  autocare-network:
+    driver: bridge
+# Usage with shared services:
+#
+# Current setup uses:
+# - PostgreSQL: localhost:5432 (from sync-postgres-simple container)
+# - Redis: localhost:6379 (from sync-redis-simple container)
+# - MongoDB: localhost:27017 (from autocare-mongodb container)
+#
+# Only start additional services if needed:
+# docker-compose --profile analytics up -d clickhouse
+# docker-compose --profile admin-tools up -d mongo-express
+# docker-compose --profile backup-services up -d mongodb

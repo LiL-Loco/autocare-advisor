@@ -1,330 +1,557 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "🚀 Start Development Servers",
-      "type": "shell",
-      "command": "echo",
-      "args": ["Starting AutoCare Advisor Development Environment..."],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "new",
-        "showReuseMessage": true,
-        "clear": false,
-        "group": "dev-servers"
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": ["Backend Server", "Frontend Server", "Database Services"],
-      "problemMatcher": []
-    },
-    {
-      "label": "Backend Server",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "dev"],
-      "options": {
-        "cwd": "${workspaceFolder}/backend"
-      },
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated",
-        "showReuseMessage": true,
-        "clear": false,
-        "group": "dev-servers"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "pattern": {
-          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
-          "file": 1,
-          "line": 2,
-          "column": 3,
-          "severity": 4,
-          "message": 5
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^.*Server starting.*$",
-          "endsPattern": "^.*Server listening on port.*$"
-        }
-      },
-      "runOptions": {
-        "instanceLimit": 1
-      }
-    },
-    {
-      "label": "Frontend Server",
-      "type": "shell",
-      "command": "npm",
-      "args": ["start"],
-      "options": {
-        "cwd": "${workspaceFolder}/frontend"
-      },
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated",
-        "showReuseMessage": true,
-        "clear": false,
-        "group": "dev-servers"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "pattern": {
-          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
-          "file": 1,
-          "line": 2,
-          "column": 3,
-          "severity": 4,
-          "message": 5
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^.*webpack compiled.*$",
-          "endsPattern": "^.*Local:.*http://localhost:3001.*$"
-        }
-      },
-      "runOptions": {
-        "instanceLimit": 1
-      }
-    },
-    {
-      "label": "Database Services",
-      "type": "shell",
-      "command": "docker-compose",
-      "args": ["up", "-d", "postgres", "mongodb", "redis"],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated",
-        "showReuseMessage": true,
-        "clear": false,
-        "group": "dev-servers"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "🧪 Run Tests",
-      "type": "shell",
-      "command": "npm",
-      "args": ["test"],
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "dedicated",
-        "showReuseMessage": false,
-        "clear": true,
-        "group": "testing"
-      },
-      "problemMatcher": ["$eslint-stylish"]
-    },
-    {
-      "label": "🧪 Run Tests (Watch Mode)",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "test:watch"],
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated",
-        "showReuseMessage": true,
-        "clear": false,
-        "group": "testing"
-      },
-      "isBackground": true,
-      "problemMatcher": ["$eslint-stylish"],
-      "runOptions": {
-        "instanceLimit": 1
-      }
-    },
-    {
-      "label": "🔍 Run Tests with Coverage",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "test:coverage"],
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "dedicated",
-        "showReuseMessage": false,
-        "clear": true,
-        "group": "testing"
-      },
-      "problemMatcher": ["$eslint-stylish"]
-    },
-    {
-      "label": "🏗️ Build Production",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "build"],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "dedicated",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": ["$tsc", "$eslint-stylish"]
-    },
-    {
-      "label": "🧹 Lint & Fix",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "lint:fix"],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": ["$eslint-stylish"]
-    },
-    {
-      "label": "📦 Install Dependencies",
-      "type": "shell",
-      "command": "npm",
-      "args": ["install"],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "🗄️ Database Reset",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "db:reset"],
-      "options": {
-        "cwd": "${workspaceFolder}/backend"
-      },
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "dedicated",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "🗄️ Database Seed",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "db:seed"],
-      "options": {
-        "cwd": "${workspaceFolder}/backend"
-      },
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "🐳 Docker Build",
-      "type": "shell",
-      "command": "docker-compose",
-      "args": ["build", "--no-cache"],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "dedicated",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "🐳 Docker Up (Full Stack)",
-      "type": "shell",
-      "command": "docker-compose",
-      "args": ["up", "-d"],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated",
-        "showReuseMessage": true,
-        "clear": false,
-        "group": "docker"
-      },
-      "isBackground": true,
-      "problemMatcher": []
-    },
-    {
-      "label": "🐳 Docker Down",
-      "type": "shell",
-      "command": "docker-compose",
-      "args": ["down"],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "📊 Generate Recommendation Test Data",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "scripts:generate-test-data"],
-      "options": {
-        "cwd": "${workspaceFolder}/backend"
-      },
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": []
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "🚀 Start Development Servers",
+			"type": "shell",
+			"command": "echo",
+			"args": [
+				"Starting AutoCare Advisor Development Environment with Shared Services..."
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new",
+				"showReuseMessage": true,
+				"clear": false,
+				"group": "dev-servers"
+			},
+			"dependsOrder": "parallel",
+			"dependsOn": [
+				"Backend Server",
+				"Frontend Server",
+				"Check Shared Services"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Backend Server",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false,
+				"group": "dev-servers"
+			},
+			"isBackground": true,
+			"problemMatcher": {
+				"pattern": {
+					"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+					"file": 1,
+					"line": 2,
+					"column": 3,
+					"severity": 4,
+					"message": 5
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Server starting.*$",
+					"endsPattern": "^.*Server listening on port.*$"
+				}
+			},
+			"runOptions": {
+				"instanceLimit": 1
+			}
+		},
+		{
+			"label": "Frontend Server",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/frontend"
+			},
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false,
+				"group": "dev-servers"
+			},
+			"isBackground": true,
+			"problemMatcher": {
+				"pattern": {
+					"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+					"file": 1,
+					"line": 2,
+					"column": 3,
+					"severity": 4,
+					"message": 5
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting the development server.*$",
+					"endsPattern": "^.*Local:.*http://localhost:5000.*$"
+				}
+			},
+			"runOptions": {
+				"instanceLimit": 1
+			}
+		},
+		{
+			"label": "Check Shared Services",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"ps",
+				"--format",
+				"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false,
+				"group": "dev-servers"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🧪 Run Tests",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test"
+			],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true,
+				"group": "testing"
+			},
+			"problemMatcher": [
+				"$eslint-stylish"
+			]
+		},
+		{
+			"label": "🧪 Run Tests (Watch Mode)",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"test:watch"
+			],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false,
+				"group": "testing"
+			},
+			"isBackground": true,
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"runOptions": {
+				"instanceLimit": 1
+			}
+		},
+		{
+			"label": "🔍 Run Tests with Coverage",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"test:coverage"
+			],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true,
+				"group": "testing"
+			},
+			"problemMatcher": [
+				"$eslint-stylish"
+			]
+		},
+		{
+			"label": "🏗️ Build Production",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"problemMatcher": [
+				"$tsc",
+				"$eslint-stylish"
+			]
+		},
+		{
+			"label": "🧹 Lint & Fix",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"lint:fix"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"problemMatcher": [
+				"$eslint-stylish"
+			]
+		},
+		{
+			"label": "📦 Install Dependencies",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🗄️ Database Reset",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"db:reset"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"dependsOn": [
+				"🔍 Check Database Status"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "🗄️ Database Seed",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"db:seed"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"dependsOn": [
+				"🔍 Check Database Status"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "🐳 Docker Build",
+			"type": "shell",
+			"command": "docker-compose",
+			"args": [
+				"build",
+				"--no-cache"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🐳 Docker Up (Full Stack)",
+			"type": "shell",
+			"command": "docker-compose",
+			"args": [
+				"up",
+				"-d"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false,
+				"group": "docker"
+			},
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "🐳 Start Shared Services (if needed)",
+			"type": "shell",
+			"command": "docker-compose",
+			"args": [
+				"-f",
+				"docker-compose.shared.yml",
+				"up",
+				"-d",
+				"mongodb"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true,
+				"group": "docker"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🔍 Check Database Status",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"ps",
+				"--format",
+				"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}",
+				"--filter",
+				"name=postgres",
+				"--filter",
+				"name=redis",
+				"--filter",
+				"name=mongo"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🗄️ Database Shell - PostgreSQL",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"exec",
+				"-it",
+				"sync-postgres-simple",
+				"psql",
+				"-U",
+				"postgres",
+				"-d",
+				"autocare_dev"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "🗄️ Database Shell - MongoDB",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"exec",
+				"-it",
+				"autocare-mongodb",
+				"mongosh",
+				"autocare_products_dev"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "🗄️ Database Shell - Redis",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"exec",
+				"-it",
+				"sync-redis-simple",
+				"redis-cli"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "🐳 Docker Down",
+			"type": "shell",
+			"command": "docker-compose",
+			"args": [
+				"down"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "📊 Generate Recommendation Test Data",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"scripts:generate-test-data"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Backend Server Dev",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "Backend Server",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "Backend Server",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "Backend Server",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"isBackground": true
+		}
+	]
 }

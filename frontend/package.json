@@ -4,37 +4,39 @@
   "description": "AutoCare Advisor Frontend - Customer web application for car care recommendations",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 5000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 5000",
     "lint": "next lint",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@heroicons/react": "^2.0.18",
     "@headlessui/react": "^1.7.17",
+    "@heroicons/react": "^2.2.0",
+    "@hookform/resolvers": "^3.3.1",
+    "@tailwindcss/forms": "^0.5.6",
+    "@tailwindcss/typography": "^0.5.10",
     "axios": "^1.5.0",
     "clsx": "^2.0.0",
     "framer-motion": "^10.16.4",
-    "tailwindcss": "^3.3.3",
-    "@tailwindcss/forms": "^0.5.6",
-    "@tailwindcss/typography": "^0.5.10",
+    "next": "^15.5.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "react-hook-form": "^7.47.0",
-    "@hookform/resolvers": "^3.3.1",
+    "tailwindcss": "^3.3.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.8.0",
     "@types/react": "^18.2.25",
     "@types/react-dom": "^18.2.10",
-    "typescript": "^5.2.2",
+    "autoprefixer": "^10.4.16",
+    "concurrently": "^9.2.0",
+    "cross-env": "^10.0.0",
     "eslint": "^8.51.0",
     "eslint-config-next": "14.0.0",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31"
+    "postcss": "^8.4.31",
+    "typescript": "^5.2.2"
   },
   "engines": {
     "node": ">=18.0.0"
