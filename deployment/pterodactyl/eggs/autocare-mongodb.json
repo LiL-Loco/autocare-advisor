@@ -1,0 +1,53 @@
+{
+  "name": "AutoCare Advisor - MongoDB",
+  "author": "autocare@example.com",
+  "description": "MongoDB database for product catalog",
+  "features": null,
+  "docker_images": {
+    "mongo:6-jammy": "mongo:6-jammy"
+  },
+  "file_denylist": [],
+  "startup": "mongod --dbpath /data/db --bind_ip_all",
+  "config": {
+    "files": "{}",
+    "startup": "{\"done\": \"waiting for connections\"}",
+    "logs": "{}",
+    "stop": "^C"
+  },
+  "scripts": {
+    "installation": {
+      "script": "mkdir -p /home/container/data/db && chown -R 999:999 /home/container/data",
+      "container": "mongo:6-jammy",
+      "entrypoint": "bash"
+    }
+  },
+  "variables": [
+    {
+      "name": "MONGO_INITDB_ROOT_USERNAME",
+      "description": "MongoDB root username",
+      "env_variable": "MONGO_INITDB_ROOT_USERNAME",
+      "default_value": "admin",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string"
+    },
+    {
+      "name": "MONGO_INITDB_ROOT_PASSWORD",
+      "description": "MongoDB root password",
+      "env_variable": "MONGO_INITDB_ROOT_PASSWORD",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|min:8"
+    },
+    {
+      "name": "MONGO_INITDB_DATABASE",
+      "description": "Initial database name",
+      "env_variable": "MONGO_INITDB_DATABASE",
+      "default_value": "autocare_products",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string"
+    }
+  ]
+}

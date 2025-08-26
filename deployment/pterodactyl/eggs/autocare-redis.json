@@ -1,0 +1,35 @@
+{
+  "name": "AutoCare Advisor - Redis",
+  "author": "autocare@example.com",
+  "description": "Redis cache for session management",
+  "features": null,
+  "docker_images": {
+    "redis:7-alpine": "redis:7-alpine"
+  },
+  "file_denylist": [],
+  "startup": "redis-server --appendonly yes --dir /data",
+  "config": {
+    "files": "{}",
+    "startup": "{\"done\": \"Ready to accept connections\"}",
+    "logs": "{}",
+    "stop": "^C"
+  },
+  "scripts": {
+    "installation": {
+      "script": "mkdir -p /home/container/data && chown -R 999:999 /home/container/data",
+      "container": "redis:7-alpine",
+      "entrypoint": "sh"
+    }
+  },
+  "variables": [
+    {
+      "name": "REDIS_PASSWORD",
+      "description": "Redis password",
+      "env_variable": "REDIS_PASSWORD",
+      "default_value": "",
+      "user_viewable": false,
+      "user_editable": true,
+      "rules": "required|string|min:8"
+    }
+  ]
+}

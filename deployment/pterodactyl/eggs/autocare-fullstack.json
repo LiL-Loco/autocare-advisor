@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "version": "PTDL_v2",
+    "update_url": null
+  },
+  "exported_at": "2024-08-26T10:00:00+00:00",
+  "name": "AutoCare Full-Stack Application",
+  "author": "autocare@example.com",
+  "description": "AutoCare Advisor - Frontend (Next.js) + Backend (Express.js) in einem Container mit Nginx Reverse Proxy",
+  "features": ["eula"],
+  "docker_images": {
+    "Node.js 18 + Nginx": "node:18-alpine"
+  },
+  "file_denylist": [],
+  "startup": "/start.sh",
+  "config": {
+    "files": "{\r\n    \"start.sh\": {\r\n        \"parser\": \"file\",\r\n        \"find\": {\r\n            \"PORT={{server.build.default.port}}\": \"PORT={{server.build.default.port}}\"\r\n        }\r\n    }\r\n}",
+    "startup": "{\r\n    \"done\": \"AutoCare Application ready\"\r\n}",
+    "logs": "{}",
+    "stop": "^C"
+  },
+  "scripts": {
+    "installation": {
+      "script": "#!/bin/bash\r\n# AutoCare Full-Stack Installation Script\r\ncd /mnt/server\r\n\r\n# Install nginx and supervisor\r\napk add --no-cache nginx supervisor bash curl\r\n\r\n# Create application directories\r\nmkdir -p /app/backend /app/frontend /app/logs /etc/supervisor.d\r\n\r\n# Install backend dependencies\r\necho \"Installing Backend dependencies...\"\r\ncd /app/backend\r\ncp -r /mnt/server/backend/* . 2>/dev/null || echo \"Backend files will be uploaded\"\r\nif [ -f package.json ]; then\r\n    npm install --production\r\nfi\r\n\r\n# Install frontend dependencies and build\r\necho \"Installing Frontend dependencies...\"\r\ncd /app/frontend\r\ncp -r /mnt/server/frontend/* . 2>/dev/null || echo \"Frontend files will be uploaded\"\r\nif [ -f package.json ]; then\r\n    npm install\r\n    npm run build\r\nfi\r\n\r\n# Create nginx configuration\r\ncat > /etc/nginx/nginx.conf << 'EOF'\r\nuser nginx;\r\nworker_processes auto;\r\nerror_log /app/logs/nginx_error.log warn;\r\npid /var/run/nginx.pid;\r\n\r\nevents {\r\n    worker_connections 1024;\r\n}\r\n\r\nhttp {\r\n    include /etc/nginx/mime.types;\r\n    default_type application/octet-stream;\r\n    \r\n    log_format main '$remote_addr - $remote_user [$time_local] \"$request\" '\r\n                    '$status $body_bytes_sent \"$http_referer\" '\r\n                    '\"$http_user_agent\" \"$http_x_forwarded_for\"';\r\n    \r\n    access_log /app/logs/nginx_access.log main;\r\n    \r\n    sendfile on;\r\n    tcp_nopush on;\r\n    tcp_nodelay on;\r\n    keepalive_timeout 65;\r\n    types_hash_max_size 2048;\r\n    \r\n    gzip on;\r\n    gzip_vary on;\r\n    gzip_min_length 1024;\r\n    gzip_proxied any;\r\n    gzip_comp_level 6;\r\n    gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json;\r\n    \r\n    upstream backend {\r\n        server 127.0.0.1:5001;\r\n    }\r\n    \r\n    upstream frontend {\r\n        server 127.0.0.1:3000;\r\n    }\r\n    \r\n    server {\r\n        listen 80 default_server;\r\n        server_name _;\r\n        \r\n        # API routes\r\n        location /api/ {\r\n            proxy_pass http://backend/;\r\n            proxy_set_header Host $host;\r\n            proxy_set_header X-Real-IP $remote_addr;\r\n            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\r\n            proxy_set_header X-Forwarded-Proto $scheme;\r\n            proxy_redirect off;\r\n        }\r\n        \r\n        # Health check\r\n        location /health {\r\n            proxy_pass http://backend/health;\r\n            proxy_set_header Host $host;\r\n            proxy_set_header X-Real-IP $remote_addr;\r\n        }\r\n        \r\n        # All other routes to frontend\r\n        location / {\r\n            proxy_pass http://frontend/;\r\n            proxy_set_header Host $host;\r\n            proxy_set_header X-Real-IP $remote_addr;\r\n            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\r\n            proxy_set_header X-Forwarded-Proto $scheme;\r\n            proxy_redirect off;\r\n        }\r\n    }\r\n}\r\nEOF\r\n\r\n# Create supervisor configuration\r\ncat > /etc/supervisor.d/autocare.ini << 'EOF'\r\n[supervisord]\r\nnodaemon=true\r\nlogfile=/app/logs/supervisord.log\r\nlogfile_maxbytes=10MB\r\nlogfile_backups=3\r\nloglevel=info\r\n\r\n[program:nginx]\r\ncommand=/usr/sbin/nginx -g \"daemon off;\"\r\nautorestart=true\r\nstdout_logfile=/app/logs/nginx.log\r\nstderr_logfile=/app/logs/nginx_error.log\r\npriority=100\r\n\r\n[program:backend]\r\ncommand=node server.js\r\ndirectory=/app/backend\r\nautorestart=true\r\nstdout_logfile=/app/logs/backend.log\r\nstderr_logfile=/app/logs/backend_error.log\r\npriority=200\r\nenvironment=NODE_ENV=\"production\",PORT=\"5001\"\r\n\r\n[program:frontend]\r\ncommand=npm start\r\ndirectory=/app/frontend\r\nautorestart=true\r\nstdout_logfile=/app/logs/frontend.log\r\nstderr_logfile=/app/logs/frontend_error.log\r\npriority=300\r\nenvironment=NODE_ENV=\"production\",PORT=\"3000\"\r\nEOF\r\n\r\n# Create startup script\r\ncat > /mnt/server/start.sh << 'EOF'\r\n#!/bin/bash\r\nset -e\r\n\r\necho \"🚀 Starting AutoCare Advisor Full-Stack Application...\"\r\n\r\n# Create log directory\r\nmkdir -p /app/logs\r\n\r\n# Copy application files if they exist\r\nif [ -d \"/mnt/server/backend\" ] && [ \"$(ls -A /mnt/server/backend 2>/dev/null)\" ]; then\r\n    echo \"📦 Copying backend files...\"\r\n    cp -r /mnt/server/backend/* /app/backend/\r\n    cd /app/backend\r\n    [ -f package.json ] && npm install --production\r\nfi\r\n\r\nif [ -d \"/mnt/server/frontend\" ] && [ \"$(ls -A /mnt/server/frontend 2>/dev/null)\" ]; then\r\n    echo \"📦 Copying frontend files...\"\r\n    cp -r /mnt/server/frontend/* /app/frontend/\r\n    cd /app/frontend\r\n    [ -f package.json ] && npm install && npm run build\r\nfi\r\n\r\n# Wait for databases\r\necho \"⏳ Waiting for database connections...\"\r\nif [ ! -z \"$DATABASE_URL\" ]; then\r\n    until nc -z $(echo $DATABASE_URL | sed 's/.*@\\([^:]*\\):.*/\\1/') 5432; do\r\n        echo \"Waiting for PostgreSQL...\"\r\n        sleep 2\r\n    done\r\nfi\r\n\r\nif [ ! -z \"$MONGODB_URI\" ]; then\r\n    until nc -z $(echo $MONGODB_URI | sed 's/.*@\\([^:]*\\):.*/\\1/') 27017; do\r\n        echo \"Waiting for MongoDB...\"\r\n        sleep 2\r\n    done\r\nfi\r\n\r\necho \"✅ Starting services with supervisor...\"\r\nsupervisord -c /etc/supervisor.d/autocare.ini\r\n\r\necho \"🌐 AutoCare Application ready on port 80!\"\r\necho \"📊 Frontend: http://localhost/\"\r\necho \"🔌 API: http://localhost/api/\"\r\necho \"❤️ Health: http://localhost/health\"\r\n\r\n# Keep container running\r\ntail -f /app/logs/*.log\r\nEOF\r\n\r\nchmod +x /mnt/server/start.sh\r\n\r\necho \"✅ AutoCare Full-Stack installation completed!\"\r\necho \"📋 Upload your backend and frontend folders to the server root\"\r\necho \"🚀 The container will handle the rest automatically\"",
+      "container": "node:18-alpine",
+      "entrypoint": "bash"
+    }
+  },
+  "variables": [
+    {
+      "name": "Application Port",
+      "description": "Main port for the application (Nginx will serve both frontend and API)",
+      "env_variable": "PORT",
+      "default_value": "80",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|integer|between:1024,65535",
+      "field_type": "text"
+    },
+    {
+      "name": "PostgreSQL Connection",
+      "description": "Full PostgreSQL connection URL",
+      "env_variable": "DATABASE_URL",
+      "default_value": "postgresql://autocare_user:password@postgres-container:5432/autocare_db",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "MongoDB Connection",
+      "description": "Full MongoDB connection URI",
+      "env_variable": "MONGODB_URI",
+      "default_value": "mongodb://autocare_mongo:password@mongodb-container:27017/autocare_products",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "Redis Connection",
+      "description": "Full Redis connection URL",
+      "env_variable": "REDIS_URL",
+      "default_value": "redis://:password@redis-container:6379/0",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "JWT Secret",
+      "description": "Secret key for JWT token generation",
+      "env_variable": "JWT_SECRET",
+      "default_value": "your-super-secret-jwt-key-change-this-in-production-64-chars",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|min:32",
+      "field_type": "text"
+    },
+    {
+      "name": "CORS Origin",
+      "description": "Allowed CORS origins for API access",
+      "env_variable": "CORS_ORIGIN",
+      "default_value": "*",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "string",
+      "field_type": "text"
+    },
+    {
+      "name": "Log Level",
+      "description": "Application logging level",
+      "env_variable": "LOG_LEVEL",
+      "default_value": "info",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|in:debug,info,warn,error",
+      "field_type": "text"
+    },
+    {
+      "name": "Node Environment",
+      "description": "Node.js environment mode",
+      "env_variable": "NODE_ENV",
+      "default_value": "production",
+      "user_viewable": false,
+      "user_editable": false,
+      "rules": "required|string|in:development,production",
+      "field_type": "text"
+    }
+  ]
+}

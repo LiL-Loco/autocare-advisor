@@ -1,0 +1,80 @@
+{
+  "name": "AutoCare Advisor - Node.js Backend",
+  "author": "autocare@example.com",
+  "description": "Express.js backend API with recommendation engine",
+  "features": ["nodejs"],
+  "docker_images": {
+    "node:18-alpine": "node:18-alpine"
+  },
+  "file_denylist": [],
+  "startup": "if [ -f package.json ]; then npm install --production; fi && npm run start:prod",
+  "config": {
+    "files": "{}",
+    "startup": "{\"done\": \"AutoCare Advisor API Server started on port\"}",
+    "logs": "{}",
+    "stop": "^C"
+  },
+  "scripts": {
+    "installation": {
+      "script": "mkdir -p /home/container/logs /home/container/uploads",
+      "container": "node:18-alpine",
+      "entrypoint": "sh"
+    }
+  },
+  "variables": [
+    {
+      "name": "NODE_ENV",
+      "description": "Node.js environment",
+      "env_variable": "NODE_ENV",
+      "default_value": "production",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string"
+    },
+    {
+      "name": "DATABASE_URL",
+      "description": "PostgreSQL connection string",
+      "env_variable": "DATABASE_URL",
+      "default_value": "postgresql://autocare_user:password@autocare-postgres:5432/autocare_prod",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string"
+    },
+    {
+      "name": "MONGODB_URI",
+      "description": "MongoDB connection string",
+      "env_variable": "MONGODB_URI",
+      "default_value": "mongodb://admin:password@autocare-mongodb:27017/autocare_products?authSource=admin",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string"
+    },
+    {
+      "name": "REDIS_URL",
+      "description": "Redis connection string",
+      "env_variable": "REDIS_URL",
+      "default_value": "redis://:password@autocare-redis:6379",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string"
+    },
+    {
+      "name": "JWT_SECRET",
+      "description": "JWT signing secret",
+      "env_variable": "JWT_SECRET",
+      "default_value": "",
+      "user_viewable": false,
+      "user_editable": true,
+      "rules": "required|string|min:32"
+    },
+    {
+      "name": "CORS_ORIGIN",
+      "description": "Allowed CORS origins",
+      "env_variable": "CORS_ORIGIN",
+      "default_value": "https://app.autocare-advisor.com",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string"
+    }
+  ]
+}

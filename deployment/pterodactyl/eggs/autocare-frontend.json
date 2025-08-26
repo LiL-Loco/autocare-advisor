@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "version": "PTDL_v2",
+    "update_url": null
+  },
+  "exported_at": "2024-08-26T10:00:00+00:00",
+  "name": "AutoCare Frontend",
+  "author": "autocare@example.com",
+  "description": "AutoCare Advisor Frontend - Next.js React Application with Nginx serving",
+  "features": ["eula"],
+  "docker_images": {
+    "Node.js 18": "node:18-alpine"
+  },
+  "file_denylist": [],
+  "startup": "npm run build && npm start",
+  "config": {
+    "files": "{\r\n    \"package.json\": {\r\n        \"parser\": \"json\",\r\n        \"find\": {\r\n            \"scripts.start\": \"next start -p {{server.build.default.port}}\"\r\n        }\r\n    }\r\n}",
+    "startup": "{\r\n    \"done\": \"ready - started server on\"\r\n}",
+    "logs": "{}",
+    "stop": "^C"
+  },
+  "scripts": {
+    "installation": {
+      "script": "#!/bin/bash\r\n# AutoCare Frontend Installation Script\r\ncd /mnt/server\r\n\r\n# Install dependencies\r\necho \"Installing Node.js dependencies...\"\r\nnpm install\r\n\r\n# Build the application\r\necho \"Building Next.js application...\"\r\nnpm run build\r\n\r\necho \"AutoCare Frontend installation completed!\"",
+      "container": "node:18-alpine",
+      "entrypoint": "bash"
+    }
+  },
+  "variables": [
+    {
+      "name": "Next.js Port",
+      "description": "The port for the Next.js frontend server",
+      "env_variable": "PORT",
+      "default_value": "3000",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|integer|between:1024,65535",
+      "field_type": "text"
+    },
+    {
+      "name": "Backend API URL",
+      "description": "URL of the backend API server",
+      "env_variable": "NEXT_PUBLIC_API_URL",
+      "default_value": "http://localhost:5001",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "Node Environment",
+      "description": "Node.js environment mode",
+      "env_variable": "NODE_ENV",
+      "default_value": "production",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|in:development,production",
+      "field_type": "text"
+    },
+    {
+      "name": "Build Memory Limit",
+      "description": "Node.js memory limit for build process",
+      "env_variable": "NODE_OPTIONS",
+      "default_value": "--max-old-space-size=2048",
+      "user_viewable": false,
+      "user_editable": false,
+      "rules": "string",
+      "field_type": "text"
+    }
+  ]
+}

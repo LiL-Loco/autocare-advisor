@@ -1,0 +1,53 @@
+{
+  "name": "AutoCare Advisor - PostgreSQL",
+  "author": "autocare@example.com",
+  "description": "PostgreSQL database for AutoCare Advisor",
+  "features": null,
+  "docker_images": {
+    "postgres:15-alpine": "postgres:15-alpine"
+  },
+  "file_denylist": [],
+  "startup": "postgres",
+  "config": {
+    "files": "{}",
+    "startup": "{\"done\": \"database system is ready to accept connections\"}",
+    "logs": "{}",
+    "stop": "^C"
+  },
+  "scripts": {
+    "installation": {
+      "script": "mkdir -p /home/container/data",
+      "container": "postgres:15-alpine",
+      "entrypoint": "ash"
+    }
+  },
+  "variables": [
+    {
+      "name": "POSTGRES_DB",
+      "description": "Database name",
+      "env_variable": "POSTGRES_DB",
+      "default_value": "autocare_prod",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string"
+    },
+    {
+      "name": "POSTGRES_USER",
+      "description": "Database username",
+      "env_variable": "POSTGRES_USER",
+      "default_value": "autocare_user",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string"
+    },
+    {
+      "name": "POSTGRES_PASSWORD",
+      "description": "Database password",
+      "env_variable": "POSTGRES_PASSWORD",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|min:8"
+    }
+  ]
+}
