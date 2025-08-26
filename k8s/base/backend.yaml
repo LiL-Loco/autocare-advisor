@@ -1,0 +1,193 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autocare-backend
+  namespace: autocare-advisor
+  labels:
+    app: autocare-backend
+    tier: backend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: autocare-backend
+  template:
+    metadata:
+      labels:
+        app: autocare-backend
+        tier: backend
+    spec:
+      containers:
+        - name: backend
+          image: autocare/backend:latest
+          ports:
+            - containerPort: 5001
+              name: http
+          env:
+            - name: NODE_ENV
+              value: 'production'
+            - name: PORT
+              value: '5001'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: autocare-backend-secret
+                  key: DATABASE_URL
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: autocare-backend-secret
+                  key: MONGODB_URI
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: autocare-backend-secret
+                  key: REDIS_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: autocare-backend-secret
+                  key: JWT_SECRET
+            - name: CORS_ORIGIN
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: CORS_ORIGIN
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: LOG_LEVEL
+            - name: MAX_REQUEST_SIZE
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: MAX_REQUEST_SIZE
+            - name: RATE_LIMIT_WINDOW
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: RATE_LIMIT_WINDOW
+            - name: RATE_LIMIT_MAX
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: RATE_LIMIT_MAX
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '200m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          volumeMounts:
+            - name: logs
+              mountPath: /app/logs
+      volumes:
+        - name: logs
+          emptyDir: {}
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:15-alpine
+          command:
+            [
+              'sh',
+              '-c',
+              'until pg_isready -h postgres-service.autocare-db.svc.cluster.local -p 5432; do echo waiting for postgres; sleep 2; done;',
+            ]
+        - name: wait-for-mongodb
+          image: mongo:6-jammy
+          command:
+            [
+              'sh',
+              '-c',
+              'until mongosh --host mongodb-service.autocare-db.svc.cluster.local:27017 --eval "db.adminCommand(\"ping\")"; do echo waiting for mongodb; sleep 2; done;',
+            ]
+        - name: wait-for-redis
+          image: redis:7-alpine
+          command:
+            [
+              'sh',
+              '-c',
+              'until redis-cli -h redis-service.autocare-db.svc.cluster.local -p 6379 ping; do echo waiting for redis; sleep 2; done;',
+            ]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: autocare-advisor
+  labels:
+    app: autocare-backend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5001
+      targetPort: 5001
+      name: http
+  selector:
+    app: autocare-backend
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-hpa
+  namespace: autocare-advisor
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: autocare-backend
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+        - type: Pods
+          value: 4
+          periodSeconds: 15
+      selectPolicy: Max

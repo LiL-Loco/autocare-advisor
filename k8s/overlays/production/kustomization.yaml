@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: autocare-advisor
+
+resources:
+  - ../../base
+
+patchesStrategicMerge:
+  - replica-patch.yaml
+  - resource-patch.yaml
+
+images:
+  - name: autocare/backend
+    newTag: latest
+  - name: autocare/frontend
+    newTag: latest
+
+configMapGenerator:
+  - name: backend-config
+    literals:
+      - CORS_ORIGIN=https://app.autocare-advisor.com
+      - LOG_LEVEL=info
+      - MAX_REQUEST_SIZE=10mb
+      - RATE_LIMIT_WINDOW=900000
+      - RATE_LIMIT_MAX=1000
+
+secretGenerator:
+  - name: autocare-backend-secret
+    literals:
+      - DATABASE_URL=postgresql://autocare_user:$(POSTGRES_PASSWORD)@postgres-service.autocare-db.svc.cluster.local:5432/autocare_db
+      - MONGODB_URI=mongodb://autocare_mongo:$(MONGO_PASSWORD)@mongodb-service.autocare-db.svc.cluster.local:27017/autocare_products
+      - REDIS_URL=redis://:$(REDIS_PASSWORD)@redis-service.autocare-db.svc.cluster.local:6379/0
+      - JWT_SECRET=$(JWT_SECRET)
+
+generatorOptions:
+  disableNameSuffixHash: true

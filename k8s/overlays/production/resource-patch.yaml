@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autocare-backend
+spec:
+  template:
+    spec:
+      containers:
+        - name: backend
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '300m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autocare-frontend
+spec:
+  template:
+    spec:
+      containers:
+        - name: frontend
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '150m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: autocare-db
+spec:
+  template:
+    spec:
+      containers:
+        - name: postgres
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
+            limits:
+              memory: '4Gi'
+              cpu: '2000m'
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-storage
+      spec:
+        resources:
+          requests:
+            storage: 100Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: autocare-db
+spec:
+  template:
+    spec:
+      containers:
+        - name: mongodb
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '300m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-storage
+      spec:
+        resources:
+          requests:
+            storage: 100Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: autocare-db
+spec:
+  template:
+    spec:
+      containers:
+        - name: redis
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '150m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-storage
+      spec:
+        resources:
+          requests:
+            storage: 32Gi

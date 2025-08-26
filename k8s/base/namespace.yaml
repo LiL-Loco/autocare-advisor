@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: autocare-advisor
+  labels:
+    name: autocare-advisor
+    environment: production
+    app.kubernetes.io/name: autocare-advisor
+    app.kubernetes.io/version: '1.0.0'
+---
+# PostgreSQL Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: autocare-db
+  labels:
+    name: autocare-db
+    environment: production
+    tier: database
