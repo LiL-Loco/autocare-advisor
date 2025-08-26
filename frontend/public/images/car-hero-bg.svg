@@ -1,0 +1,44 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Car Hero Background -->
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="50%" stop-color="#1e40af"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="carGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="url(#heroGradient)"/>
+  
+  <!-- Car Silhouette -->
+  <g transform="translate(1200, 400)">
+    <path d="M0 100 L80 80 L120 70 L180 75 L220 80 L280 85 L320 100 L340 120 L360 140 L380 150 L400 160 L400 200 L380 210 L360 215 L340 220 L320 225 L280 230 L220 235 L180 240 L120 245 L80 250 L0 250 Z" 
+          fill="url(#carGradient)" 
+          stroke="rgba(255,255,255,0.2)" 
+          stroke-width="2"/>
+    
+    <!-- Car Details -->
+    <circle cx="100" cy="220" r="25" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="3"/>
+    <circle cx="300" cy="220" r="25" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="3"/>
+    
+    <!-- Windows -->
+    <path d="M120 100 L160 85 L200 90 L240 95 L280 100 L280 140 L120 140 Z" 
+          fill="rgba(255,255,255,0.05)" 
+          stroke="rgba(255,255,255,0.15)" 
+          stroke-width="1"/>
+  </g>
+  
+  <!-- Floating Elements -->
+  <g opacity="0.3">
+    <circle cx="200" cy="200" r="3" fill="#60a5fa"/>
+    <circle cx="1600" cy="300" r="2" fill="#3b82f6"/>
+    <circle cx="400" cy="150" r="4" fill="#1d4ed8"/>
+    <circle cx="1400" cy="600" r="3" fill="#60a5fa"/>
+    <circle cx="800" cy="800" r="2" fill="#3b82f6"/>
+  </g>
+</svg>

@@ -68,7 +68,7 @@ export default function RecommendationsPage() {
         // Demo-Daten für Produktempfehlungen
         const demoData: RecommendationData = {
           personalizedMessage:
-            'Basierend auf deinen Angaben haben wir die perfekten Pflegeprodukte für dein Fahrzeug ausgewählt.',
+            'Basierend auf Ihren Angaben haben wir die perfekten Pflegeprodukte für Ihr Fahrzeug ausgewählt.',
           totalProducts: 4,
           categories: ['Felgenreiniger', 'Wachs', 'Shampoo', 'Mikrofiber'],
           estimatedTotalCost: 94.29,
