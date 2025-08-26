@@ -24,7 +24,7 @@ import {
   TrophyIcon,
 } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Question Type
 interface Question {
@@ -327,6 +327,35 @@ export default function DirectQuestionnairePage() {
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
   const answeredCount = Object.keys(answers).length;
 
+  // Handle Enter key press for navigation
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.key === 'Enter' &&
+        !event.shiftKey &&
+        !event.ctrlKey &&
+        !event.altKey
+      ) {
+        // Only handle Enter if current question is answered
+        // Allow Enter everywhere except in textareas (for multi-line input)
+        const activeElement = document.activeElement as HTMLElement;
+        const isInTextarea = activeElement?.tagName === 'TEXTAREA';
+
+        if (isCurrentQuestionAnswered() && !isInTextarea) {
+          event.preventDefault();
+          if (currentQuestionIndex < totalQuestions - 1) {
+            goToNext();
+          } else {
+            handleSubmit();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [currentQuestionIndex, totalQuestions, answers, isSubmitting]);
+
   // Handle answer change
   const handleAnswerChange = (value: any) => {
     setAnswers((prev) => ({
@@ -396,7 +425,7 @@ export default function DirectQuestionnairePage() {
           <RadioGroup
             value={value || ''}
             onValueChange={handleAnswerChange}
-            className="space-y-3"
+            className="space-y-2 sm:space-y-3"
           >
             {currentQuestion.options?.map((option) => {
               const opt =
@@ -406,22 +435,22 @@ export default function DirectQuestionnairePage() {
               return (
                 <div
                   key={opt.value || opt.label}
-                  className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors"
+                  className="flex items-start space-x-3 p-3 sm:p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors touch-manipulation"
                 >
                   <RadioGroupItem
                     value={opt.value || opt.label}
                     id={opt.value || opt.label}
-                    className="mt-1"
+                    className="mt-1 touch-manipulation"
                   />
                   <div className="grid gap-1.5 leading-none flex-1">
                     <Label
                       htmlFor={opt.value || opt.label}
-                      className="text-lg font-medium cursor-pointer"
+                      className="text-sm sm:text-base lg:text-lg font-medium cursor-pointer"
                     >
                       {opt.label}
                     </Label>
                     {opt.description && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         {opt.description}
                       </p>
                     )}
@@ -435,7 +464,7 @@ export default function DirectQuestionnairePage() {
       case 'checkbox':
         const selectedOptions = Array.isArray(value) ? value : [];
         return (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {currentQuestion.options?.map((option) => {
               const opt =
                 typeof option === 'string'
@@ -447,7 +476,7 @@ export default function DirectQuestionnairePage() {
               return (
                 <div
                   key={optValue}
-                  className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors"
+                  className="flex items-start space-x-3 p-3 sm:p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors touch-manipulation"
                 >
                   <Checkbox
                     id={optValue}
@@ -458,17 +487,17 @@ export default function DirectQuestionnairePage() {
                         : selectedOptions.filter((o) => o !== optValue);
                       handleAnswerChange(newValue);
                     }}
-                    className="mt-1"
+                    className="mt-1 touch-manipulation"
                   />
                   <div className="grid gap-1.5 leading-none flex-1">
                     <Label
                       htmlFor={optValue}
-                      className="text-lg font-medium cursor-pointer"
+                      className="text-sm sm:text-base lg:text-lg font-medium cursor-pointer"
                     >
                       {opt.label}
                     </Label>
                     {opt.description && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         {opt.description}
                       </p>
                     )}
@@ -482,14 +511,24 @@ export default function DirectQuestionnairePage() {
       case 'select':
         return (
           <Select value={value || ''} onValueChange={handleAnswerChange}>
-            <SelectTrigger className="w-full text-lg h-14">
+            <SelectTrigger className="w-full text-sm sm:text-base lg:text-lg h-12 sm:h-14 touch-manipulation">
               <SelectValue placeholder="Bitte wählen..." />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent
+              position="popper"
+              side="bottom"
+              align="start"
+              avoidCollisions={false}
+              sticky="always"
+            >
               {currentQuestion.options?.map((option) => {
                 const opt = typeof option === 'string' ? option : option.label;
                 return (
-                  <SelectItem key={opt} value={opt} className="text-lg">
+                  <SelectItem
+                    key={opt}
+                    value={opt}
+                    className="text-sm sm:text-base lg:text-lg"
+                  >
                     {opt}
                   </SelectItem>
                 );
@@ -502,18 +541,18 @@ export default function DirectQuestionnairePage() {
         const sliderValue =
           value !== undefined ? [value] : [currentQuestion.min || 0];
         return (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <Slider
               value={sliderValue}
               onValueChange={([newValue]) => handleAnswerChange(newValue)}
               min={currentQuestion.min}
               max={currentQuestion.max}
               step={currentQuestion.step}
-              className="w-full"
+              className="w-full touch-manipulation"
             />
-            <div className="flex justify-between text-lg text-muted-foreground">
+            <div className="flex justify-between text-sm sm:text-base lg:text-lg text-muted-foreground">
               <span>{currentQuestion.min}</span>
-              <div className="font-bold text-3xl text-primary">
+              <div className="font-bold text-2xl sm:text-3xl text-primary">
                 {value || currentQuestion.min}
               </div>
               <span>{currentQuestion.max}</span>
@@ -528,7 +567,7 @@ export default function DirectQuestionnairePage() {
             value={value || ''}
             onChange={(e) => handleAnswerChange(e.target.value)}
             placeholder={currentQuestion.placeholder}
-            className="w-full text-lg h-14"
+            className="w-full text-sm sm:text-base lg:text-lg h-12 sm:h-14 touch-manipulation"
           />
         );
 
@@ -538,71 +577,63 @@ export default function DirectQuestionnairePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-2xl">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <Logo
               size="lg"
-              className="cursor-pointer"
+              className="cursor-pointer scale-90 sm:scale-100"
               onClick={() => router.push('/')}
             />
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-muted-foreground">
-                {currentQuestionIndex + 1} von {totalQuestions}
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push('/')}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <ChevronLeftIcon className="w-4 h-4 mr-2" />
-                Zurück
-              </Button>
+            <div className="text-xs sm:text-sm text-muted-foreground">
+              {currentQuestionIndex + 1} von {totalQuestions}
             </div>
           </div>
 
-          <Progress value={progress} className="mb-6" />
+          <Progress value={progress} className="mb-4 sm:mb-6" />
 
           <div className="text-center">
-            <Badge variant="secondary" className="mb-2">
+            <Badge
+              variant="secondary"
+              className="mb-2 text-xs sm:text-sm bg-[#f8de00] text-neutral-950 border-[#f8de00]"
+            >
               {currentQuestion.category}
             </Badge>
           </div>
         </div>
 
         {/* Question Card */}
-        <Card className="mb-8 shadow-2xl border-0">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-2xl font-bold text-center">
+        <Card className="mb-6 sm:mb-8 shadow-2xl border-0">
+          <CardHeader className="pb-4 sm:pb-6 px-4 sm:px-6">
+            <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold text-center leading-tight">
               {currentQuestion.text}
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="space-y-8">
-            <div className="mb-8">{renderQuestionInput()}</div>
+          <CardContent className="space-y-6 sm:space-y-8 px-4 sm:px-6">
+            <div className="mb-6 sm:mb-8">{renderQuestionInput()}</div>
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between items-center pt-6 border-t">
+            <div className="flex flex-col sm:flex-row justify-between items-center pt-4 sm:pt-6 border-t gap-4 sm:gap-0">
               <Button
                 variant="outline"
                 size="lg"
                 onClick={goToPrevious}
                 disabled={currentQuestionIndex === 0}
-                className={
+                className={`w-full sm:w-auto ${
                   currentQuestionIndex === 0
                     ? 'opacity-50 cursor-not-allowed'
                     : ''
-                }
+                }`}
               >
-                <ChevronLeftIcon className="w-5 h-5 mr-2" />
+                <ChevronLeftIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Zurück
               </Button>
 
-              <div className="text-center">
-                <div className="text-sm text-muted-foreground mb-1">
+              <div className="text-center order-first sm:order-none">
+                <div className="text-xs sm:text-sm text-muted-foreground mb-1">
                   Beantwortet: {answeredCount}/{totalQuestions}
                 </div>
                 {isCurrentQuestionAnswered() && (
@@ -618,27 +649,33 @@ export default function DirectQuestionnairePage() {
                   size="lg"
                   onClick={goToNext}
                   disabled={!isCurrentQuestionAnswered()}
-                  className="min-w-[120px]"
+                  className="min-w-[120px] w-full sm:w-auto"
                 >
                   Weiter
-                  <ChevronRightIcon className="w-5 h-5 ml-2" />
+                  <ChevronRightIcon className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                 </Button>
               ) : (
                 <Button
                   size="lg"
                   onClick={handleSubmit}
                   disabled={!isCurrentQuestionAnswered() || isSubmitting}
-                  className="min-w-[180px] bg-green-600 hover:bg-green-700"
+                  className="min-w-[180px] w-full sm:w-auto bg-green-600 hover:bg-green-700"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
-                      Wird verarbeitet...
+                      <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2" />
+                      <span className="hidden sm:inline">
+                        Wird verarbeitet...
+                      </span>
+                      <span className="sm:hidden">Loading...</span>
                     </>
                   ) : (
                     <>
-                      <TrophyIcon className="w-5 h-5 mr-2" />
-                      Empfehlungen erhalten
+                      <TrophyIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      <span className="hidden sm:inline">
+                        Empfehlungen erhalten
+                      </span>
+                      <span className="sm:hidden">Fertig</span>
                     </>
                   )}
                 </Button>
@@ -648,11 +685,11 @@ export default function DirectQuestionnairePage() {
         </Card>
 
         {/* Question Dots */}
-        <div className="flex justify-center space-x-2">
+        <div className="flex justify-center space-x-1 sm:space-x-2 px-4 overflow-x-auto">
           {allQuestions.map((_, index) => (
             <div
               key={index}
-              className={`w-2 h-2 rounded-full transition-all ${
+              className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all flex-shrink-0 ${
                 index < currentQuestionIndex
                   ? 'bg-green-500'
                   : index === currentQuestionIndex
