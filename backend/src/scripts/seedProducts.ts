@@ -7,7 +7,6 @@
  * NO AI/ML - Pure rule-based product data for matching
  */
 
-import mongoose from 'mongoose';
 import { mongoConnection } from '../database/mongodb';
 import Product from '../models/Product';
 import logger from '../utils/logger';
@@ -335,13 +334,13 @@ const SAMPLE_PRODUCTS = [
 ];
 
 class ProductSeeder {
-  private defaultPartnerId: mongoose.Types.ObjectId;
-  private defaultCreatorId: mongoose.Types.ObjectId;
+  private defaultPartnerId: string;
+  private defaultCreatorId: string;
 
   constructor() {
-    // Generate default IDs for seeding
-    this.defaultPartnerId = new mongoose.Types.ObjectId();
-    this.defaultCreatorId = new mongoose.Types.ObjectId();
+    // Generate default PostgreSQL UUIDs for seeding
+    this.defaultPartnerId = '64a12345-6789-4012-9345-678901234569';
+    this.defaultCreatorId = '64a12345-6789-4012-9345-678901234570';
   }
 
   /**

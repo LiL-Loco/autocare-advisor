@@ -597,7 +597,7 @@ export default function DirectQuestionnairePage() {
           <div className="text-center">
             <Badge
               variant="secondary"
-              className="mb-2 text-xs sm:text-sm bg-[#f8de00] text-neutral-950 border-[#f8de00]"
+              className="mb-2 text-xs sm:text-sm bg-[#f8de00] text-neutral-950 border-[#f8de00] hover:bg-[#f8de00] hover:text-neutral-950"
             >
               {currentQuestion.category}
             </Badge>

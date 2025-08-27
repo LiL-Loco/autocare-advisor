@@ -226,5 +226,12 @@
 
   "// Test Configuration": "",
   "autocare.testing.coverage.threshold": 90,
-  "autocare.testing.timeout": 10000
+  "autocare.testing.timeout": 10000,
+  "python-envs.pythonProjects": [
+    {
+      "path": "",
+      "envManager": "ms-python.python:system",
+      "packageManager": "ms-python.python:pip"
+    }
+  ]
 }

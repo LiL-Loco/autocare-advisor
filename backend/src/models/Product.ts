@@ -23,7 +23,7 @@ export interface IProduct extends Document {
   features: string[];
 
   // Partner Information
-  partnerId: mongoose.Types.ObjectId;
+  partnerId: string;
   partnerShopName: string;
   partnerShopUrl: string;
   tier: 'basic' | 'professional' | 'enterprise';
@@ -91,8 +91,8 @@ export interface IProduct extends Document {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-  createdBy: mongoose.Types.ObjectId; // Admin user who created the product
-  lastModifiedBy: mongoose.Types.ObjectId;
+  createdBy: string; // User UUID from PostgreSQL
+  lastModifiedBy: string;
 
   // Analytics (computed fields)
   viewCount: number;
@@ -176,8 +176,7 @@ const ProductSchema: Schema = new Schema(
 
     // Partner Information
     partnerId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
       required: true,
       index: true,
     },
@@ -377,13 +376,13 @@ const ProductSchema: Schema = new Schema(
       index: true,
     },
     createdBy: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
       required: true,
+      index: true,
     },
     lastModifiedBy: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
+      index: true,
     },
 
     // Analytics

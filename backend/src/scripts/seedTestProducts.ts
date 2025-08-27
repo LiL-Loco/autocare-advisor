@@ -4,13 +4,12 @@
  * Seeds the database with realistic test products for recommendation engine testing
  */
 
-import mongoose from 'mongoose';
 import Product from '../models/Product';
 import logger from '../utils/logger';
 
-// Create dummy IDs for testing (replace with actual admin and partner IDs)
-const ADMIN_USER_ID = new mongoose.Types.ObjectId('64a123456789012345678901');
-const PARTNER_ID = new mongoose.Types.ObjectId('64a123456789012345678902');
+// Create dummy UUIDs for testing (replace with actual PostgreSQL user IDs)
+const ADMIN_USER_ID = '64a12345-6789-4012-9345-678901234567'; // Mock PostgreSQL UUID
+const PARTNER_ID = '64a12345-6789-4012-9345-678901234568'; // Mock PostgreSQL UUID
 
 const testProducts = [
   {

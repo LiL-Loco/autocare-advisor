@@ -13,6 +13,7 @@ import healthRouter from './routes/health';
 import invitationsRouter from './routes/invitations';
 import partnerAnalyticsRouter from './routes/partnerAnalytics';
 import partnersRouter from './routes/partners';
+import productManagementRouter from './routes/productManagement';
 import productsRouter from './routes/products';
 import recommendationsRouter from './routes/recommendations';
 
@@ -64,6 +65,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/billing', initializeBillingRoutes(billingPool));
 app.use('/api/admin', adminRouter);
 app.use('/api/invitations', invitationsRouter);
+app.use('/api/product-management', productManagementRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/recommendations', recommendationsRouter);
 app.use('/api/partners', partnersRouter);
@@ -83,6 +85,7 @@ app.get('/', (req, res) => {
       admin: '/api/admin',
       invitations: '/api/invitations',
       products: '/api/products',
+      productManagement: '/api/products/management',
       recommendations: '/api/recommendations',
       partners: '/api/partners',
       partnerAnalytics: '/api/partners/analytics',

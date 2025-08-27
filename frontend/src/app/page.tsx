@@ -6,26 +6,17 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import BubbleAnimation from '@/components/ui/bubble-animation';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
+  ArrowRightIcon,
   BoltIcon,
-  BuildingStorefrontIcon,
   CheckIcon,
   ChevronRightIcon,
   ClockIcon,
   CurrencyDollarIcon,
-  PlayIcon,
+  ExclamationTriangleIcon,
   ShieldCheckIcon,
-  SparklesIcon,
   StarIcon,
-  TrophyIcon,
-  WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 
@@ -36,486 +27,549 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative py-16 sm:py-24 lg:py-32 px-4 bg-neutral-950 text-white overflow-hidden">
-        {/* Bubble Animation Background */}
-        <BubbleAnimation bubbleCount={20} />
-
+        <BubbleAnimation />
         <div className="container mx-auto max-w-6xl relative z-10">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Left Content */}
-            <div className="text-center lg:text-left">
-              <Badge
-                variant="secondary"
-                className="mb-4 sm:mb-6 bg-[#f8de00] text-neutral-950 border-[#f8de00] text-sm sm:text-base"
-              >
-                <TrophyIcon className="w-4 h-4 mr-2" />
-                Professionelle Fahrzeugpflege
-              </Badge>
+          <div className="text-center max-w-4xl mx-auto">
+            <Badge
+              variant="secondary"
+              className="mb-6 sm:mb-8 bg-[#f8de00]/10 border-[#f8de00]/20 text-[#f8de00] hover:bg-[#f8de00]/20"
+            >
+              <FoamIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              Schluss mit Produktwahl-Verwirrung
+            </Badge>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-                <span className="text-white">CLEAN</span>
-                <span className="text-[#f8de00]">tastic</span>
-                <Badge
-                  variant="outline"
-                  className="ml-2 sm:ml-4 text-xs bg-transparent border-slate-600 text-slate-400"
-                >
-                  v2.0
-                </Badge>
-              </h1>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 leading-tight">
+              <span className="text-[#f8de00]">CLEANtastic</span> findet die
+              richtige Autopflege für{' '}
+              <span className="text-[#f8de00]">DEIN</span> Auto
+            </h1>
 
-              <p className="text-lg sm:text-xl mb-6 sm:mb-8 text-slate-300 leading-relaxed px-2 sm:px-0">
-                Intelligente Fahrzeuganalyse mit{' '}
-                <span className="text-white font-semibold">
-                  sofortigen Produktempfehlungen
-                </span>{' '}
-                - vollautomatisch und wissenschaftlich fundiert.
-              </p>
+            <p className="text-lg sm:text-xl lg:text-2xl text-slate-300 mb-8 sm:mb-10 max-w-3xl mx-auto px-4 sm:px-0">
+              Nie wieder stundenlang recherchieren oder teure Fehlkäufe bereuen.
+              Unser intelligentes System erstellt dir in 3 Minuten die perfekte
+              Produktliste für dein Auto.
+            </p>
 
-              <div className="hidden sm:flex sm:flex-wrap justify-center lg:justify-start gap-4 sm:gap-6 mb-6 sm:mb-8">
-                <div className="flex items-center text-slate-400 justify-center lg:justify-start">
-                  <div className="w-8 h-8 mr-3 bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <CheckIcon className="w-4 h-4 text-slate-300" />
-                  </div>
-                  <span className="text-sm sm:text-base whitespace-nowrap">
-                    Maßgeschneidert
-                  </span>
-                </div>
-                <div className="flex items-center text-slate-400 justify-center lg:justify-start">
-                  <div className="w-8 h-8 mr-3 bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <CurrencyDollarIcon className="w-4 h-4 text-slate-300" />
-                  </div>
-                  <span className="text-sm sm:text-base whitespace-nowrap">
-                    Preisvergleich
-                  </span>
-                </div>
-                <div className="flex items-center text-slate-400 justify-center lg:justify-start">
-                  <div className="w-8 h-8 mr-3 bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <ClockIcon className="w-4 h-4 text-slate-300" />
-                  </div>
-                  <span className="text-sm whitespace-nowrap">3 Minuten</span>
-                </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12 text-sm sm:text-base">
+              <div className="flex items-center">
+                <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2" />
+                <span className="text-slate-200">Fahrzeugspezifisch</span>
+              </div>
+              <div className="flex items-center">
+                <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2" />
+                <span className="text-slate-200">Keine Recherche</span>
+              </div>
+              <div className="flex items-center">
+                <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2" />
+                <span className="text-slate-200">3 Minuten</span>
               </div>
             </div>
 
-            {/* Right Content - CTA Card */}
-            <div className="mt-8 lg:mt-0">
-              <Card className="shadow-xl border-slate-200 mx-auto max-w-md lg:max-w-none">
-                <CardHeader className="text-center pb-4 px-4 sm:px-6">
-                  <CardTitle className="text-xl sm:text-2xl font-bold text-neutral-950 flex items-center justify-center">
-                    <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-[#f8de00]" />
-                    Digitaler Pflegeberater
-                  </CardTitle>
-                  <CardDescription className="text-slate-600 text-sm sm:text-base">
-                    Automatische Analyse deines Fahrzeugs für passgenaue
-                    Produktempfehlungen
-                  </CardDescription>
-                </CardHeader>
+            <Button
+              size="lg"
+              onClick={() => router.push('/wizard')}
+              className="bg-[#f8de00] hover:bg-[#e5c800] text-neutral-950 font-semibold px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg mb-6 sm:mb-8 button-one overflow-hidden relative"
+            >
+              Meine Produktliste erstellen
+              <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+            </Button>
 
-                <CardContent className="space-y-4 px-4 sm:px-6">
-                  <Button
-                    onClick={() => router.push('/start-questionnaire')}
-                    className="w-full text-base sm:text-lg h-12 sm:h-14 bg-[#f8de00] hover:bg-[#e6c700] text-neutral-950 touch-manipulation"
-                    size="lg"
-                  >
-                    <WrenchScrewdriverIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                    Fahrzeug analysieren
-                    <ChevronRightIcon className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                  </Button>
-
-                  <div className="hidden sm:flex justify-center gap-2 flex-wrap">
-                    <Badge
-                      variant="secondary"
-                      className="text-xs text-slate-600 px-2 py-1"
-                    >
-                      <CheckIcon className="w-3 h-3 mr-1" />
-                      Vollautomatisch
-                    </Badge>
-                    <Badge
-                      variant="secondary"
-                      className="text-xs text-slate-600 px-2 py-1"
-                    >
-                      <ClockIcon className="w-3 h-3 mr-1" />
-                      ~3 Minuten
-                    </Badge>
-                    <Badge
-                      variant="secondary"
-                      className="text-xs text-slate-600 px-2 py-1"
-                    >
-                      <SparklesIcon className="w-3 h-3 mr-1" />
-                      Sofort verfügbar
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
+              <div className="flex -space-x-2">
+                <Avatar className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-white">
+                  <AvatarFallback className="text-xs bg-[#f8de00] text-neutral-950">
+                    S
+                  </AvatarFallback>
+                </Avatar>
+                <Avatar className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-white">
+                  <AvatarFallback className="text-xs bg-[#f8de00] text-neutral-950">
+                    M
+                  </AvatarFallback>
+                </Avatar>
+                <Avatar className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-white">
+                  <AvatarFallback className="text-xs bg-[#f8de00] text-neutral-950">
+                    T
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <span>Über 2.500 zufriedene Autoliebhaber</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Problem Identification Section */}
       <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-950 mb-4 sm:mb-6">
-              Profi-Autopflege leicht gemacht
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-950 mb-4 sm:mb-6 flex items-center justify-center flex-wrap">
+              <ExclamationTriangleIcon className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-orange-500" />
+              <span className="text-center">Kennst du diese Probleme?</span>
             </h2>
             <p className="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto px-4 sm:px-0">
-              Von Anfänger bis Profi - wir haben die passende Lösung für deinen
-              Lacktyp
+              Diese Frustrationen kennt jeder Autoliebhaber - du bist nicht
+              allein!
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
-            <Card className="text-center hover:shadow-lg transition-all duration-300 hover:scale-105 border-slate-200">
-              <CardContent className="p-4 sm:p-6">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:bg-slate-200 transition-colors">
-                  <CheckIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-600 animate-pulse" />
+          <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-12">
+            <Card className="border-red-200 bg-red-50 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <ClockIcon className="w-6 h-6 text-red-600" />
                 </div>
-                <CardTitle className="text-base sm:text-lg mb-2 text-neutral-950">
-                  Präzise Diagnostik
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm text-slate-600">
-                  KI-gestützte Problemanalyse erkennt versteckte Lackschäden
-                </CardDescription>
+                <h3 className="text-lg font-bold text-red-900 mb-3">
+                  Stundenlange Recherche
+                </h3>
+                <p className="text-red-800 text-sm">
+                  "Welche Politur für meinen BMW? Was ist der Unterschied
+                  zwischen Wachs und Versiegelung? Ich verliere mich in endlosen
+                  Foren..."
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="text-center hover:shadow-lg transition-all duration-300 hover:scale-105 border-slate-200">
-              <CardContent className="p-4 sm:p-6">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:bg-slate-200 transition-colors">
-                  <BoltIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-600 hover:animate-spin transition-transform" />
+            <Card className="border-orange-200 bg-orange-50 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-orange-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <CurrencyDollarIcon className="w-6 h-6 text-orange-600" />
                 </div>
-                <CardTitle className="text-lg mb-2 text-neutral-950">
-                  Blitzschnell
-                </CardTitle>
-                <CardDescription className="text-sm text-slate-600">
-                  In nur 3 Minuten zur perfekten Produktempfehlung
-                </CardDescription>
+                <h3 className="text-lg font-bold text-orange-900 mb-3">
+                  Teure Fehlkäufe
+                </h3>
+                <p className="text-orange-800 text-sm">
+                  "Schon wieder 80€ für Produkte ausgegeben, die nicht zu meinem
+                  Auto passen. Der Lack sieht noch schlechter aus als vorher..."
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="text-center hover:shadow-lg transition-all duration-300 hover:scale-105 border-slate-200">
-              <CardContent className="p-6">
-                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-slate-200 transition-colors">
-                  <ShieldCheckIcon className="w-8 h-8 text-slate-600" />
+            <Card className="border-yellow-200 bg-yellow-50 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-yellow-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <ExclamationTriangleIcon className="w-6 h-6 text-yellow-600" />
                 </div>
-                <CardTitle className="text-lg mb-2 text-neutral-950">
-                  Premium Marken
-                </CardTitle>
-                <CardDescription className="text-sm text-slate-600">
-                  Nur geprüfte Top-Marken wie Meguiar's, Chemical Guys, SONAX
-                </CardDescription>
+                <h3 className="text-lg font-bold text-yellow-900 mb-3">
+                  Angst vor Schäden
+                </h3>
+                <p className="text-yellow-800 text-sm">
+                  "Was wenn ich den Lack beschädige? Welches Produkt ist zu
+                  aggressiv? Ich trau mich gar nicht mehr ran..."
+                </p>
               </CardContent>
             </Card>
+          </div>
 
-            <Card className="text-center hover:shadow-lg transition-all duration-300 hover:scale-105 border-slate-200">
-              <CardContent className="p-6">
-                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-slate-200 transition-colors">
-                  <SparklesIcon className="w-8 h-8 text-slate-600 animate-pulse" />
-                </div>
-                <CardTitle className="text-lg mb-2 text-neutral-950">
-                  Showroom-Glanz
-                </CardTitle>
-                <CardDescription className="text-sm text-slate-600">
-                  Garantierte Profi-Ergebnisse auch für Hobby-Schrauber
-                </CardDescription>
-              </CardContent>
-            </Card>
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-neutral-950 mb-4">
+              Es gibt eine bessere Lösung!
+            </h3>
+            <p className="text-lg text-slate-600 mb-6">
+              Lass uns das für dich lösen. Professionell, schnell und garantiert
+              richtig.
+            </p>
+            <ChevronRightIcon className="w-6 h-6 text-[#f8de00] mx-auto animate-bounce" />
           </div>
         </div>
       </section>
 
-      {/* Problem Categories */}
+      {/* Solution Benefits Section */}
       <section className="py-12 sm:py-16 lg:py-20 px-4 bg-slate-50">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-neutral-950 mb-4 sm:mb-6 flex items-center justify-center flex-wrap">
-              <WrenchScrewdriverIcon className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3" />
-              <span className="text-center">
-                Häufige Probleme die wir lösen
-              </span>
+              <ShieldCheckIcon className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-green-500" />
+              <span className="text-center">So lösen wir deine Probleme</span>
             </h2>
             <p className="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto px-4 sm:px-0">
-              Egal ob BMW, Audi, Mercedes oder VW - diese Probleme kennt jeder
-              Autobesitzer
+              Professionelle Autopflege war noch nie so einfach
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <Card className="group hover:shadow-lg hover:bg-white cursor-pointer transition-all border-slate-200 touch-manipulation">
-              <CardContent className="text-center p-4 sm:p-6">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-200 rounded-full mx-auto mb-3 sm:mb-4 group-hover:bg-slate-300 transition-colors flex items-center justify-center">
-                  <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600 group-hover:animate-spin" />
+          <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+            <Card className="border-green-200 bg-green-50 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <BoltIcon className="w-6 h-6 text-green-600" />
                 </div>
-                <CardTitle className="text-base sm:text-lg mb-2 sm:mb-3 text-neutral-950">
-                  Schleier & Hologramme
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm mb-3 sm:mb-4 text-slate-600">
-                  Besonders auf schwarzem Lack nach der Politur sichtbar
-                </CardDescription>
-                <Badge
-                  variant="secondary"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity bg-slate-100 text-slate-700"
-                >
-                  <CheckIcon className="w-3 h-3 mr-1" />
-                  Sofort lösen
-                </Badge>
+                <h3 className="text-lg font-bold text-green-900 mb-3">
+                  Fahrzeugspezifische Empfehlungen
+                </h3>
+                <p className="text-green-800 text-sm">
+                  Unser Expertensystem kennt die Besonderheiten von über 15.000
+                  Fahrzeugmodellen. BMW E90? Audi A4? Wir wissen genau, was dein
+                  Auto braucht.
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg hover:bg-white cursor-pointer transition-all border-slate-200">
-              <CardContent className="text-center p-6">
-                <div className="w-12 h-12 bg-slate-200 rounded-full mx-auto mb-4 group-hover:bg-slate-300 transition-colors flex items-center justify-center">
-                  <BoltIcon className="w-6 h-6 text-slate-600 group-hover:animate-pulse" />
+            <Card className="border-green-200 bg-green-50 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <ClockIcon className="w-6 h-6 text-green-600" />
                 </div>
-                <CardTitle className="text-lg mb-3 text-neutral-950">
-                  Kratzer & Swirls
-                </CardTitle>
-                <CardDescription className="text-sm mb-4 text-slate-600">
-                  Feine Lackschäden durch falsche Waschhandschuhe
-                </CardDescription>
-                <Badge
-                  variant="secondary"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity bg-slate-100 text-slate-700"
-                >
-                  <WrenchScrewdriverIcon className="w-3 h-3 mr-1" />
-                  Reparatur-Guide
-                </Badge>
+                <h3 className="text-lg font-bold text-green-900 mb-3">
+                  3 Minuten statt 3 Stunden
+                </h3>
+                <p className="text-green-800 text-sm">
+                  Keine endlose Recherche mehr. Beantworte ein paar Fragen zu
+                  deinem Auto und erhalte sofort die perfekte Produktliste.
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg hover:bg-white cursor-pointer transition-all border-slate-200">
-              <CardContent className="text-center p-6">
-                <div className="w-12 h-12 bg-slate-200 rounded-full mx-auto mb-4 group-hover:bg-slate-300 transition-colors flex items-center justify-center">
-                  <FoamIcon
-                    className="w-6 h-6 text-slate-600 group-hover:text-slate-800"
-                    size={24}
-                  />
+            <Card className="border-green-200 bg-green-50 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <ShieldCheckIcon className="w-6 h-6 text-green-600" />
                 </div>
-                <CardTitle className="text-lg mb-3 text-neutral-950">
-                  Wasserflecken
-                </CardTitle>
-                <CardDescription className="text-sm mb-4 text-slate-600">
-                  Hartnäckige Kalkflecken nach der Autowäsche
-                </CardDescription>
-                <Badge
-                  variant="secondary"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity bg-slate-100 text-slate-700"
-                >
-                  <CheckIcon className="w-3 h-3 mr-1" />
-                  Entfernen lernen
-                </Badge>
-              </CardContent>
-            </Card>
-
-            <Card className="group hover:shadow-lg hover:bg-white cursor-pointer transition-all border-slate-200">
-              <CardContent className="text-center p-6">
-                <div className="w-12 h-12 bg-slate-200 rounded-full mx-auto mb-4 group-hover:bg-slate-300 transition-colors flex items-center justify-center">
-                  <SparklesIcon className="w-6 h-6 text-slate-600 group-hover:animate-pulse" />
-                </div>
-                <CardTitle className="text-lg mb-3 text-neutral-950">
-                  Glanz verloren
-                </CardTitle>
-                <CardDescription className="text-sm mb-4 text-slate-600">
-                  Lack wirkt matt, stumpf und farblos
-                </CardDescription>
-                <Badge
-                  variant="secondary"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity bg-slate-100 text-slate-700"
-                >
-                  <SparklesIcon className="w-3 h-3 mr-1" />
-                  Glanz zurückholen
-                </Badge>
+                <h3 className="text-lg font-bold text-green-900 mb-3">
+                  Geprüfte Sicherheit
+                </h3>
+                <p className="text-green-800 text-sm">
+                  Alle empfohlenen Produkte sind von Profis getestet und für
+                  deinen Lacktyp geeignet. Schritt-für-Schritt Anleitung
+                  inklusive.
+                </p>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Social Proof / Testimonials Section */}
       <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-950 mb-4 sm:mb-6 flex items-center justify-center flex-wrap">
-              <TrophyIcon className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 animate-pulse" />
-              <span>Was unsere Kunden sagen</span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-950 mb-4 sm:mb-6">
+              Echte Ergebnisse von echten Autoliebhabern
             </h2>
             <p className="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto px-4 sm:px-0">
-              Über 10.000 zufriedene Autobesitzer vertrauen bereits auf unsere
-              Expertise
+              Über 2.500 Nutzer haben durchschnittlich 4,8 Stunden Recherche und
+              127€ Fehlkäufe gespart
             </p>
           </div>
 
-          <div className="grid gap-6 sm:gap-8 md:grid-cols-2 mb-12">
-            <Card className="shadow-lg border-l-4 border-slate-400">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center mb-3 sm:mb-4 gap-2 sm:gap-0">
-                  <div className="flex text-slate-400 mr-0 sm:mr-3 justify-center sm:justify-start">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <StarIcon key={star} className="w-4 h-4 fill-current" />
-                    ))}
+          <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-12">
+            <Card className="hover:shadow-lg transition-all duration-300 border-slate-200 bg-white">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="flex space-x-1 mb-2">
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                   </div>
                   <Badge
                     variant="secondary"
-                    className="bg-slate-100 text-slate-700 text-xs sm:text-sm self-center sm:self-auto"
+                    className="ml-auto bg-green-100 text-green-800"
                   >
-                    BMW 320d Besitzer
+                    Gespart: 240€
                   </Badge>
                 </div>
-                <CardDescription className="text-slate-700 mb-3 sm:mb-4 text-sm sm:text-base leading-relaxed">
-                  "Endlich eine Seite, die mir genau sagt welches Produkt ich
-                  für mein Problem brauche. Die Schleier sind weg und mein
-                  schwarzer BMW glänzt wieder wie neu! Der Preisvergleich hat
-                  mir auch noch 15€ gespart."
-                </CardDescription>
-                <div className="flex items-center justify-center sm:justify-start">
-                  <Avatar className="mr-3">
-                    <AvatarFallback className="bg-slate-600 text-white font-bold text-sm">
-                      M
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="text-center sm:text-left">
-                    <p className="font-semibold text-neutral-950 text-sm sm:text-base">
-                      Michael K.
-                    </p>
-                    <p className="text-xs sm:text-sm text-slate-500">
-                      München • BMW 320d
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-lg border-l-4 border-slate-400">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center mb-3 sm:mb-4 gap-2 sm:gap-0">
-                  <div className="flex text-slate-400 mr-0 sm:mr-3 justify-center sm:justify-start">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <StarIcon key={star} className="w-4 h-4 fill-current" />
-                    ))}
-                  </div>
-                  <Badge
-                    variant="secondary"
-                    className="bg-slate-100 text-slate-700 text-xs sm:text-sm self-center sm:self-auto"
-                  >
-                    Audi A3 Besitzerin
-                  </Badge>
-                </div>
-                <CardDescription className="text-slate-700 mb-4 text-base leading-relaxed">
-                  "Als Anfänger war ich völlig überfordert. CLEANtastic hat mir
-                  Schritt-für-Schritt erklärt wie ich die Kratzer entfernen
-                  kann. Super Ergebnis und ich habe richtig Spaß daran
-                  gefunden!"
-                </CardDescription>
+                <p className="text-slate-700 mb-4 italic">
+                  "Nach 2 Jahren Fehlkäufen endlich die richtigen Produkte! Mein
+                  E90 glänzt wie am ersten Tag. Die Keramikversiegelung war
+                  perfekt für meinen Alltag."
+                </p>
                 <div className="flex items-center">
-                  <Avatar className="mr-3">
-                    <AvatarFallback className="bg-slate-600 text-white font-bold">
-                      S
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-sm font-semibold text-slate-600">
+                      SW
+                    </span>
+                  </div>
                   <div>
-                    <p className="font-semibold text-neutral-950">Sarah M.</p>
-                    <p className="text-sm text-slate-500">Hamburg • Audi A3</p>
+                    <p className="font-semibold text-slate-900">Stefan W.</p>
+                    <p className="text-sm text-slate-600">
+                      BMW 3er E90, München • vor 3 Monaten
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-all duration-300 border-slate-200 bg-white">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="flex space-x-1 mb-2">
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  </div>
+                  <Badge
+                    variant="secondary"
+                    className="ml-auto bg-green-100 text-green-800"
+                  >
+                    Gespart: 6h
+                  </Badge>
+                </div>
+                <p className="text-slate-700 mb-4 italic">
+                  "Wahnsinn! Statt wochenlang zu googeln hatte ich in 5 Minuten
+                  meine Liste. Die Kratzer sind komplett weg - mein Audi sieht
+                  aus wie neu!"
+                </p>
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-sm font-semibold text-slate-600">
+                      MK
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Marco K.</p>
+                    <p className="text-sm text-slate-600">
+                      Audi A4 B9, Hamburg • vor 1 Monat
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-all duration-300 border-slate-200 bg-white">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="flex space-x-1 mb-2">
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <StarIcon className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  </div>
+                  <Badge
+                    variant="secondary"
+                    className="ml-auto bg-green-100 text-green-800"
+                  >
+                    Anfänger → Profi
+                  </Badge>
+                </div>
+                <p className="text-slate-700 mb-4 italic">
+                  "Als totaler Neuling war ich überfordert. Die
+                  Schritt-für-Schritt Anleitung war perfekt. Jetzt machen mir
+                  sogar Freunde Komplimente!"
+                </p>
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-sm font-semibold text-slate-600">
+                      TM
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Thomas M.</p>
+                    <p className="text-sm text-slate-600">
+                      VW Golf 8, Berlin • vor 2 Wochen
+                    </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <Card className="text-center border-slate-200">
-              <CardContent className="p-3 sm:p-4 lg:p-6">
-                <div className="text-2xl sm:text-3xl font-bold text-slate-700 mb-1 sm:mb-2">
-                  4.9/5
+          <div className="text-center bg-slate-50 rounded-xl p-6 sm:p-8">
+            <div className="grid grid-cols-3 gap-4 sm:gap-8">
+              <div>
+                <div className="text-2xl sm:text-3xl font-bold text-neutral-950">
+                  4.8h
                 </div>
-                <div className="flex justify-center mb-1 sm:mb-2">
-                  <div className="flex text-slate-400">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <StarIcon
-                        key={star}
-                        className="w-3 h-3 sm:w-4 sm:h-4 fill-current hover:animate-spin transition-transform"
-                      />
-                    ))}
-                  </div>
+                <div className="text-sm text-slate-600">Ø Zeitersparnis</div>
+              </div>
+              <div>
+                <div className="text-2xl sm:text-3xl font-bold text-neutral-950">
+                  127€
                 </div>
-                <CardDescription className="text-xs sm:text-sm text-slate-600">
-                  Kundenbewertung
-                </CardDescription>
+                <div className="text-sm text-slate-600">Ø Geld gespart</div>
+              </div>
+              <div>
+                <div className="text-2xl sm:text-3xl font-bold text-neutral-950">
+                  94%
+                </div>
+                <div className="text-sm text-slate-600">Zufriedenheit</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-slate-50">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-950 mb-4 sm:mb-6">
+              So einfach funktioniert's
+            </h2>
+            <p className="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto px-4 sm:px-0">
+              In nur 3 Schritten zur perfekten Produktliste für dein Auto
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-[#f8de00] rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-neutral-950">1</span>
+              </div>
+              <h3 className="text-xl font-bold text-neutral-950 mb-4">
+                Fahrzeug eingeben
+              </h3>
+              <p className="text-slate-600">
+                Marke, Modell, Baujahr und Lackzustand - wir erfassen alle
+                relevanten Details deines Autos.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-[#f8de00] rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-neutral-950">2</span>
+              </div>
+              <h3 className="text-xl font-bold text-neutral-950 mb-4">
+                Probleme beschreiben
+              </h3>
+              <p className="text-slate-600">
+                Kratzer, Wasserflecken, matte Stellen? Unser Expertensystem
+                analysiert deine spezifischen Herausforderungen.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-[#f8de00] rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-neutral-950">3</span>
+              </div>
+              <h3 className="text-xl font-bold text-neutral-950 mb-4">
+                Produktliste erhalten
+              </h3>
+              <p className="text-slate-600">
+                Fertig! Du erhältst eine personalisierte Liste mit den besten
+                Produkten für dein Auto - mit Kauflinks und Anleitung.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-950 mb-4 sm:mb-6">
+              Häufige Fragen
+            </h2>
+            <p className="text-lg sm:text-xl text-slate-600">
+              Alles was du wissen musst, bevor du startest
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card className="border-slate-200">
+              <CardContent className="p-6">
+                <h3 className="font-bold text-lg text-neutral-950 mb-3">
+                  Wie genau sind die Empfehlungen für mein Auto?
+                </h3>
+                <p className="text-slate-600">
+                  Unsere Expertendatenbank enthält über 15.000 Fahrzeugmodelle
+                  mit spezifischen Lackeigenschaften, Materialien und
+                  Besonderheiten. Die Empfehlungen werden exakt auf dein Auto
+                  und dessen Zustand abgestimmt.
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="text-center border-slate-200">
+            <Card className="border-slate-200">
               <CardContent className="p-6">
-                <div className="text-3xl font-bold text-slate-700 mb-2">
-                  15,000+
-                </div>
-                <div className="w-6 h-6 bg-slate-300 rounded mx-auto mb-2 flex items-center justify-center">
-                  <CheckIcon className="w-4 h-4 text-slate-600 animate-pulse" />
-                </div>
-                <CardDescription className="text-sm text-slate-600">
-                  Beratungen
-                </CardDescription>
+                <h3 className="font-bold text-lg text-neutral-950 mb-3">
+                  Was passiert, wenn ich mit den Produkten nicht zufrieden bin?
+                </h3>
+                <p className="text-slate-600">
+                  Alle empfohlenen Produkte sind von Profis getestet und kommen
+                  mit einer detaillierten Anleitung. Falls du trotzdem nicht
+                  zufrieden bist, helfen wir dir gerne bei einer alternativen
+                  Produktauswahl.
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="text-center border-slate-200">
+            <Card className="border-slate-200">
               <CardContent className="p-6">
-                <div className="text-3xl font-bold text-slate-700 mb-2">
-                  500+
-                </div>
-                <div className="w-6 h-6 bg-slate-300 rounded mx-auto mb-2 flex items-center justify-center">
-                  <BuildingStorefrontIcon className="w-4 h-4 text-slate-600" />
-                </div>
-                <CardDescription className="text-sm text-slate-600">
-                  Produkte
-                </CardDescription>
+                <h3 className="font-bold text-lg text-neutral-950 mb-3">
+                  Wie lange dauert die Produktlisten-Erstellung?
+                </h3>
+                <p className="text-slate-600">
+                  Der gesamte Prozess dauert nur 3-5 Minuten. Du beantwortest
+                  ein paar Fragen zu deinem Auto und erhältst sofort deine
+                  personalisierte Produktliste mit Kauflinks und
+                  Anwendungsanleitung.
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="text-center border-slate-200">
+            <Card className="border-slate-200">
               <CardContent className="p-6">
-                <div className="text-3xl font-bold text-slate-700 mb-2">
-                  98%
-                </div>
-                <div className="w-6 h-6 bg-slate-300 rounded mx-auto mb-2 flex items-center justify-center">
-                  <SparklesIcon className="w-4 h-4 text-slate-600 animate-pulse" />
-                </div>
-                <CardDescription className="text-sm text-slate-600">
-                  Erfolgsrate
-                </CardDescription>
+                <h3 className="font-bold text-lg text-neutral-950 mb-3">
+                  Kostet die Beratung etwas?
+                </h3>
+                <p className="text-slate-600">
+                  Die Produktlisten-Erstellung ist komplett kostenlos. Du zahlst
+                  nur für die Produkte, die du tatsächlich kaufen möchtest -
+                  ohne versteckte Kosten oder Aufschläge.
+                </p>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Final CTA Section */}
       <section className="py-12 sm:py-16 lg:py-20 px-4 bg-neutral-950 text-white">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6">
-            Bereit für den perfekten Lack?
-          </h2>
-          <p className="text-lg sm:text-xl mb-6 sm:mb-8 text-slate-300 px-4 sm:px-0">
-            Starte jetzt die Fahrzeuganalyse und finde die passenden Produkte
-            für dein Auto.
-          </p>
-
-          <div className="flex flex-col gap-4 sm:gap-6 justify-center items-center">
-            <Button
-              onClick={() => router.push('/start-questionnaire')}
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center">
+            <Badge
               variant="secondary"
-              size="lg"
-              className="bg-[#f8de00] text-neutral-950 hover:bg-[#e6c700] px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg h-auto group w-full sm:w-auto max-w-md touch-manipulation"
+              className="mb-6 bg-[#f8de00]/10 border-[#f8de00]/20 text-[#f8de00] inline-flex"
             >
-              <PlayIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:animate-bounce" />
-              Fahrzeug analysieren
-              <ChevronRightIcon className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-            </Button>
+              ⚡ Starte jetzt - dauert nur 3 Minuten
+            </Badge>
+
+            <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+              Nie wieder Zeit verschwenden oder Geld verschenken
+            </h2>
+            <p className="text-lg sm:text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+              Schließe dich über 2.500 zufriedenen Autoliebhabern an und erhalte
+              sofort deine persönliche Produktliste.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-8">
+              <div className="flex items-center text-green-400 text-sm sm:text-base">
+                <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
+                <span>Komplett kostenlos</span>
+              </div>
+              <div className="flex items-center text-green-400 text-sm sm:text-base">
+                <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
+                <span>Keine Anmeldung nötig</span>
+              </div>
+              <div className="flex items-center text-green-400 text-sm sm:text-base">
+                <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
+                <span>Sofortige Ergebnisse</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <Button
+                size="lg"
+                onClick={() => router.push('/wizard')}
+                className="bg-[#f8de00] hover:bg-[#e5c800] text-neutral-950 font-semibold px-8 py-4 text-lg button-one overflow-hidden relative mb-4"
+              >
+                Jetzt meine Produktliste erstellen
+                <ArrowRightIcon className="w-5 h-5 ml-2" />
+              </Button>
+
+              <p className="text-sm text-slate-400 text-center max-w-md">
+                💡 Durchschnittliche Ersparnis: 4,8 Stunden Recherche + 127€
+                Fehlkäufe
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
       <Footer />
     </div>
   );
