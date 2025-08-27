@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Monitor, Smartphone, Zap } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface PWAInstallProps {
   onInstalled?: () => void;
@@ -148,7 +149,7 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({
             'Scroll down and tap "Add to Home Screen"',
             'Tap "Add" to install the app',
           ],
-          icon: '📱',
+          icon: Smartphone,
         };
       case 'android':
         return {
@@ -158,7 +159,7 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({
             'Or use the install button below',
             'Access the app directly from your home screen',
           ],
-          icon: '🤖',
+          icon: Smartphone,
         };
       case 'desktop':
         return {
@@ -168,7 +169,7 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({
             'Or look for the install icon in your address bar',
             'Access the app from your desktop or taskbar',
           ],
-          icon: '💻',
+          icon: Monitor,
         };
       default:
         return {
@@ -178,7 +179,7 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({
             'Access it like a native app',
             'Works offline with cached data',
           ],
-          icon: '⚡',
+          icon: Zap,
         };
     }
   };
@@ -197,7 +198,7 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <span className="text-2xl">{instructions.icon}</span>
+              <instructions.icon className="h-8 w-8" />
               <div>
                 <h3 className="font-semibold text-lg">{instructions.title}</h3>
                 <p className="text-sm text-blue-100">

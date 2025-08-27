@@ -1,6 +1,30 @@
 'use client';
 
-import { BarChart, BarChart3, Package, TrendingUp, Upload } from 'lucide-react';
+import {
+  BarChart,
+  BarChart3,
+  Bell,
+  CreditCard,
+  DollarSign,
+  Download,
+  FileBarChart,
+  FileText,
+  HelpCircle,
+  Key,
+  LogOut,
+  Menu,
+  MessageSquare,
+  Package,
+  PenTool,
+  Plug2,
+  Search,
+  Settings,
+  Target,
+  TrendingUp,
+  Upload,
+  Users,
+  Webhook,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -21,31 +45,31 @@ interface NavigationItem {
   subItems?: { name: string; href: string; icon: React.ComponentType<any> }[];
 }
 
-const navigationItems = [
+const navigationItems: NavigationItem[] = [
   {
     name: 'Dashboard',
     href: '/partner/dashboard',
     icon: BarChart3,
-    description: 'Overview & Analytics',
+    description: 'Übersicht & Analytics',
   },
   {
-    name: 'Products',
+    name: 'Produkte',
     href: '/partner/dashboard/products',
     icon: Package,
-    description: 'Product Management',
+    description: 'Produktverwaltung',
     subItems: [
       {
-        name: 'Advanced Product Management',
+        name: 'Erweiterte Produktverwaltung',
         href: '/partner/dashboard/products/advanced',
         icon: TrendingUp,
       },
       {
-        name: 'Bulk Operations',
+        name: 'Massenoperationen',
         href: '/partner/dashboard/products/bulk',
         icon: Upload,
       },
       {
-        name: 'Product Analytics',
+        name: 'Produkt-Analytics',
         href: '/partner/dashboard/products/analytics',
         icon: BarChart,
       },
@@ -54,149 +78,165 @@ const navigationItems = [
   {
     name: 'Analytics',
     href: '/partner/dashboard/analytics',
-    icon: '📈',
-    description: 'Advanced Analytics',
+    icon: TrendingUp,
+    description: 'Erweiterte Analytics',
   },
   {
-    name: 'Customers',
+    name: 'Kunden',
     href: '/partner/dashboard/customers',
-    icon: '👥',
-    description: 'Customer Insights',
+    icon: Users,
+    description: 'Kundeneinblicke',
     subItems: [
       {
-        name: 'Customer Journey',
+        name: 'Kunden-Journey',
         href: '/partner/dashboard/customers/journey',
-        icon: '🛤️',
+        icon: BarChart,
       },
       {
-        name: 'Segmentation',
+        name: 'Segmentierung',
         href: '/partner/dashboard/customers/segments',
-        icon: '🎯',
+        icon: Target,
       },
       {
-        name: 'Behavior Analysis',
+        name: 'Verhaltensanalyse',
         href: '/partner/dashboard/customers/behavior',
-        icon: '🔍',
+        icon: Search,
       },
     ],
   },
   {
     name: 'Marketing',
     href: '/partner/dashboard/marketing',
-    icon: '🎯',
-    description: 'Campaign Management',
+    icon: Target,
+    description: 'Kampagnenverwaltung',
     subItems: [
       {
-        name: 'Campaign Tools',
+        name: 'Kampagnen-Tools',
         href: '/partner/dashboard/marketing/campaigns',
-        icon: '📢',
+        icon: MessageSquare,
       },
       {
-        name: 'Templates',
+        name: 'Vorlagen',
         href: '/partner/dashboard/marketing/templates',
-        icon: '📄',
+        icon: FileText,
       },
       {
-        name: 'Performance',
+        name: 'Leistung',
         href: '/partner/dashboard/marketing/performance',
-        icon: '📈',
+        icon: TrendingUp,
       },
     ],
   },
   {
-    name: 'API Management',
+    name: 'API-Verwaltung',
     href: '/partner/dashboard/api',
-    icon: '�',
-    description: 'API & Integrations',
+    icon: Plug2,
+    description: 'API & Integrationen',
     subItems: [
-      { name: 'API Keys', href: '/partner/dashboard/api/keys', icon: '🔑' },
-      { name: 'Webhooks', href: '/partner/dashboard/api/webhooks', icon: '🔄' },
+      { name: 'API-Schlüssel', href: '/partner/dashboard/api/keys', icon: Key },
       {
-        name: 'Documentation',
-        href: '/partner/dashboard/api/docs',
-        icon: '📚',
+        name: 'Webhooks',
+        href: '/partner/dashboard/api/webhooks',
+        icon: Webhook,
       },
       {
-        name: 'Integrations',
+        name: 'Dokumentation',
+        href: '/partner/dashboard/api/docs',
+        icon: FileText,
+      },
+      {
+        name: 'Integrationen',
         href: '/partner/dashboard/api/integrations',
-        icon: '🔌',
+        icon: Plug2,
       },
     ],
   },
   {
-    name: 'Notifications',
+    name: 'Benachrichtigungen',
     href: '/partner/dashboard/notifications',
-    icon: '🔔',
-    description: 'Alerts & Messages',
+    icon: Bell,
+    description: 'Benachrichtigungen & Meldungen',
     subItems: [
       {
-        name: 'Notification Center',
+        name: 'Benachrichtigungszentrale',
         href: '/partner/dashboard/notifications/center',
-        icon: '🎯',
+        icon: Target,
       },
       {
-        name: 'Preferences',
+        name: 'Einstellungen',
         href: '/partner/dashboard/notifications/preferences',
-        icon: '⚙️',
+        icon: Settings,
       },
       {
-        name: 'Templates',
+        name: 'Vorlagen',
         href: '/partner/dashboard/notifications/templates',
-        icon: '📝',
+        icon: PenTool,
       },
       {
         name: 'Analytics',
         href: '/partner/dashboard/notifications/analytics',
-        icon: '📊',
+        icon: BarChart3,
       },
     ],
   },
   {
-    name: 'Billing',
+    name: 'Abrechnung',
     href: '/partner/billing',
-    icon: '💳',
-    description: 'Usage & Billing',
+    icon: CreditCard,
+    description: 'Nutzung & Abrechnung',
     subItems: [
       {
-        name: 'Subscription Plans',
+        name: 'Abonnement-Pläne',
         href: '/partner/billing/plans',
-        icon: '📋',
+        icon: FileBarChart,
       },
-      { name: 'Usage Tracking', href: '/partner/billing/usage', icon: '📊' },
-      { name: 'Billing History', href: '/partner/billing/history', icon: '📄' },
-      { name: 'Payment Methods', href: '/partner/billing/payment', icon: '💰' },
+      {
+        name: 'Nutzungsverfolgung',
+        href: '/partner/billing/usage',
+        icon: BarChart3,
+      },
+      {
+        name: 'Rechnungshistorie',
+        href: '/partner/billing/history',
+        icon: FileText,
+      },
+      {
+        name: 'Zahlungsmethoden',
+        href: '/partner/billing/payment',
+        icon: DollarSign,
+      },
     ],
   },
   {
-    name: 'Settings',
+    name: 'Einstellungen',
     href: '/partner/dashboard/settings',
-    icon: '⚙️',
-    description: 'Account & Preferences',
+    icon: Settings,
+    description: 'Konto & Präferenzen',
     subItems: [
       {
-        name: 'Dashboard Settings',
+        name: 'Dashboard-Einstellungen',
         href: '/partner/dashboard/settings/dashboard',
-        icon: '🏠',
+        icon: BarChart3,
       },
       {
-        name: 'Security',
+        name: 'Sicherheit',
         href: '/partner/dashboard/settings/security',
-        icon: '🔒',
+        icon: Key,
       },
       {
-        name: 'Integrations',
+        name: 'Integrationen',
         href: '/partner/dashboard/settings/integrations',
-        icon: '🔗',
+        icon: Plug2,
       },
       {
-        name: 'Branding',
+        name: 'Markengestaltung',
         href: '/partner/dashboard/settings/branding',
-        icon: '🎨',
+        icon: PenTool,
       },
       {
-        name: 'Backup',
+        name: 'Sicherung',
         href: '/partner/dashboard/settings/backup',
-        icon: '💾',
+        icon: Download,
       },
     ],
   },
@@ -204,19 +244,19 @@ const navigationItems = [
 
 const quickActions = [
   {
-    name: 'Upload Products',
+    name: 'Produkte hochladen',
     href: '/partner/dashboard/products/upload',
-    icon: '📤',
+    icon: Upload,
   },
   {
-    name: 'Export Data',
+    name: 'Daten Exportieren',
     href: '/partner/dashboard/analytics/exports',
-    icon: '📊',
+    icon: Download,
   },
   {
-    name: 'View Reports',
+    name: 'Berichte anzeigen',
     href: '/partner/dashboard/analytics/reports',
-    icon: '📋',
+    icon: FileBarChart,
   },
 ];
 
@@ -295,12 +335,6 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
               <p className="text-xs text-muted-foreground">Partner Portal</p>
             </div>
           </div>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-1 text-gray-400 hover:text-gray-600"
-          >
-            <span className="sr-only">Close sidebar</span>✕
-          </button>
         </div>
 
         {/* Partner Info */}
@@ -326,6 +360,7 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
           {navigationItems.map((item) => {
             const isActive = isActiveItem(item.href, item.subItems);
             const isExpanded = expandedItems[item.name] || isActive;
+            const IconComponent = item.icon;
 
             return (
               <div key={item.name} className="space-y-1">
@@ -341,7 +376,7 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
                       : router.push(item.href)
                   }
                 >
-                  <span className="text-lg mr-3">{item.icon}</span>
+                  <IconComponent className="h-5 w-5 mr-3" />
                   <div className="flex-1">
                     <div className="font-medium">{item.name}</div>
                     <div
@@ -385,6 +420,7 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
                   <div className="ml-6 space-y-1">
                     {item.subItems.map((subItem) => {
                       const isSubActive = pathname === subItem.href;
+                      const SubIconComponent = subItem.icon;
                       return (
                         <Link
                           key={subItem.name}
@@ -395,7 +431,7 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
                               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                           }`}
                         >
-                          <span className="text-sm mr-2">{subItem.icon}</span>
+                          <SubIconComponent className="h-4 w-4 mr-2" />
                           <span>{subItem.name}</span>
                           {isSubActive && (
                             <div className="ml-auto w-1.5 h-1.5 bg-primary rounded-full"></div>
@@ -413,19 +449,22 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
         {/* Quick Actions */}
         <div className="px-4 py-4 border-t">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-            Quick Actions
+            Schnellaktionen
           </h3>
           <div className="space-y-1">
-            {quickActions.map((action) => (
-              <Link
-                key={action.name}
-                href={action.href}
-                className="flex items-center px-3 py-2 text-xs font-medium text-muted-foreground rounded-md hover:bg-muted hover:text-foreground transition-colors"
-              >
-                <span className="mr-2">{action.icon}</span>
-                {action.name}
-              </Link>
-            ))}
+            {quickActions.map((action) => {
+              const ActionIconComponent = action.icon;
+              return (
+                <Link
+                  key={action.name}
+                  href={action.href}
+                  className="flex items-center px-3 py-2 text-xs font-medium text-muted-foreground rounded-md hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <ActionIconComponent className="h-4 w-4 mr-2" />
+                  {action.name}
+                </Link>
+              );
+            })}
           </div>
         </div>
 
@@ -435,8 +474,8 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
             onClick={handleLogout}
             className="flex items-center w-full px-3 py-2 text-sm font-medium text-foreground rounded-lg hover:bg-muted transition-colors"
           >
-            <span className="mr-3">🚪</span>
-            Sign out
+            <LogOut className="h-4 w-4 mr-3" />
+            Abmelden
           </button>
         </div>
       </div>
@@ -451,16 +490,18 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
                 onClick={() => setSidebarOpen(true)}
                 className="p-2 text-muted-foreground hover:text-foreground lg:hidden"
               >
-                <span className="sr-only">Open sidebar</span>☰
+                <span className="sr-only">Open sidebar</span>
+                <Menu className="h-5 w-5" />
               </button>
               <div className="ml-4 lg:ml-0">
                 <h1 className="text-lg font-semibold text-foreground">
                   {navigationItems.find((item) => item.href === pathname)
-                    ?.name || 'Partner Portal'}
+                    ?.name || 'Partner-Portal'}
                 </h1>
                 <p className="text-sm text-muted-foreground">
                   {navigationItems.find((item) => item.href === pathname)
-                    ?.description || 'Manage your products and analytics'}
+                    ?.description ||
+                    'Verwalten Sie Ihre Produkte und Analytics'}
                 </p>
               </div>
             </div>
@@ -469,17 +510,18 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
             <div className="flex items-center space-x-3">
               <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
                 <span className="sr-only">Search</span>
-                🔍
+                <Search className="h-5 w-5" />
               </button>
               <button className="p-2 text-muted-foreground hover:text-foreground transition-colors relative">
                 <span className="sr-only">Notifications</span>
-                🔔
+                <Bell className="h-5 w-5" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                   2
                 </span>
               </button>
               <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-                <span className="sr-only">Help</span>❓
+                <span className="sr-only">Help</span>
+                <HelpCircle className="h-5 w-5" />
               </button>
             </div>
           </div>

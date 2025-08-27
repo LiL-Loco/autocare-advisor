@@ -1,5 +1,6 @@
 'use client';
 
+import { Link2, Mail, Smartphone } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 // Types for Notification Center
@@ -709,17 +710,21 @@ const NotificationCenter: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { key: 'inApp', label: 'In-App Notifications', icon: '📱' },
-                { key: 'email', label: 'Email Notifications', icon: '📧' },
-                { key: 'sms', label: 'SMS Notifications', icon: '📲' },
-                { key: 'webhook', label: 'Webhook Notifications', icon: '🔗' },
+                {
+                  key: 'inApp',
+                  label: 'In-App Notifications',
+                  icon: Smartphone,
+                },
+                { key: 'email', label: 'Email Notifications', icon: Mail },
+                { key: 'sms', label: 'SMS Notifications', icon: Smartphone },
+                { key: 'webhook', label: 'Webhook Notifications', icon: Link2 },
               ].map((setting) => (
                 <div
                   key={setting.key}
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                 >
                   <div className="flex items-center">
-                    <span className="text-2xl mr-3">{setting.icon}</span>
+                    <setting.icon className="h-5 w-5 mr-3 text-gray-600" />
                     <span className="font-medium text-gray-900">
                       {setting.label}
                     </span>

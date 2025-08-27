@@ -1,5 +1,6 @@
 'use client';
 
+import { Activity, AlertTriangle, BarChart3, Package, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
@@ -23,7 +24,7 @@ import usePartnerAnalytics from '../../../hooks/usePartnerAnalytics';
 interface QuickActionProps {
   title: string;
   description: string;
-  icon: string;
+  icon: React.ComponentType<any>;
   color: string;
   onClick: () => void;
 }
@@ -31,7 +32,7 @@ interface QuickActionProps {
 function QuickActionCard({
   title,
   description,
-  icon,
+  icon: IconComponent,
   color,
   onClick,
 }: QuickActionProps) {
@@ -53,7 +54,7 @@ function QuickActionCard({
       }`}
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="text-2xl">{icon}</span>
+        <IconComponent className="h-8 w-8" />
         <svg
           className="w-5 h-5 opacity-60"
           fill="none"
@@ -227,7 +228,7 @@ export default function PartnerDashboard() {
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading dashboard...</p>
+            <p className="mt-4 text-gray-600">Dashboard wird geladen...</p>
           </div>
         </div>
       </PartnerLayout>
@@ -236,30 +237,30 @@ export default function PartnerDashboard() {
 
   const quickActions = [
     {
-      title: 'Upload Products',
-      description: 'Add new products via CSV',
-      icon: '📤',
+      title: 'Produkte hochladen',
+      description: 'Neue Produkte via CSV hinzufügen',
+      icon: Package,
       color: 'blue',
       onClick: () => router.push('/partner/dashboard/products/upload'),
     },
     {
-      title: 'View Analytics',
-      description: 'Detailed performance data',
-      icon: '📊',
+      title: 'Analytics anzeigen',
+      description: 'Detaillierte Leistungsdaten',
+      icon: BarChart3,
       color: 'green',
       onClick: () => router.push('/partner/dashboard/analytics'),
     },
     {
-      title: 'Export Reports',
-      description: 'Download business reports',
-      icon: '📋',
+      title: 'Berichte exportieren',
+      description: 'Geschäftsberichte herunterladen',
+      icon: Activity,
       color: 'purple',
       onClick: () => router.push('/partner/dashboard/analytics/exports'),
     },
     {
-      title: 'Upgrade Plan',
-      description: 'Unlock more features',
-      icon: '⚡',
+      title: 'Plan upgraden',
+      description: 'Weitere Features freischalten',
+      icon: Zap,
       color: 'yellow',
       onClick: () => router.push('/partner/billing'),
     },
@@ -273,23 +274,23 @@ export default function PartnerDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-2">
-                Welcome back, {user?.firstName}! 👋
+                Willkommen zurück, {user?.firstName}!
               </h1>
               <p className="text-blue-100 mb-4">
-                Here's what's happening with your products today
+                Das passiert heute mit Ihren Produkten
               </p>
               <div className="flex items-center space-x-6 text-sm">
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-emerald-400 rounded-full mr-2"></span>
-                  System Status: All Good
+                  Systemstatus: Alles in Ordnung
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></span>
-                  2 New Notifications
+                  2 neue Benachrichtigungen
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
-                  Last sync: 5 min ago
+                  Letzte Synchronisation: vor 5 Min.
                 </div>
               </div>
             </div>
@@ -310,7 +311,7 @@ export default function PartnerDashboard() {
                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                 />
               </svg>
-              Refresh Data
+              Daten aktualisieren
             </button>
           </div>
         </div>
@@ -320,18 +321,18 @@ export default function PartnerDashboard() {
           <div className="bg-red-50 border border-red-200 rounded-xl p-6">
             <div className="flex items-start">
               <div className="flex-shrink-0">
-                <span className="text-2xl">⚠️</span>
+                <AlertTriangle className="h-8 w-8 text-yellow-500" />
               </div>
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-red-800 mb-1">
-                  Analytics Error
+                  Analytics Fehler
                 </h3>
                 <p className="text-sm text-red-600">{analyticsError}</p>
                 <button
                   onClick={refreshData}
                   className="mt-3 text-sm text-red-600 hover:text-red-500 underline"
                 >
-                  Try again
+                  Erneut versuchen
                 </button>
               </div>
             </div>
@@ -341,7 +342,7 @@ export default function PartnerDashboard() {
         {/* Quick Actions */}
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Quick Actions
+            Schnellaktionen
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {quickActions.map((action, index) => (
@@ -354,7 +355,7 @@ export default function PartnerDashboard() {
         {analyticsLoading && (
           <div className="bg-white rounded-2xl p-12 text-center border border-gray-100">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading analytics data...</p>
+            <p className="text-gray-600">Analytics-Daten werden geladen...</p>
           </div>
         )}
 
@@ -371,38 +372,38 @@ export default function PartnerDashboard() {
               {/* Key Performance Metrics */}
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Key Performance Metrics
+                  Wichtige Leistungskennzahlen
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   <PerformanceMetric
-                    label="Total Products"
+                    label="Gesamte Produkte"
                     value={analytics.overview.totalProducts.toString()}
-                    change="+12% vs last month"
+                    change="+12% vs letzten Monat"
                     changeType="positive"
-                    icon="📦"
+                    icon=""
                   />
                   <PerformanceMetric
-                    label="Total Views"
+                    label="Gesamte Aufrufe"
                     value={analytics.overview.totalViews.toLocaleString()}
-                    change="+8.2% vs last month"
+                    change="+8,2% vs letzten Monat"
                     changeType="positive"
-                    icon="👁️"
+                    icon=""
                   />
                   <PerformanceMetric
-                    label="Total Clicks"
+                    label="Gesamte Klicks"
                     value={analytics.overview.totalClicks.toLocaleString()}
-                    change="-2.1% vs last month"
+                    change="-2,1% vs letzten Monat"
                     changeType="negative"
-                    icon="👆"
+                    icon=""
                   />
                   <PerformanceMetric
                     label="Conversion Rate"
                     value={`${analytics.overview.averageConversionRate.toFixed(
                       1
                     )}%`}
-                    change="No change"
+                    change="Keine Änderung"
                     changeType="neutral"
-                    icon="🎯"
+                    icon=""
                   />
                 </div>
               </div>
@@ -411,21 +412,21 @@ export default function PartnerDashboard() {
               {revenueData && (
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                    Revenue Overview
+                    Umsatzübersicht
                   </h2>
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2">
                       <RevenueCard
-                        title="Monthly Revenue"
+                        title="Monatlicher Umsatz"
                         amount={analytics.overview.monthlyRevenue}
-                        subtitle="Current month performance"
-                        trend={{ value: 12.5, period: 'vs last month' }}
+                        subtitle="Aktuelle Monatsleistung"
+                        trend={{ value: 12.5, period: 'vs letzten Monat' }}
                       />
                     </div>
                     <div className="space-y-4">
                       <div className="bg-white p-6 rounded-xl border border-gray-100">
                         <h3 className="font-semibold text-gray-900 mb-2">
-                          Commission Earned
+                          Verdiente Provision
                         </h3>
                         <p className="text-2xl font-bold text-emerald-600">
                           €
@@ -434,12 +435,12 @@ export default function PartnerDashboard() {
                             .toLocaleString()}
                         </p>
                         <p className="text-sm text-gray-500">
-                          5% commission rate
+                          5% Provisionssatz
                         </p>
                       </div>
                       <div className="bg-white p-6 rounded-xl border border-gray-100">
                         <h3 className="font-semibold text-gray-900 mb-2">
-                          Top Category
+                          Top-Kategorie
                         </h3>
                         <p className="text-lg font-bold text-blue-600">
                           {revenueData.revenueByCategory[0]?.category || 'N/A'}
@@ -449,7 +450,7 @@ export default function PartnerDashboard() {
                           {(
                             revenueData.revenueByCategory[0]?.revenue || 0
                           ).toLocaleString()}{' '}
-                          revenue
+                          Umsatz
                         </p>
                       </div>
                     </div>
@@ -474,29 +475,29 @@ export default function PartnerDashboard() {
               {/* Market Insights */}
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Market Insights
+                  Markteinblicke
                 </h2>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <InsightsCard
-                    title="Most Searched Problems"
+                    title="Meistgesuchte Probleme"
                     data={analytics.insights.mostSearchedProblems.map((p) => ({
                       name: p.problem,
                       value: p.count,
-                      label: 'searches',
+                      label: 'Suchanfragen',
                     }))}
                     color="blue"
                   />
                   <InsightsCard
-                    title="Top Vehicle Brands"
+                    title="Top Fahrzeugmarken"
                     data={analytics.insights.topVehicleBrands.map((b) => ({
                       name: b.brand,
                       value: b.count,
-                      label: 'requests',
+                      label: 'Anfragen',
                     }))}
                     color="green"
                   />
                   <InsightsCard
-                    title="Seasonal Trends"
+                    title="Saisonale Trends"
                     data={analytics.insights.seasonalTrends.map((s) => ({
                       name: s.season,
                       value: s.popularity,
@@ -511,10 +512,10 @@ export default function PartnerDashboard() {
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-gray-900">
-                    Recent Activity
+                    Kürzliche Aktivität
                   </h2>
                   <button className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors">
-                    View all activity →
+                    Alle Aktivitäten anzeigen →
                   </button>
                 </div>
                 <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
@@ -523,19 +524,19 @@ export default function PartnerDashboard() {
                       <thead className="bg-gray-50">
                         <tr>
                           <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Date
+                            Datum
                           </th>
                           <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Views
+                            Aufrufe
                           </th>
                           <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Clicks
+                            Klicks
                           </th>
                           <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Revenue
+                            Umsatz
                           </th>
                           <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Conversion Rate
+                            Konversionsrate
                           </th>
                         </tr>
                       </thead>
@@ -589,13 +590,13 @@ export default function PartnerDashboard() {
               {/* Enhanced Analytics Section */}
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Enhanced Analytics
+                  Erweiterte Analytics
                 </h2>
 
                 {/* Real-time Metrics */}
                 <div className="mb-8">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    Real-time Metrics
+                    Echtzeit-Metriken
                   </h3>
                   <RealTimeMetrics data={realTimeData} />
                 </div>
@@ -603,52 +604,56 @@ export default function PartnerDashboard() {
                 {/* Enhanced Metric Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                   <EnhancedMetricCard
-                    title="Monthly Revenue"
-                    value={`€${analytics.overview.monthlyRevenue.toLocaleString()}`}
+                    title="Monatlicher Umsatz"
+                    value={`€${analytics.overview.monthlyRevenue.toLocaleString(
+                      'de-DE'
+                    )}`}
                     change={{
                       value: 12.5,
-                      period: 'vs last month',
+                      period: 'vs letzter Monat',
                       type: 'increase',
                     }}
-                    icon="💰"
+                    icon=""
                     trend={miniTrendData}
                     color="green"
                   />
                   <EnhancedMetricCard
-                    title="Product Views"
-                    value={analytics.overview.totalViews.toLocaleString()}
+                    title="Produktaufrufe"
+                    value={analytics.overview.totalViews.toLocaleString(
+                      'de-DE'
+                    )}
                     change={{
                       value: 8.2,
-                      period: 'vs last month',
+                      period: 'vs letzter Monat',
                       type: 'increase',
                     }}
-                    icon="👁️"
+                    icon=""
                     trend={miniTrendData}
                     color="blue"
                   />
                   <EnhancedMetricCard
-                    title="Click Rate"
+                    title="Klickrate"
                     value={`${analytics.overview.averageConversionRate.toFixed(
                       1
                     )}%`}
                     change={{
                       value: 2.1,
-                      period: 'vs last month',
+                      period: 'vs letzter Monat',
                       type: 'decrease',
                     }}
-                    icon="👆"
+                    icon=""
                     trend={miniTrendData}
                     color="purple"
                   />
                   <EnhancedMetricCard
-                    title="Active Products"
+                    title="Aktive Produkte"
                     value={analytics.overview.totalProducts.toString()}
                     change={{
                       value: 5.5,
-                      period: 'vs last month',
+                      period: 'vs letzter Monat',
                       type: 'increase',
                     }}
-                    icon="📦"
+                    icon=""
                     trend={miniTrendData}
                     color="yellow"
                   />
@@ -658,14 +663,14 @@ export default function PartnerDashboard() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                   <AdvancedChart
                     data={revenueChartData}
-                    title="Monthly Revenue Trend"
+                    title="Monatlicher Umsatztrend"
                     type="area"
                     height={350}
                     colorScheme="success"
                   />
                   <AdvancedChart
                     data={productPerformanceData}
-                    title="Top Product Categories"
+                    title="Top-Produktkategorien"
                     type="pie"
                     height={350}
                     colorScheme="primary"
@@ -676,12 +681,12 @@ export default function PartnerDashboard() {
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
                   <ComparisonChart
                     data={comparisonData}
-                    title="Performance Comparison (This Month vs Last Month)"
+                    title="Leistungsvergleich (Dieser Monat vs Letzter Monat)"
                     height={300}
                   />
                   <TrendAnalysis
                     data={trendData}
-                    title="7-Day Performance Trends"
+                    title="7-Tage Leistungstrends"
                     height={300}
                   />
                 </div>
