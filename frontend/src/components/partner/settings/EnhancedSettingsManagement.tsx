@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Types for Enhanced Settings
 interface DashboardSettings {
@@ -72,18 +72,20 @@ interface BackupSettings {
 }
 
 const EnhancedSettingsManagement: React.FC = () => {
-  const [dashboardSettings, setDashboardSettings] = useState<DashboardSettings>({
-    theme: 'light',
-    layout: 'comfortable',
-    sidebar: 'expanded',
-    notifications: true,
-    animations: true,
-    autoSave: true,
-    language: 'en',
-    timezone: 'UTC',
-    dateFormat: 'DD/MM/YYYY',
-    numberFormat: 'US'
-  });
+  const [dashboardSettings, setDashboardSettings] = useState<DashboardSettings>(
+    {
+      theme: 'light',
+      layout: 'comfortable',
+      sidebar: 'expanded',
+      notifications: true,
+      animations: true,
+      autoSave: true,
+      language: 'en',
+      timezone: 'UTC',
+      dateFormat: 'DD/MM/YYYY',
+      numberFormat: 'US',
+    }
+  );
 
   const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
     twoFactorEnabled: false,
@@ -93,19 +95,20 @@ const EnhancedSettingsManagement: React.FC = () => {
     loginNotifications: true,
     deviceTracking: false,
     encryptionEnabled: true,
-    backupFrequency: 'daily'
+    backupFrequency: 'daily',
   });
 
-  const [integrationSettings, setIntegrationSettings] = useState<IntegrationSettings>({
-    webhookUrl: '',
-    apiVersion: 'v1',
-    rateLimiting: true,
-    cachingEnabled: true,
-    compressionEnabled: false,
-    loggingLevel: 'info',
-    retryAttempts: 3,
-    timeout: 30000
-  });
+  const [integrationSettings, setIntegrationSettings] =
+    useState<IntegrationSettings>({
+      webhookUrl: '',
+      apiVersion: 'v1',
+      rateLimiting: true,
+      cachingEnabled: true,
+      compressionEnabled: false,
+      loggingLevel: 'info',
+      retryAttempts: 3,
+      timeout: 30000,
+    });
 
   const [userPreferences, setUserPreferences] = useState<UserPreferences>({
     defaultView: 'dashboard',
@@ -115,7 +118,7 @@ const EnhancedSettingsManagement: React.FC = () => {
     exportFormat: 'csv',
     emailDigest: 'weekly',
     marketingEmails: false,
-    productUpdates: true
+    productUpdates: true,
   });
 
   const [brandingSettings, setBrandingSettings] = useState<BrandingSettings>({
@@ -127,7 +130,7 @@ const EnhancedSettingsManagement: React.FC = () => {
     customCSS: '',
     favicon: '',
     companyName: '',
-    brandingEnabled: false
+    brandingEnabled: false,
   });
 
   const [backupSettings, setBackupSettings] = useState<BackupSettings>({
@@ -137,11 +140,18 @@ const EnhancedSettingsManagement: React.FC = () => {
     location: 'cloud',
     encryption: true,
     compression: true,
-    notifications: true
+    notifications: true,
   });
 
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'security' | 'integrations' | 'preferences' | 'branding' | 'backup'>('dashboard');
+  const [activeTab, setActiveTab] = useState<
+    | 'dashboard'
+    | 'security'
+    | 'integrations'
+    | 'preferences'
+    | 'branding'
+    | 'backup'
+  >('dashboard');
   const [showResetModal, setShowResetModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
@@ -171,19 +181,22 @@ const EnhancedSettingsManagement: React.FC = () => {
       integrations: integrationSettings,
       preferences: userPreferences,
       branding: brandingSettings,
-      backup: backupSettings
+      backup: backupSettings,
     };
 
     const dataStr = JSON.stringify(allSettings, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
-    const exportFileDefaultName = `settings-export-${new Date().toISOString().split('T')[0]}.json`;
-    
+    const dataUri =
+      'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
+    const exportFileDefaultName = `settings-export-${
+      new Date().toISOString().split('T')[0]
+    }.json`;
+
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
-    
+
     setShowExportModal(false);
   };
 
@@ -197,7 +210,8 @@ const EnhancedSettingsManagement: React.FC = () => {
           // Apply imported settings
           if (settings.dashboard) setDashboardSettings(settings.dashboard);
           if (settings.security) setSecuritySettings(settings.security);
-          if (settings.integrations) setIntegrationSettings(settings.integrations);
+          if (settings.integrations)
+            setIntegrationSettings(settings.integrations);
           if (settings.preferences) setUserPreferences(settings.preferences);
           if (settings.branding) setBrandingSettings(settings.branding);
           if (settings.backup) setBackupSettings(settings.backup);
@@ -222,7 +236,9 @@ const EnhancedSettingsManagement: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Settings & Customization</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Settings & Customization
+          </h1>
           <p className="text-gray-600 mt-1">
             Personalize your dashboard and manage your preferences
           </p>
@@ -237,7 +253,7 @@ const EnhancedSettingsManagement: React.FC = () => {
               className="hidden"
             />
           </label>
-          <button 
+          <button
             onClick={() => setShowExportModal(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
@@ -255,8 +271,8 @@ const EnhancedSettingsManagement: React.FC = () => {
             { key: 'integrations', label: 'Integrations', icon: '🔗' },
             { key: 'preferences', label: 'Preferences', icon: '⚙️' },
             { key: 'branding', label: 'Branding', icon: '🎨' },
-            { key: 'backup', label: 'Backup', icon: '💾' }
-          ].map(tab => (
+            { key: 'backup', label: 'Backup', icon: '💾' },
+          ].map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as any)}
@@ -277,14 +293,23 @@ const EnhancedSettingsManagement: React.FC = () => {
       {activeTab === 'dashboard' && (
         <div className="space-y-8">
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Dashboard Customization</h2>
-            
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              Dashboard Customization
+            </h2>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Theme</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Theme
+                </label>
                 <select
                   value={dashboardSettings.theme}
-                  onChange={(e) => setDashboardSettings(prev => ({ ...prev, theme: e.target.value as any }))}
+                  onChange={(e) =>
+                    setDashboardSettings((prev) => ({
+                      ...prev,
+                      theme: e.target.value as any,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="light">Light</option>
@@ -294,10 +319,17 @@ const EnhancedSettingsManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Layout</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Layout
+                </label>
                 <select
                   value={dashboardSettings.layout}
-                  onChange={(e) => setDashboardSettings(prev => ({ ...prev, layout: e.target.value as any }))}
+                  onChange={(e) =>
+                    setDashboardSettings((prev) => ({
+                      ...prev,
+                      layout: e.target.value as any,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="compact">Compact</option>
@@ -307,10 +339,17 @@ const EnhancedSettingsManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Sidebar</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Sidebar
+                </label>
                 <select
                   value={dashboardSettings.sidebar}
-                  onChange={(e) => setDashboardSettings(prev => ({ ...prev, sidebar: e.target.value as any }))}
+                  onChange={(e) =>
+                    setDashboardSettings((prev) => ({
+                      ...prev,
+                      sidebar: e.target.value as any,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="expanded">Always Expanded</option>
@@ -320,10 +359,17 @@ const EnhancedSettingsManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Language
+                </label>
                 <select
                   value={dashboardSettings.language}
-                  onChange={(e) => setDashboardSettings(prev => ({ ...prev, language: e.target.value }))}
+                  onChange={(e) =>
+                    setDashboardSettings((prev) => ({
+                      ...prev,
+                      language: e.target.value,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="en">English</option>
@@ -334,10 +380,17 @@ const EnhancedSettingsManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Timezone
+                </label>
                 <select
                   value={dashboardSettings.timezone}
-                  onChange={(e) => setDashboardSettings(prev => ({ ...prev, timezone: e.target.value }))}
+                  onChange={(e) =>
+                    setDashboardSettings((prev) => ({
+                      ...prev,
+                      timezone: e.target.value,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="UTC">UTC</option>
@@ -348,10 +401,17 @@ const EnhancedSettingsManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date Format</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Date Format
+                </label>
                 <select
                   value={dashboardSettings.dateFormat}
-                  onChange={(e) => setDashboardSettings(prev => ({ ...prev, dateFormat: e.target.value }))}
+                  onChange={(e) =>
+                    setDashboardSettings((prev) => ({
+                      ...prev,
+                      dateFormat: e.target.value,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="DD/MM/YYYY">DD/MM/YYYY</option>
@@ -362,25 +422,52 @@ const EnhancedSettingsManagement: React.FC = () => {
             </div>
 
             <div className="mt-6 space-y-4">
-              <h3 className="text-md font-medium text-gray-900">Display Options</h3>
+              <h3 className="text-md font-medium text-gray-900">
+                Display Options
+              </h3>
               <div className="space-y-3">
                 {[
-                  { key: 'notifications', label: 'Show notifications', description: 'Display in-app notifications' },
-                  { key: 'animations', label: 'Enable animations', description: 'Use smooth transitions and animations' },
-                  { key: 'autoSave', label: 'Auto-save changes', description: 'Automatically save changes as you work' }
-                ].map(option => (
-                  <div key={option.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  {
+                    key: 'notifications',
+                    label: 'Show notifications',
+                    description: 'Display in-app notifications',
+                  },
+                  {
+                    key: 'animations',
+                    label: 'Enable animations',
+                    description: 'Use smooth transitions and animations',
+                  },
+                  {
+                    key: 'autoSave',
+                    label: 'Auto-save changes',
+                    description: 'Automatically save changes as you work',
+                  },
+                ].map((option) => (
+                  <div
+                    key={option.key}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
                     <div>
-                      <span className="font-medium text-gray-900">{option.label}</span>
-                      <p className="text-sm text-gray-600">{option.description}</p>
+                      <span className="font-medium text-gray-900">
+                        {option.label}
+                      </span>
+                      <p className="text-sm text-gray-600">
+                        {option.description}
+                      </p>
                     </div>
                     <input
                       type="checkbox"
-                      checked={dashboardSettings[option.key as keyof DashboardSettings] as boolean}
-                      onChange={(e) => setDashboardSettings(prev => ({ 
-                        ...prev, 
-                        [option.key]: e.target.checked 
-                      }))}
+                      checked={
+                        dashboardSettings[
+                          option.key as keyof DashboardSettings
+                        ] as boolean
+                      }
+                      onChange={(e) =>
+                        setDashboardSettings((prev) => ({
+                          ...prev,
+                          [option.key]: e.target.checked,
+                        }))
+                      }
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                   </div>
@@ -404,25 +491,35 @@ const EnhancedSettingsManagement: React.FC = () => {
       {activeTab === 'security' && (
         <div className="space-y-8">
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Security Configuration</h2>
-            
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              Security Configuration
+            </h2>
+
             <div className="space-y-6">
               {/* Authentication */}
               <div>
-                <h3 className="text-md font-medium text-gray-900 mb-4">Authentication</h3>
+                <h3 className="text-md font-medium text-gray-900 mb-4">
+                  Authentication
+                </h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <span className="font-medium text-gray-900">Two-Factor Authentication</span>
-                      <p className="text-sm text-gray-600">Add an extra layer of security to your account</p>
+                      <span className="font-medium text-gray-900">
+                        Two-Factor Authentication
+                      </span>
+                      <p className="text-sm text-gray-600">
+                        Add an extra layer of security to your account
+                      </p>
                     </div>
                     <input
                       type="checkbox"
                       checked={securitySettings.twoFactorEnabled}
-                      onChange={(e) => setSecuritySettings(prev => ({ 
-                        ...prev, 
-                        twoFactorEnabled: e.target.checked 
-                      }))}
+                      onChange={(e) =>
+                        setSecuritySettings((prev) => ({
+                          ...prev,
+                          twoFactorEnabled: e.target.checked,
+                        }))
+                      }
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                   </div>
@@ -434,10 +531,12 @@ const EnhancedSettingsManagement: React.FC = () => {
                     <input
                       type="number"
                       value={securitySettings.sessionTimeout}
-                      onChange={(e) => setSecuritySettings(prev => ({ 
-                        ...prev, 
-                        sessionTimeout: parseInt(e.target.value) 
-                      }))}
+                      onChange={(e) =>
+                        setSecuritySettings((prev) => ({
+                          ...prev,
+                          sessionTimeout: parseInt(e.target.value),
+                        }))
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       min="5"
                       max="480"
@@ -448,7 +547,9 @@ const EnhancedSettingsManagement: React.FC = () => {
 
               {/* Access Control */}
               <div>
-                <h3 className="text-md font-medium text-gray-900 mb-4">Access Control</h3>
+                <h3 className="text-md font-medium text-gray-900 mb-4">
+                  Access Control
+                </h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -456,10 +557,14 @@ const EnhancedSettingsManagement: React.FC = () => {
                     </label>
                     <textarea
                       value={securitySettings.ipWhitelist.join('\n')}
-                      onChange={(e) => setSecuritySettings(prev => ({ 
-                        ...prev, 
-                        ipWhitelist: e.target.value.split('\n').filter(ip => ip.trim())
-                      }))}
+                      onChange={(e) =>
+                        setSecuritySettings((prev) => ({
+                          ...prev,
+                          ipWhitelist: e.target.value
+                            .split('\n')
+                            .filter((ip) => ip.trim()),
+                        }))
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       rows={4}
                       placeholder="192.168.1.1&#10;10.0.0.0/8"
@@ -468,16 +573,22 @@ const EnhancedSettingsManagement: React.FC = () => {
 
                   <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <span className="font-medium text-gray-900">Login Notifications</span>
-                      <p className="text-sm text-gray-600">Receive alerts for new login attempts</p>
+                      <span className="font-medium text-gray-900">
+                        Login Notifications
+                      </span>
+                      <p className="text-sm text-gray-600">
+                        Receive alerts for new login attempts
+                      </p>
                     </div>
                     <input
                       type="checkbox"
                       checked={securitySettings.loginNotifications}
-                      onChange={(e) => setSecuritySettings(prev => ({ 
-                        ...prev, 
-                        loginNotifications: e.target.checked 
-                      }))}
+                      onChange={(e) =>
+                        setSecuritySettings((prev) => ({
+                          ...prev,
+                          loginNotifications: e.target.checked,
+                        }))
+                      }
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                   </div>
@@ -486,25 +597,52 @@ const EnhancedSettingsManagement: React.FC = () => {
 
               {/* Data Protection */}
               <div>
-                <h3 className="text-md font-medium text-gray-900 mb-4">Data Protection</h3>
+                <h3 className="text-md font-medium text-gray-900 mb-4">
+                  Data Protection
+                </h3>
                 <div className="space-y-4">
                   {[
-                    { key: 'encryptionEnabled', label: 'Data Encryption', description: 'Encrypt sensitive data at rest' },
-                    { key: 'apiKeyRotation', label: 'Automatic API Key Rotation', description: 'Rotate API keys periodically' },
-                    { key: 'deviceTracking', label: 'Device Tracking', description: 'Track and manage logged-in devices' }
-                  ].map(option => (
-                    <div key={option.key} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    {
+                      key: 'encryptionEnabled',
+                      label: 'Data Encryption',
+                      description: 'Encrypt sensitive data at rest',
+                    },
+                    {
+                      key: 'apiKeyRotation',
+                      label: 'Automatic API Key Rotation',
+                      description: 'Rotate API keys periodically',
+                    },
+                    {
+                      key: 'deviceTracking',
+                      label: 'Device Tracking',
+                      description: 'Track and manage logged-in devices',
+                    },
+                  ].map((option) => (
+                    <div
+                      key={option.key}
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                    >
                       <div>
-                        <span className="font-medium text-gray-900">{option.label}</span>
-                        <p className="text-sm text-gray-600">{option.description}</p>
+                        <span className="font-medium text-gray-900">
+                          {option.label}
+                        </span>
+                        <p className="text-sm text-gray-600">
+                          {option.description}
+                        </p>
                       </div>
                       <input
                         type="checkbox"
-                        checked={securitySettings[option.key as keyof SecuritySettings] as boolean}
-                        onChange={(e) => setSecuritySettings(prev => ({ 
-                          ...prev, 
-                          [option.key]: e.target.checked 
-                        }))}
+                        checked={
+                          securitySettings[
+                            option.key as keyof SecuritySettings
+                          ] as boolean
+                        }
+                        onChange={(e) =>
+                          setSecuritySettings((prev) => ({
+                            ...prev,
+                            [option.key]: e.target.checked,
+                          }))
+                        }
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                     </div>
@@ -529,26 +667,42 @@ const EnhancedSettingsManagement: React.FC = () => {
       {activeTab === 'integrations' && (
         <div className="space-y-8">
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Integration Configuration</h2>
-            
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              Integration Configuration
+            </h2>
+
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Webhook URL</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Webhook URL
+                  </label>
                   <input
                     type="url"
                     value={integrationSettings.webhookUrl}
-                    onChange={(e) => setIntegrationSettings(prev => ({ ...prev, webhookUrl: e.target.value }))}
+                    onChange={(e) =>
+                      setIntegrationSettings((prev) => ({
+                        ...prev,
+                        webhookUrl: e.target.value,
+                      }))
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     placeholder="https://your-domain.com/webhook"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">API Version</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    API Version
+                  </label>
                   <select
                     value={integrationSettings.apiVersion}
-                    onChange={(e) => setIntegrationSettings(prev => ({ ...prev, apiVersion: e.target.value }))}
+                    onChange={(e) =>
+                      setIntegrationSettings((prev) => ({
+                        ...prev,
+                        apiVersion: e.target.value,
+                      }))
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   >
                     <option value="v1">v1</option>
@@ -558,10 +712,17 @@ const EnhancedSettingsManagement: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Logging Level</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Logging Level
+                  </label>
                   <select
                     value={integrationSettings.loggingLevel}
-                    onChange={(e) => setIntegrationSettings(prev => ({ ...prev, loggingLevel: e.target.value as any }))}
+                    onChange={(e) =>
+                      setIntegrationSettings((prev) => ({
+                        ...prev,
+                        loggingLevel: e.target.value as any,
+                      }))
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   >
                     <option value="error">Error</option>
@@ -572,11 +733,18 @@ const EnhancedSettingsManagement: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Timeout (ms)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Timeout (ms)
+                  </label>
                   <input
                     type="number"
                     value={integrationSettings.timeout}
-                    onChange={(e) => setIntegrationSettings(prev => ({ ...prev, timeout: parseInt(e.target.value) }))}
+                    onChange={(e) =>
+                      setIntegrationSettings((prev) => ({
+                        ...prev,
+                        timeout: parseInt(e.target.value),
+                      }))
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     min="1000"
                     max="300000"
@@ -584,11 +752,18 @@ const EnhancedSettingsManagement: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Retry Attempts</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Retry Attempts
+                  </label>
                   <input
                     type="number"
                     value={integrationSettings.retryAttempts}
-                    onChange={(e) => setIntegrationSettings(prev => ({ ...prev, retryAttempts: parseInt(e.target.value) }))}
+                    onChange={(e) =>
+                      setIntegrationSettings((prev) => ({
+                        ...prev,
+                        retryAttempts: parseInt(e.target.value),
+                      }))
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     min="0"
                     max="10"
@@ -597,24 +772,51 @@ const EnhancedSettingsManagement: React.FC = () => {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-md font-medium text-gray-900">Performance Options</h3>
+                <h3 className="text-md font-medium text-gray-900">
+                  Performance Options
+                </h3>
                 {[
-                  { key: 'rateLimiting', label: 'Rate Limiting', description: 'Enable request rate limiting' },
-                  { key: 'cachingEnabled', label: 'Response Caching', description: 'Cache API responses to improve performance' },
-                  { key: 'compressionEnabled', label: 'Response Compression', description: 'Enable gzip compression for responses' }
-                ].map(option => (
-                  <div key={option.key} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  {
+                    key: 'rateLimiting',
+                    label: 'Rate Limiting',
+                    description: 'Enable request rate limiting',
+                  },
+                  {
+                    key: 'cachingEnabled',
+                    label: 'Response Caching',
+                    description: 'Cache API responses to improve performance',
+                  },
+                  {
+                    key: 'compressionEnabled',
+                    label: 'Response Compression',
+                    description: 'Enable gzip compression for responses',
+                  },
+                ].map((option) => (
+                  <div
+                    key={option.key}
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                  >
                     <div>
-                      <span className="font-medium text-gray-900">{option.label}</span>
-                      <p className="text-sm text-gray-600">{option.description}</p>
+                      <span className="font-medium text-gray-900">
+                        {option.label}
+                      </span>
+                      <p className="text-sm text-gray-600">
+                        {option.description}
+                      </p>
                     </div>
                     <input
                       type="checkbox"
-                      checked={integrationSettings[option.key as keyof IntegrationSettings] as boolean}
-                      onChange={(e) => setIntegrationSettings(prev => ({ 
-                        ...prev, 
-                        [option.key]: e.target.checked 
-                      }))}
+                      checked={
+                        integrationSettings[
+                          option.key as keyof IntegrationSettings
+                        ] as boolean
+                      }
+                      onChange={(e) =>
+                        setIntegrationSettings((prev) => ({
+                          ...prev,
+                          [option.key]: e.target.checked,
+                        }))
+                      }
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                   </div>
@@ -638,14 +840,23 @@ const EnhancedSettingsManagement: React.FC = () => {
       {activeTab === 'preferences' && (
         <div className="space-y-8">
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">User Preferences</h2>
-            
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              User Preferences
+            </h2>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Default View</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Default View
+                </label>
                 <select
                   value={userPreferences.defaultView}
-                  onChange={(e) => setUserPreferences(prev => ({ ...prev, defaultView: e.target.value }))}
+                  onChange={(e) =>
+                    setUserPreferences((prev) => ({
+                      ...prev,
+                      defaultView: e.target.value,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="dashboard">Dashboard</option>
@@ -656,10 +867,17 @@ const EnhancedSettingsManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Items per Page</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Items per Page
+                </label>
                 <select
                   value={userPreferences.itemsPerPage}
-                  onChange={(e) => setUserPreferences(prev => ({ ...prev, itemsPerPage: parseInt(e.target.value) }))}
+                  onChange={(e) =>
+                    setUserPreferences((prev) => ({
+                      ...prev,
+                      itemsPerPage: parseInt(e.target.value),
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value={10}>10</option>
@@ -670,10 +888,17 @@ const EnhancedSettingsManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Export Format</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Export Format
+                </label>
                 <select
                   value={userPreferences.exportFormat}
-                  onChange={(e) => setUserPreferences(prev => ({ ...prev, exportFormat: e.target.value as any }))}
+                  onChange={(e) =>
+                    setUserPreferences((prev) => ({
+                      ...prev,
+                      exportFormat: e.target.value as any,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="csv">CSV</option>
@@ -683,10 +908,17 @@ const EnhancedSettingsManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email Digest</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Digest
+                </label>
                 <select
                   value={userPreferences.emailDigest}
-                  onChange={(e) => setUserPreferences(prev => ({ ...prev, emailDigest: e.target.value as any }))}
+                  onChange={(e) =>
+                    setUserPreferences((prev) => ({
+                      ...prev,
+                      emailDigest: e.target.value as any,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="never">Never</option>
@@ -697,11 +929,18 @@ const EnhancedSettingsManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Auto-refresh Interval (seconds)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Auto-refresh Interval (seconds)
+                </label>
                 <input
                   type="number"
                   value={userPreferences.refreshInterval}
-                  onChange={(e) => setUserPreferences(prev => ({ ...prev, refreshInterval: parseInt(e.target.value) }))}
+                  onChange={(e) =>
+                    setUserPreferences((prev) => ({
+                      ...prev,
+                      refreshInterval: parseInt(e.target.value),
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   min="30"
                   max="300"
@@ -711,25 +950,52 @@ const EnhancedSettingsManagement: React.FC = () => {
             </div>
 
             <div className="mt-6 space-y-4">
-              <h3 className="text-md font-medium text-gray-900">Communication Preferences</h3>
+              <h3 className="text-md font-medium text-gray-900">
+                Communication Preferences
+              </h3>
               <div className="space-y-3">
                 {[
-                  { key: 'autoRefresh', label: 'Auto-refresh data', description: 'Automatically refresh dashboard data' },
-                  { key: 'marketingEmails', label: 'Marketing emails', description: 'Receive marketing and promotional emails' },
-                  { key: 'productUpdates', label: 'Product updates', description: 'Get notified about new features and updates' }
-                ].map(option => (
-                  <div key={option.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  {
+                    key: 'autoRefresh',
+                    label: 'Auto-refresh data',
+                    description: 'Automatically refresh dashboard data',
+                  },
+                  {
+                    key: 'marketingEmails',
+                    label: 'Marketing emails',
+                    description: 'Receive marketing and promotional emails',
+                  },
+                  {
+                    key: 'productUpdates',
+                    label: 'Product updates',
+                    description: 'Get notified about new features and updates',
+                  },
+                ].map((option) => (
+                  <div
+                    key={option.key}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
                     <div>
-                      <span className="font-medium text-gray-900">{option.label}</span>
-                      <p className="text-sm text-gray-600">{option.description}</p>
+                      <span className="font-medium text-gray-900">
+                        {option.label}
+                      </span>
+                      <p className="text-sm text-gray-600">
+                        {option.description}
+                      </p>
                     </div>
                     <input
                       type="checkbox"
-                      checked={userPreferences[option.key as keyof UserPreferences] as boolean}
-                      onChange={(e) => setUserPreferences(prev => ({ 
-                        ...prev, 
-                        [option.key]: e.target.checked 
-                      }))}
+                      checked={
+                        userPreferences[
+                          option.key as keyof UserPreferences
+                        ] as boolean
+                      }
+                      onChange={(e) =>
+                        setUserPreferences((prev) => ({
+                          ...prev,
+                          [option.key]: e.target.checked,
+                        }))
+                      }
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                   </div>
@@ -753,21 +1019,29 @@ const EnhancedSettingsManagement: React.FC = () => {
       {activeTab === 'branding' && (
         <div className="space-y-8">
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Brand Customization</h2>
-            
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              Brand Customization
+            </h2>
+
             <div className="space-y-6">
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div>
-                  <span className="font-medium text-gray-900">Enable Custom Branding</span>
-                  <p className="text-sm text-gray-600">Customize the appearance with your brand colors and logo</p>
+                  <span className="font-medium text-gray-900">
+                    Enable Custom Branding
+                  </span>
+                  <p className="text-sm text-gray-600">
+                    Customize the appearance with your brand colors and logo
+                  </p>
                 </div>
                 <input
                   type="checkbox"
                   checked={brandingSettings.brandingEnabled}
-                  onChange={(e) => setBrandingSettings(prev => ({ 
-                    ...prev, 
-                    brandingEnabled: e.target.checked 
-                  }))}
+                  onChange={(e) =>
+                    setBrandingSettings((prev) => ({
+                      ...prev,
+                      brandingEnabled: e.target.checked,
+                    }))
+                  }
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
               </div>
@@ -776,21 +1050,35 @@ const EnhancedSettingsManagement: React.FC = () => {
                 <div className="space-y-6 pl-4 border-l-2 border-blue-100">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Company Name
+                      </label>
                       <input
                         type="text"
                         value={brandingSettings.companyName}
-                        onChange={(e) => setBrandingSettings(prev => ({ ...prev, companyName: e.target.value }))}
+                        onChange={(e) =>
+                          setBrandingSettings((prev) => ({
+                            ...prev,
+                            companyName: e.target.value,
+                          }))
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                         placeholder="Your Company Name"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Font Family</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Font Family
+                      </label>
                       <select
                         value={brandingSettings.fontFamily}
-                        onChange={(e) => setBrandingSettings(prev => ({ ...prev, fontFamily: e.target.value }))}
+                        onChange={(e) =>
+                          setBrandingSettings((prev) => ({
+                            ...prev,
+                            fontFamily: e.target.value,
+                          }))
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       >
                         <option value="Inter">Inter</option>
@@ -804,54 +1092,90 @@ const EnhancedSettingsManagement: React.FC = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Primary Color</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Primary Color
+                      </label>
                       <div className="flex items-center space-x-2">
                         <input
                           type="color"
                           value={brandingSettings.primaryColor}
-                          onChange={(e) => setBrandingSettings(prev => ({ ...prev, primaryColor: e.target.value }))}
+                          onChange={(e) =>
+                            setBrandingSettings((prev) => ({
+                              ...prev,
+                              primaryColor: e.target.value,
+                            }))
+                          }
                           className="w-12 h-10 rounded border border-gray-300"
                         />
                         <input
                           type="text"
                           value={brandingSettings.primaryColor}
-                          onChange={(e) => setBrandingSettings(prev => ({ ...prev, primaryColor: e.target.value }))}
+                          onChange={(e) =>
+                            setBrandingSettings((prev) => ({
+                              ...prev,
+                              primaryColor: e.target.value,
+                            }))
+                          }
                           className="flex-1 px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Secondary Color</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Secondary Color
+                      </label>
                       <div className="flex items-center space-x-2">
                         <input
                           type="color"
                           value={brandingSettings.secondaryColor}
-                          onChange={(e) => setBrandingSettings(prev => ({ ...prev, secondaryColor: e.target.value }))}
+                          onChange={(e) =>
+                            setBrandingSettings((prev) => ({
+                              ...prev,
+                              secondaryColor: e.target.value,
+                            }))
+                          }
                           className="w-12 h-10 rounded border border-gray-300"
                         />
                         <input
                           type="text"
                           value={brandingSettings.secondaryColor}
-                          onChange={(e) => setBrandingSettings(prev => ({ ...prev, secondaryColor: e.target.value }))}
+                          onChange={(e) =>
+                            setBrandingSettings((prev) => ({
+                              ...prev,
+                              secondaryColor: e.target.value,
+                            }))
+                          }
                           className="flex-1 px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Accent Color</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Accent Color
+                      </label>
                       <div className="flex items-center space-x-2">
                         <input
                           type="color"
                           value={brandingSettings.accentColor}
-                          onChange={(e) => setBrandingSettings(prev => ({ ...prev, accentColor: e.target.value }))}
+                          onChange={(e) =>
+                            setBrandingSettings((prev) => ({
+                              ...prev,
+                              accentColor: e.target.value,
+                            }))
+                          }
                           className="w-12 h-10 rounded border border-gray-300"
                         />
                         <input
                           type="text"
                           value={brandingSettings.accentColor}
-                          onChange={(e) => setBrandingSettings(prev => ({ ...prev, accentColor: e.target.value }))}
+                          onChange={(e) =>
+                            setBrandingSettings((prev) => ({
+                              ...prev,
+                              accentColor: e.target.value,
+                            }))
+                          }
                           className="flex-1 px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm"
                         />
                       </div>
@@ -859,32 +1183,53 @@ const EnhancedSettingsManagement: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Logo URL</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Logo URL
+                    </label>
                     <input
                       type="url"
                       value={brandingSettings.logo}
-                      onChange={(e) => setBrandingSettings(prev => ({ ...prev, logo: e.target.value }))}
+                      onChange={(e) =>
+                        setBrandingSettings((prev) => ({
+                          ...prev,
+                          logo: e.target.value,
+                        }))
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       placeholder="https://your-domain.com/logo.png"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Favicon URL</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Favicon URL
+                    </label>
                     <input
                       type="url"
                       value={brandingSettings.favicon}
-                      onChange={(e) => setBrandingSettings(prev => ({ ...prev, favicon: e.target.value }))}
+                      onChange={(e) =>
+                        setBrandingSettings((prev) => ({
+                          ...prev,
+                          favicon: e.target.value,
+                        }))
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       placeholder="https://your-domain.com/favicon.ico"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Custom CSS</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Custom CSS
+                    </label>
                     <textarea
                       value={brandingSettings.customCSS}
-                      onChange={(e) => setBrandingSettings(prev => ({ ...prev, customCSS: e.target.value }))}
+                      onChange={(e) =>
+                        setBrandingSettings((prev) => ({
+                          ...prev,
+                          customCSS: e.target.value,
+                        }))
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm"
                       rows={8}
                       placeholder="/* Add your custom CSS here */&#10;.custom-class {&#10;  color: #333;&#10;}"
@@ -916,21 +1261,29 @@ const EnhancedSettingsManagement: React.FC = () => {
       {activeTab === 'backup' && (
         <div className="space-y-8">
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Backup & Recovery</h2>
-            
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              Backup & Recovery
+            </h2>
+
             <div className="space-y-6">
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div>
-                  <span className="font-medium text-gray-900">Automatic Backup</span>
-                  <p className="text-sm text-gray-600">Enable automatic data backups</p>
+                  <span className="font-medium text-gray-900">
+                    Automatic Backup
+                  </span>
+                  <p className="text-sm text-gray-600">
+                    Enable automatic data backups
+                  </p>
                 </div>
                 <input
                   type="checkbox"
                   checked={backupSettings.autoBackup}
-                  onChange={(e) => setBackupSettings(prev => ({ 
-                    ...prev, 
-                    autoBackup: e.target.checked 
-                  }))}
+                  onChange={(e) =>
+                    setBackupSettings((prev) => ({
+                      ...prev,
+                      autoBackup: e.target.checked,
+                    }))
+                  }
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
               </div>
@@ -939,10 +1292,17 @@ const EnhancedSettingsManagement: React.FC = () => {
                 <div className="space-y-6 pl-4 border-l-2 border-blue-100">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Backup Frequency</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Backup Frequency
+                      </label>
                       <select
                         value={backupSettings.frequency}
-                        onChange={(e) => setBackupSettings(prev => ({ ...prev, frequency: e.target.value as any }))}
+                        onChange={(e) =>
+                          setBackupSettings((prev) => ({
+                            ...prev,
+                            frequency: e.target.value as any,
+                          }))
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       >
                         <option value="hourly">Hourly</option>
@@ -952,10 +1312,17 @@ const EnhancedSettingsManagement: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Backup Location</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Backup Location
+                      </label>
                       <select
                         value={backupSettings.location}
-                        onChange={(e) => setBackupSettings(prev => ({ ...prev, location: e.target.value as any }))}
+                        onChange={(e) =>
+                          setBackupSettings((prev) => ({
+                            ...prev,
+                            location: e.target.value as any,
+                          }))
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       >
                         <option value="local">Local Storage</option>
@@ -965,11 +1332,18 @@ const EnhancedSettingsManagement: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Retention Period (days)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Retention Period (days)
+                      </label>
                       <input
                         type="number"
                         value={backupSettings.retention}
-                        onChange={(e) => setBackupSettings(prev => ({ ...prev, retention: parseInt(e.target.value) }))}
+                        onChange={(e) =>
+                          setBackupSettings((prev) => ({
+                            ...prev,
+                            retention: parseInt(e.target.value),
+                          }))
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                         min="1"
                         max="365"
@@ -978,24 +1352,51 @@ const EnhancedSettingsManagement: React.FC = () => {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-md font-medium text-gray-900">Backup Options</h3>
+                    <h3 className="text-md font-medium text-gray-900">
+                      Backup Options
+                    </h3>
                     {[
-                      { key: 'encryption', label: 'Encrypt Backups', description: 'Encrypt backup files for security' },
-                      { key: 'compression', label: 'Compress Backups', description: 'Reduce backup file size with compression' },
-                      { key: 'notifications', label: 'Backup Notifications', description: 'Get notified about backup status' }
-                    ].map(option => (
-                      <div key={option.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      {
+                        key: 'encryption',
+                        label: 'Encrypt Backups',
+                        description: 'Encrypt backup files for security',
+                      },
+                      {
+                        key: 'compression',
+                        label: 'Compress Backups',
+                        description: 'Reduce backup file size with compression',
+                      },
+                      {
+                        key: 'notifications',
+                        label: 'Backup Notifications',
+                        description: 'Get notified about backup status',
+                      },
+                    ].map((option) => (
+                      <div
+                        key={option.key}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      >
                         <div>
-                          <span className="font-medium text-gray-900">{option.label}</span>
-                          <p className="text-sm text-gray-600">{option.description}</p>
+                          <span className="font-medium text-gray-900">
+                            {option.label}
+                          </span>
+                          <p className="text-sm text-gray-600">
+                            {option.description}
+                          </p>
                         </div>
                         <input
                           type="checkbox"
-                          checked={backupSettings[option.key as keyof BackupSettings] as boolean}
-                          onChange={(e) => setBackupSettings(prev => ({ 
-                            ...prev, 
-                            [option.key]: e.target.checked 
-                          }))}
+                          checked={
+                            backupSettings[
+                              option.key as keyof BackupSettings
+                            ] as boolean
+                          }
+                          onChange={(e) =>
+                            setBackupSettings((prev) => ({
+                              ...prev,
+                              [option.key]: e.target.checked,
+                            }))
+                          }
                           className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
                       </div>
@@ -1007,8 +1408,16 @@ const EnhancedSettingsManagement: React.FC = () => {
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    <svg
+                      className="h-5 w-5 text-yellow-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                   <div className="ml-3">
@@ -1017,7 +1426,9 @@ const EnhancedSettingsManagement: React.FC = () => {
                     </h3>
                     <div className="mt-2 text-sm text-yellow-700">
                       <p>
-                        You can create a manual backup of your data at any time. This includes all your settings, products, and configuration.
+                        You can create a manual backup of your data at any time.
+                        This includes all your settings, products, and
+                        configuration.
                       </p>
                     </div>
                     <div className="mt-4">
@@ -1047,16 +1458,29 @@ const EnhancedSettingsManagement: React.FC = () => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Export Settings</h3>
+              <h3 className="text-lg font-bold text-gray-900">
+                Export Settings
+              </h3>
               <button onClick={() => setShowExportModal(false)}>
-                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
             <div className="space-y-4">
               <p className="text-sm text-gray-600">
-                Export all your settings as a JSON file. This includes dashboard preferences, security settings, integrations, and more.
+                Export all your settings as a JSON file. This includes dashboard
+                preferences, security settings, integrations, and more.
               </p>
               <div className="flex space-x-3">
                 <button

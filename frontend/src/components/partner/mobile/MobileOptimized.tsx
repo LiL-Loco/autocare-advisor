@@ -1,9 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { X, Menu, Home, Package, Users, Bell, BarChart3, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  BarChart3,
+  Bell,
+  Home,
+  Menu,
+  Package,
+  Settings,
+  Users,
+  X,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -12,51 +21,55 @@ interface MobileMenuProps {
 }
 
 const navigationItems = [
-  { 
-    href: '/partner/dashboard', 
-    label: 'Dashboard', 
+  {
+    href: '/partner/dashboard',
+    label: 'Dashboard',
     icon: Home,
-    description: 'Overview & Analytics'
+    description: 'Overview & Analytics',
   },
-  { 
-    href: '/partner/products', 
-    label: 'Products', 
+  {
+    href: '/partner/products',
+    label: 'Products',
     icon: Package,
-    description: 'Manage Inventory'
+    description: 'Manage Inventory',
   },
-  { 
-    href: '/partner/customers', 
-    label: 'Customers', 
+  {
+    href: '/partner/customers',
+    label: 'Customers',
     icon: Users,
-    description: 'Customer Insights'
+    description: 'Customer Insights',
   },
-  { 
-    href: '/partner/notifications', 
-    label: 'Notifications', 
+  {
+    href: '/partner/notifications',
+    label: 'Notifications',
     icon: Bell,
     description: 'Alerts & Updates',
-    badge: '3'
+    badge: '3',
   },
-  { 
-    href: '/partner/analytics', 
-    label: 'Analytics', 
+  {
+    href: '/partner/analytics',
+    label: 'Analytics',
     icon: BarChart3,
-    description: 'Performance Reports'
+    description: 'Performance Reports',
   },
-  { 
-    href: '/partner/settings', 
-    label: 'Settings', 
+  {
+    href: '/partner/settings',
+    label: 'Settings',
     icon: Settings,
-    description: 'Account & Preferences'
+    description: 'Account & Preferences',
   },
 ];
 
-export default function MobileMenu({ isOpen, onClose, currentPath }: MobileMenuProps) {
+export default function MobileMenu({
+  isOpen,
+  onClose,
+  currentPath,
+}: MobileMenuProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    
+
     // Prevent body scroll when menu is open
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -92,15 +105,12 @@ export default function MobileMenu({ isOpen, onClose, currentPath }: MobileMenuP
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">AutoCare Partner</h2>
+            <h2 className="text-xl font-bold text-gray-900">
+              AutoCare Partner
+            </h2>
             <p className="text-sm text-gray-600">Product Management</p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onClose}
-            className="p-2"
-          >
+          <Button variant="outline" size="sm" onClick={onClose} className="p-2">
             <X className="h-5 w-5" />
           </Button>
         </div>
@@ -148,7 +158,9 @@ export default function MobileMenu({ isOpen, onClose, currentPath }: MobileMenuP
                 >
                   <Icon
                     className={`mr-4 h-6 w-6 ${
-                      isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'
+                      isActive
+                        ? 'text-white'
+                        : 'text-gray-400 group-hover:text-gray-600'
                     }`}
                   />
                   <div className="flex-1">
@@ -206,7 +218,7 @@ export function MobileHeader({ currentPath = '' }: { currentPath?: string }) {
   const [notificationCount] = useState(3);
 
   const getCurrentPageTitle = (path: string) => {
-    const item = navigationItems.find(nav => nav.href === path);
+    const item = navigationItems.find((nav) => nav.href === path);
     return item?.label || 'Dashboard';
   };
 
@@ -231,11 +243,7 @@ export function MobileHeader({ currentPath = '' }: { currentPath?: string }) {
           </div>
 
           <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="relative p-2"
-            >
+            <Button variant="outline" size="sm" className="relative p-2">
               <Bell className="h-5 w-5" />
               {notificationCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -274,21 +282,23 @@ export function TouchButton({
   size = 'md',
   disabled = false,
   className = '',
-  icon
+  icon,
 }: TouchButtonProps) {
-  const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none focus:ring-2 focus:ring-offset-2';
-  
+  const baseClasses =
+    'inline-flex items-center justify-center font-medium transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none focus:ring-2 focus:ring-offset-2';
+
   const variantClasses = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
     secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',
-    outline: 'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-blue-500',
-    ghost: 'text-gray-700 bg-transparent hover:bg-gray-100 focus:ring-blue-500'
+    outline:
+      'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-blue-500',
+    ghost: 'text-gray-700 bg-transparent hover:bg-gray-100 focus:ring-blue-500',
   };
 
   const sizeClasses = {
     sm: 'px-4 py-2 text-sm rounded-lg min-h-[40px]', // Minimum touch target 40px
     md: 'px-6 py-3 text-base rounded-xl min-h-[48px]', // Recommended touch target 48px
-    lg: 'px-8 py-4 text-lg rounded-xl min-h-[56px]' // Large touch target 56px
+    lg: 'px-8 py-4 text-lg rounded-xl min-h-[56px]', // Large touch target 56px
   };
 
   return (
@@ -311,27 +321,29 @@ interface MobileCardProps {
   shadow?: 'none' | 'sm' | 'md' | 'lg';
 }
 
-export function MobileCard({ 
-  children, 
-  className = '', 
+export function MobileCard({
+  children,
+  className = '',
   padding = 'md',
-  shadow = 'sm'
+  shadow = 'sm',
 }: MobileCardProps) {
   const paddingClasses = {
     sm: 'p-3',
     md: 'p-4 sm:p-6',
-    lg: 'p-6 sm:p-8'
+    lg: 'p-6 sm:p-8',
   };
 
   const shadowClasses = {
     none: '',
     sm: 'shadow-sm',
     md: 'shadow-md',
-    lg: 'shadow-lg'
+    lg: 'shadow-lg',
   };
 
   return (
-    <div className={`bg-white rounded-xl border border-gray-200 ${shadowClasses[shadow]} ${paddingClasses[padding]} ${className}`}>
+    <div
+      className={`bg-white rounded-xl border border-gray-200 ${shadowClasses[shadow]} ${paddingClasses[padding]} ${className}`}
+    >
       {children}
     </div>
   );
@@ -359,7 +371,7 @@ export function MobileInput({
   error,
   disabled = false,
   className = '',
-  icon
+  icon,
 }: MobileInputProps) {
   return (
     <div className={`space-y-2 ${className}`}>
@@ -387,13 +399,15 @@ export function MobileInput({
             placeholder-gray-400
             min-h-[48px]
             ${icon ? 'pl-10' : ''}
-            ${error ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}
+            ${
+              error
+                ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                : ''
+            }
           `}
         />
       </div>
-      {error && (
-        <p className="text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
 }

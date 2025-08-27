@@ -1,20 +1,26 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Upload, 
-  FileText, 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle, 
-  Download,
-  RefreshCw,
-  Eye,
-  Trash2
-} from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import {
+  AlertTriangle,
+  CheckCircle,
+  Download,
+  Eye,
+  FileText,
+  RefreshCw,
+  Trash2,
+  Upload,
+  XCircle,
+} from 'lucide-react';
+import React, { useCallback, useState } from 'react';
 
 interface CSVUploadProps {
   partnerId: string;
@@ -41,7 +47,9 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
   const [validating, setValidating] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>(
+    []
+  );
   const [uploadStats, setUploadStats] = useState<UploadStats | null>(null);
   const [previewData, setPreviewData] = useState<string[][]>([]);
   const [showPreview, setShowPreview] = useState(false);
@@ -54,13 +62,13 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
       setValidationErrors([]);
       setUploadStats(null);
       setPreviewData([]);
-      
+
       // Parse and preview first few rows
       const reader = new FileReader();
       reader.onload = (e) => {
         const text = e.target?.result as string;
         const lines = text.split('\n');
-        const preview = lines.slice(0, 6).map(line => line.split(','));
+        const preview = lines.slice(0, 6).map((line) => line.split(','));
         setPreviewData(preview);
       };
       reader.readAsText(selectedFile);
@@ -80,10 +88,10 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragActive(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
-    const csvFile = files.find(file => file.type === 'text/csv');
-    
+    const csvFile = files.find((file) => file.type === 'text/csv');
+
     if (csvFile) {
       handleFileSelect(csvFile);
     }
@@ -98,52 +106,52 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
 
   const validateCSV = async () => {
     if (!file) return;
-    
+
     setValidating(true);
-    
+
     // Simulate validation process
     const errors: ValidationError[] = [
       {
         row: 5,
         column: 'price',
         message: 'Price must be a positive number',
-        severity: 'error'
+        severity: 'error',
       },
       {
         row: 12,
         column: 'category',
         message: 'Category not recognized, will use default',
-        severity: 'warning'
+        severity: 'warning',
       },
       {
         row: 18,
         column: 'description',
         message: 'Description is empty',
-        severity: 'warning'
-      }
+        severity: 'warning',
+      },
     ];
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     setValidationErrors(errors);
     setValidating(false);
   };
 
   const uploadCSV = async () => {
     if (!file) return;
-    
+
     setUploading(true);
     setUploadProgress(0);
-    
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('partnerId', partnerId);
-    
+
     try {
       // Simulate upload progress
       const interval = setInterval(() => {
-        setUploadProgress(prev => {
+        setUploadProgress((prev) => {
           if (prev >= 90) {
             clearInterval(interval);
             return prev;
@@ -151,22 +159,22 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
           return prev + Math.random() * 15;
         });
       }, 200);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       clearInterval(interval);
       setUploadProgress(100);
-      
+
       // Simulate upload results
       setUploadStats({
         total: 150,
         processed: 150,
         successful: 145,
         failed: 3,
-        warnings: 2
+        warnings: 2,
       });
-      
+
       setUploadComplete(true);
     } catch (error) {
       console.error('Upload failed:', error);
@@ -180,9 +188,9 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
       'name,category,price,description,brand,sku,stock_quantity,is_active',
       'Premium Car Wax,Car Care,29.99,High-quality car wax for professional finish,AutoShine,AS-001,50,true',
       'Engine Oil 5W-30,Oil & Fluids,24.95,Synthetic engine oil for modern vehicles,TechnoOil,TO-5W30,100,true',
-      'Brake Pads Set,Brakes,89.99,Ceramic brake pads for enhanced stopping power,StopMax,SM-BP001,25,true'
+      'Brake Pads Set,Brakes,89.99,Ceramic brake pads for enhanced stopping power,StopMax,SM-BP001,25,true',
     ].join('\n');
-    
+
     const blob = new Blob([templateData], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -209,8 +217,12 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">CSV Product Upload</h2>
-          <p className="text-gray-600">Upload your product catalog in CSV format</p>
+          <h2 className="text-2xl font-bold text-gray-900">
+            CSV Product Upload
+          </h2>
+          <p className="text-gray-600">
+            Upload your product catalog in CSV format
+          </p>
         </div>
         <Button variant="outline" onClick={downloadTemplate}>
           <Download className="h-4 w-4 mr-2" />
@@ -229,21 +241,41 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
         <CardContent>
           <div className="grid md:grid-cols-2 gap-4 text-sm">
             <div>
-              <h4 className="font-semibold text-gray-900 mb-2">Required Columns:</h4>
+              <h4 className="font-semibold text-gray-900 mb-2">
+                Required Columns:
+              </h4>
               <ul className="space-y-1 text-gray-600">
-                <li>• <code>name</code> - Product name</li>
-                <li>• <code>category</code> - Product category</li>
-                <li>• <code>price</code> - Product price (decimal)</li>
-                <li>• <code>description</code> - Product description</li>
+                <li>
+                  • <code>name</code> - Product name
+                </li>
+                <li>
+                  • <code>category</code> - Product category
+                </li>
+                <li>
+                  • <code>price</code> - Product price (decimal)
+                </li>
+                <li>
+                  • <code>description</code> - Product description
+                </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-900 mb-2">Optional Columns:</h4>
+              <h4 className="font-semibold text-gray-900 mb-2">
+                Optional Columns:
+              </h4>
               <ul className="space-y-1 text-gray-600">
-                <li>• <code>brand</code> - Product brand</li>
-                <li>• <code>sku</code> - Stock keeping unit</li>
-                <li>• <code>stock_quantity</code> - Available stock</li>
-                <li>• <code>is_active</code> - Product visibility (true/false)</li>
+                <li>
+                  • <code>brand</code> - Product brand
+                </li>
+                <li>
+                  • <code>sku</code> - Stock keeping unit
+                </li>
+                <li>
+                  • <code>stock_quantity</code> - Available stock
+                </li>
+                <li>
+                  • <code>is_active</code> - Product visibility (true/false)
+                </li>
               </ul>
             </div>
           </div>
@@ -280,30 +312,41 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
               }
             }}
           >
-            <input 
-              type="file" 
-              accept=".csv" 
+            <input
+              type="file"
+              accept=".csv"
               onChange={handleFileInputChange}
-              className="hidden" 
+              className="hidden"
               id="csv-file-input"
             />
-            
+
             {file ? (
               <div className="space-y-4">
                 <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{file.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {file.name}
+                  </h3>
                   <p className="text-gray-600">
                     {(file.size / 1024 / 1024).toFixed(2)} MB • Ready to process
                   </p>
                 </div>
                 <div className="flex items-center justify-center space-x-3">
-                  <Button variant="outline" onClick={() => setShowPreview(!showPreview)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowPreview(!showPreview)}
+                  >
                     <Eye className="h-4 w-4 mr-2" />
                     {showPreview ? 'Hide' : 'Preview'}
                   </Button>
-                  <Button variant="outline" onClick={validateCSV} disabled={validating}>
-                    {validating && <RefreshCw className="h-4 w-4 mr-2 animate-spin" />}
+                  <Button
+                    variant="outline"
+                    onClick={validateCSV}
+                    disabled={validating}
+                  >
+                    {validating && (
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    )}
                     Validate
                   </Button>
                   <Button variant="outline" onClick={clearFile}>
@@ -317,7 +360,9 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
                 <Upload className="h-12 w-12 text-gray-400 mx-auto" />
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {isDragActive ? 'Drop your CSV file here' : 'Upload CSV File'}
+                    {isDragActive
+                      ? 'Drop your CSV file here'
+                      : 'Upload CSV File'}
                   </h3>
                   <p className="text-gray-600">
                     Drag & drop your product CSV file, or click to browse
@@ -345,22 +390,30 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
                 <thead>
                   <tr className="border-b">
                     {previewData[0]?.map((header: string, index: number) => (
-                      <th key={index} className="text-left py-2 px-3 font-semibold">
+                      <th
+                        key={index}
+                        className="text-left py-2 px-3 font-semibold"
+                      >
                         {header}
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {previewData.slice(1).map((row: string[], rowIndex: number) => (
-                    <tr key={rowIndex} className="border-b">
-                      {row.map((cell: string, cellIndex: number) => (
-                        <td key={cellIndex} className="py-2 px-3 text-gray-700">
-                          {cell}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
+                  {previewData
+                    .slice(1)
+                    .map((row: string[], rowIndex: number) => (
+                      <tr key={rowIndex} className="border-b">
+                        {row.map((cell: string, cellIndex: number) => (
+                          <td
+                            key={cellIndex}
+                            className="py-2 px-3 text-gray-700"
+                          >
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -392,14 +445,22 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
                     <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
                   )}
                   <div>
-                    <p className={`font-medium ${
-                      error.severity === 'error' ? 'text-red-800' : 'text-yellow-800'
-                    }`}>
+                    <p
+                      className={`font-medium ${
+                        error.severity === 'error'
+                          ? 'text-red-800'
+                          : 'text-yellow-800'
+                      }`}
+                    >
                       Row {error.row}, Column "{error.column}"
                     </p>
-                    <p className={`text-sm ${
-                      error.severity === 'error' ? 'text-red-600' : 'text-yellow-600'
-                    }`}>
+                    <p
+                      className={`text-sm ${
+                        error.severity === 'error'
+                          ? 'text-red-600'
+                          : 'text-yellow-600'
+                      }`}
+                    >
                       {error.message}
                     </p>
                   </div>
@@ -439,19 +500,27 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-gray-900">{uploadStats.total}</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {uploadStats.total}
+                </div>
                 <div className="text-sm text-gray-600">Total Rows</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-green-600">{uploadStats.successful}</div>
+                <div className="text-2xl font-bold text-green-600">
+                  {uploadStats.successful}
+                </div>
                 <div className="text-sm text-gray-600">Successful</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-red-600">{uploadStats.failed}</div>
+                <div className="text-2xl font-bold text-red-600">
+                  {uploadStats.failed}
+                </div>
                 <div className="text-sm text-gray-600">Failed</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-yellow-600">{uploadStats.warnings}</div>
+                <div className="text-2xl font-bold text-yellow-600">
+                  {uploadStats.warnings}
+                </div>
                 <div className="text-sm text-gray-600">Warnings</div>
               </div>
             </div>
@@ -462,15 +531,15 @@ export default function CSVUpload({ partnerId }: CSVUploadProps) {
       {/* Upload Action */}
       {file && !uploading && !uploadComplete && (
         <div className="flex justify-center">
-          <Button 
+          <Button
             onClick={uploadCSV}
             size="lg"
-            disabled={validationErrors.some(e => e.severity === 'error')}
+            disabled={validationErrors.some((e) => e.severity === 'error')}
             className="w-full md:w-auto"
           >
             <Upload className="h-4 w-4 mr-2" />
             Upload Products
-            {validationErrors.some(e => e.severity === 'error') && (
+            {validationErrors.some((e) => e.severity === 'error') && (
               <span className="ml-2 text-xs">(Fix errors first)</span>
             )}
           </Button>

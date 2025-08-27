@@ -1,20 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Trash2, 
-  Edit3, 
-  Download, 
-  Upload, 
-  Eye, 
-  EyeOff, 
-  Tag,
-  Copy,
-  MoreHorizontal,
-  CheckSquare,
-  Square
-} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +9,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
+import {
+  CheckSquare,
+  Copy,
+  Download,
+  Edit3,
+  Eye,
+  EyeOff,
+  MoreHorizontal,
+  Square,
+  Tag,
+  Trash2,
+} from 'lucide-react';
+import { useState } from 'react';
 
 interface BulkOperationsProps {
   selectedProducts: string[];
@@ -79,7 +78,7 @@ export default function BulkOperations({
               {selectedProducts.length} of {totalProducts} products selected
             </span>
           </div>
-          
+
           <Badge variant="secondary" className="bg-blue-100 text-blue-800">
             Bulk Actions Available
           </Badge>
@@ -111,7 +110,9 @@ export default function BulkOperations({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleBulkAction(() => onBulkExport(selectedProducts))}
+            onClick={() =>
+              handleBulkAction(() => onBulkExport(selectedProducts))
+            }
             disabled={isProcessing}
             className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
           >
@@ -133,7 +134,11 @@ export default function BulkOperations({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleBulkAction(() => onBulkToggleVisibility(selectedProducts, true))}
+            onClick={() =>
+              handleBulkAction(() =>
+                onBulkToggleVisibility(selectedProducts, true)
+              )
+            }
             disabled={isProcessing}
             className="text-green-600 border-green-200 hover:bg-green-50"
           >
@@ -144,7 +149,11 @@ export default function BulkOperations({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleBulkAction(() => onBulkToggleVisibility(selectedProducts, false))}
+            onClick={() =>
+              handleBulkAction(() =>
+                onBulkToggleVisibility(selectedProducts, false)
+              )
+            }
             disabled={isProcessing}
             className="text-orange-600 border-orange-200 hover:bg-orange-50"
           >
@@ -161,14 +170,20 @@ export default function BulkOperations({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48">
               <DropdownMenuItem
-                onClick={() => handleBulkAction(() => onDuplicateProducts(selectedProducts))}
+                onClick={() =>
+                  handleBulkAction(() => onDuplicateProducts(selectedProducts))
+                }
                 disabled={isProcessing}
               >
                 <Copy className="h-4 w-4 mr-2" />
                 Duplicate Products
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => handleBulkAction(() => onBulkEdit(selectedProducts, { featured: true }))}
+                onClick={() =>
+                  handleBulkAction(() =>
+                    onBulkEdit(selectedProducts, { featured: true })
+                  )
+                }
                 disabled={isProcessing}
               >
                 <Tag className="h-4 w-4 mr-2" />
@@ -176,7 +191,9 @@ export default function BulkOperations({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => handleBulkAction(() => onBulkDelete(selectedProducts))}
+                onClick={() =>
+                  handleBulkAction(() => onBulkDelete(selectedProducts))
+                }
                 disabled={isProcessing}
                 className="text-red-600 focus:text-red-600"
               >
@@ -216,7 +233,11 @@ interface BulkEditModalProps {
   onApply: (updates: any) => void;
 }
 
-function BulkEditModal({ selectedCount, onClose, onApply }: BulkEditModalProps) {
+function BulkEditModal({
+  selectedCount,
+  onClose,
+  onApply,
+}: BulkEditModalProps) {
   const [updates, setUpdates] = useState({
     category: '',
     price: '',
@@ -231,10 +252,16 @@ function BulkEditModal({ selectedCount, onClose, onApply }: BulkEditModalProps) 
         if (key === 'featured') return true;
         return value !== '' && value !== false;
       })
-      .reduce((acc, [key, value]) => ({
-        ...acc,
-        [key]: key === 'price' || key === 'discount' ? parseFloat(value as string) : value
-      }), {});
+      .reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]:
+            key === 'price' || key === 'discount'
+              ? parseFloat(value as string)
+              : value,
+        }),
+        {}
+      );
 
     onApply(filteredUpdates);
   };
@@ -253,7 +280,9 @@ function BulkEditModal({ selectedCount, onClose, onApply }: BulkEditModalProps) 
             </label>
             <select
               value={updates.category}
-              onChange={(e) => setUpdates({ ...updates, category: e.target.value })}
+              onChange={(e) =>
+                setUpdates({ ...updates, category: e.target.value })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Keep existing</option>
@@ -272,7 +301,9 @@ function BulkEditModal({ selectedCount, onClose, onApply }: BulkEditModalProps) 
               <input
                 type="number"
                 value={updates.price}
-                onChange={(e) => setUpdates({ ...updates, price: e.target.value })}
+                onChange={(e) =>
+                  setUpdates({ ...updates, price: e.target.value })
+                }
                 placeholder="Keep existing"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
@@ -284,7 +315,9 @@ function BulkEditModal({ selectedCount, onClose, onApply }: BulkEditModalProps) 
               <input
                 type="number"
                 value={updates.discount}
-                onChange={(e) => setUpdates({ ...updates, discount: e.target.value })}
+                onChange={(e) =>
+                  setUpdates({ ...updates, discount: e.target.value })
+                }
                 placeholder="Keep existing"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
@@ -309,10 +342,15 @@ function BulkEditModal({ selectedCount, onClose, onApply }: BulkEditModalProps) 
               type="checkbox"
               id="featured"
               checked={updates.featured}
-              onChange={(e) => setUpdates({ ...updates, featured: e.target.checked })}
+              onChange={(e) =>
+                setUpdates({ ...updates, featured: e.target.checked })
+              }
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <label htmlFor="featured" className="ml-2 block text-sm text-gray-700">
+            <label
+              htmlFor="featured"
+              className="ml-2 block text-sm text-gray-700"
+            >
               Mark as Featured Product
             </label>
           </div>
@@ -322,9 +360,7 @@ function BulkEditModal({ selectedCount, onClose, onApply }: BulkEditModalProps) 
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleApply}>
-            Apply Changes
-          </Button>
+          <Button onClick={handleApply}>Apply Changes</Button>
         </div>
       </div>
     </div>

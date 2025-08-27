@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 // Types for Product Management
 interface Product {
@@ -53,20 +53,34 @@ const ProductManagementInterface: React.FC = () => {
       id: `prod-${i + 1}`,
       name: `AutoCare Product ${i + 1}`,
       sku: `AC-${String(i + 1).padStart(4, '0')}`,
-      category: ['Engine Oil', 'Brake Pads', 'Air Filters', 'Spark Plugs', 'Tires'][i % 5],
+      category: [
+        'Engine Oil',
+        'Brake Pads',
+        'Air Filters',
+        'Spark Plugs',
+        'Tires',
+      ][i % 5],
       price: 25 + Math.floor(Math.random() * 200),
       stock: Math.floor(Math.random() * 100),
-      status: ['active', 'inactive', 'draft'][Math.floor(Math.random() * 3)] as 'active' | 'inactive' | 'draft',
+      status: ['active', 'inactive', 'draft'][Math.floor(Math.random() * 3)] as
+        | 'active'
+        | 'inactive'
+        | 'draft',
       performance: {
         views: Math.floor(Math.random() * 1000),
         clicks: Math.floor(Math.random() * 100),
         conversions: Math.floor(Math.random() * 20),
         revenue: Math.floor(Math.random() * 5000),
       },
-      lastUpdated: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString(),
-      tags: ['popular', 'bestseller', 'new', 'discounted'].slice(0, Math.floor(Math.random() * 3)),
+      lastUpdated: new Date(
+        Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000
+      ).toISOString(),
+      tags: ['popular', 'bestseller', 'new', 'discounted'].slice(
+        0,
+        Math.floor(Math.random() * 3)
+      ),
     }));
-    
+
     setTimeout(() => {
       setProducts(mockProducts);
       setLoading(false);
@@ -74,20 +88,32 @@ const ProductManagementInterface: React.FC = () => {
   }, []);
 
   // Filter and sort products
-  const filteredProducts = products.filter(product => {
-    if (filters.status && product.status !== filters.status) return false;
-    if (filters.category && product.category !== filters.category) return false;
-    if (filters.search && !product.name.toLowerCase().includes(filters.search.toLowerCase()) && 
-        !product.sku.toLowerCase().includes(filters.search.toLowerCase())) return false;
-    if (filters.priceRange && (product.price < filters.priceRange[0] || product.price > filters.priceRange[1])) return false;
-    return true;
-  }).sort((a, b) => {
-    if (!filters.sortBy) return 0;
-    const aValue = a[filters.sortBy as keyof Product] as any;
-    const bValue = b[filters.sortBy as keyof Product] as any;
-    const modifier = filters.sortOrder === 'desc' ? -1 : 1;
-    return aValue > bValue ? modifier : aValue < bValue ? -modifier : 0;
-  });
+  const filteredProducts = products
+    .filter((product) => {
+      if (filters.status && product.status !== filters.status) return false;
+      if (filters.category && product.category !== filters.category)
+        return false;
+      if (
+        filters.search &&
+        !product.name.toLowerCase().includes(filters.search.toLowerCase()) &&
+        !product.sku.toLowerCase().includes(filters.search.toLowerCase())
+      )
+        return false;
+      if (
+        filters.priceRange &&
+        (product.price < filters.priceRange[0] ||
+          product.price > filters.priceRange[1])
+      )
+        return false;
+      return true;
+    })
+    .sort((a, b) => {
+      if (!filters.sortBy) return 0;
+      const aValue = a[filters.sortBy as keyof Product] as any;
+      const bValue = b[filters.sortBy as keyof Product] as any;
+      const modifier = filters.sortOrder === 'desc' ? -1 : 1;
+      return aValue > bValue ? modifier : aValue < bValue ? -modifier : 0;
+    });
 
   // Pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -97,39 +123,47 @@ const ProductManagementInterface: React.FC = () => {
   );
 
   const handleSelectProduct = (productId: string) => {
-    setSelectedProducts(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId)
+    setSelectedProducts((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
         : [...prev, productId]
     );
   };
 
   const handleSelectAll = () => {
     setSelectedProducts(
-      selectedProducts.length === paginatedProducts.length 
-        ? [] 
-        : paginatedProducts.map(p => p.id)
+      selectedProducts.length === paginatedProducts.length
+        ? []
+        : paginatedProducts.map((p) => p.id)
     );
   };
 
   const handleBulkAction = (action: BulkAction) => {
-    setProducts(prev => prev.map(product => {
-      if (!selectedProducts.includes(product.id)) return product;
-      
-      switch (action.type) {
-        case 'status':
-          return { ...product, status: action.value };
-        case 'category':
-          return { ...product, category: action.value };
-        case 'pricing':
-          return { ...product, price: product.price * (1 + action.value / 100) };
-        case 'delete':
-          return null;
-        default:
-          return product;
-      }
-    }).filter(Boolean) as Product[]);
-    
+    setProducts(
+      (prev) =>
+        prev
+          .map((product) => {
+            if (!selectedProducts.includes(product.id)) return product;
+
+            switch (action.type) {
+              case 'status':
+                return { ...product, status: action.value };
+              case 'category':
+                return { ...product, category: action.value };
+              case 'pricing':
+                return {
+                  ...product,
+                  price: product.price * (1 + action.value / 100),
+                };
+              case 'delete':
+                return null;
+              default:
+                return product;
+            }
+          })
+          .filter(Boolean) as Product[]
+    );
+
     setSelectedProducts([]);
     setShowBulkModal(false);
     setBulkActionMode(false);
@@ -137,15 +171,20 @@ const ProductManagementInterface: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800 border-green-200';
-      case 'inactive': return 'bg-red-100 text-red-800 border-red-200';
-      case 'draft': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'active':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'inactive':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'draft':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const formatCurrency = (amount: number) => `€${amount.toFixed(2)}`;
-  const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString('de-DE');
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString('de-DE');
 
   if (loading) {
     return (
@@ -160,9 +199,12 @@ const ProductManagementInterface: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Product Management</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Product Management
+          </h1>
           <p className="text-gray-600 mt-1">
-            {filteredProducts.length} products • {selectedProducts.length} selected
+            {filteredProducts.length} products • {selectedProducts.length}{' '}
+            selected
           </p>
         </div>
         <div className="flex items-center space-x-3 mt-4 lg:mt-0">
@@ -178,8 +220,18 @@ const ProductManagementInterface: React.FC = () => {
             onClick={() => router.push('/partner/products/upload')}
             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+              />
             </svg>
             Import CSV
           </button>
@@ -227,13 +279,20 @@ const ProductManagementInterface: React.FC = () => {
               type="text"
               placeholder="Search products..."
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, search: e.target.value }))
+              }
             />
           </div>
           <div>
             <select
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value || undefined }))}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  status: e.target.value || undefined,
+                }))
+              }
             >
               <option value="">All Statuses</option>
               <option value="active">Active</option>
@@ -244,7 +303,12 @@ const ProductManagementInterface: React.FC = () => {
           <div>
             <select
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value || undefined }))}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  category: e.target.value || undefined,
+                }))
+              }
             >
               <option value="">All Categories</option>
               <option value="Engine Oil">Engine Oil</option>
@@ -259,10 +323,10 @@ const ProductManagementInterface: React.FC = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               onChange={(e) => {
                 const [sortBy, sortOrder] = e.target.value.split('-');
-                setFilters(prev => ({ 
-                  ...prev, 
-                  sortBy: sortBy || undefined, 
-                  sortOrder: (sortOrder as 'asc' | 'desc') || 'asc' 
+                setFilters((prev) => ({
+                  ...prev,
+                  sortBy: sortBy || undefined,
+                  sortOrder: (sortOrder as 'asc' | 'desc') || 'asc',
                 }));
               }}
             >
@@ -271,7 +335,9 @@ const ProductManagementInterface: React.FC = () => {
               <option value="name-desc">Name (Z-A)</option>
               <option value="price-asc">Price (Low-High)</option>
               <option value="price-desc">Price (High-Low)</option>
-              <option value="performance.revenue-desc">Revenue (High-Low)</option>
+              <option value="performance.revenue-desc">
+                Revenue (High-Low)
+              </option>
               <option value="lastUpdated-desc">Recently Updated</option>
             </select>
           </div>
@@ -287,7 +353,9 @@ const ProductManagementInterface: React.FC = () => {
                 <th className="px-6 py-3 text-left">
                   <input
                     type="checkbox"
-                    checked={selectedProducts.length === paginatedProducts.length}
+                    checked={
+                      selectedProducts.length === paginatedProducts.length
+                    }
                     onChange={handleSelectAll}
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
@@ -328,12 +396,19 @@ const ProductManagementInterface: React.FC = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
-                      <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                      <div className="text-sm text-gray-500">SKU: {product.sku}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {product.name}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        SKU: {product.sku}
+                      </div>
                       {product.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
-                          {product.tags.map(tag => (
-                            <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                          {product.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
+                            >
                               {tag}
                             </span>
                           ))}
@@ -341,24 +416,40 @@ const ProductManagementInterface: React.FC = () => {
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{product.category}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{formatCurrency(product.price)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{product.stock}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {product.category}
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    {formatCurrency(product.price)}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {product.stock}
+                  </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(product.status)}`}>
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(
+                        product.status
+                      )}`}
+                    >
                       {product.status}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm space-y-1">
                       <div>Views: {product.performance.views}</div>
-                      <div>Revenue: {formatCurrency(product.performance.revenue)}</div>
+                      <div>
+                        Revenue: {formatCurrency(product.performance.revenue)}
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm font-medium">
                     <div className="flex space-x-2">
-                      <button className="text-blue-600 hover:text-blue-900">Edit</button>
-                      <button className="text-red-600 hover:text-red-900">Delete</button>
+                      <button className="text-blue-600 hover:text-blue-900">
+                        Edit
+                      </button>
+                      <button className="text-red-600 hover:text-red-900">
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -371,11 +462,13 @@ const ProductManagementInterface: React.FC = () => {
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-700">
-          Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredProducts.length)} of {filteredProducts.length} results
+          Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
+          {Math.min(currentPage * itemsPerPage, filteredProducts.length)} of{' '}
+          {filteredProducts.length} results
         </div>
         <div className="flex items-center space-x-2">
           <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
             className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -385,7 +478,9 @@ const ProductManagementInterface: React.FC = () => {
             Page {currentPage} of {totalPages}
           </span>
           <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
             className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -398,22 +493,30 @@ const ProductManagementInterface: React.FC = () => {
       {showBulkModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Bulk Status Change</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">
+              Bulk Status Change
+            </h3>
             <div className="space-y-3">
               <button
-                onClick={() => handleBulkAction({ type: 'status', value: 'active' })}
+                onClick={() =>
+                  handleBulkAction({ type: 'status', value: 'active' })
+                }
                 className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
               >
                 Set to Active
               </button>
               <button
-                onClick={() => handleBulkAction({ type: 'status', value: 'inactive' })}
+                onClick={() =>
+                  handleBulkAction({ type: 'status', value: 'inactive' })
+                }
                 className="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
               >
                 Set to Inactive
               </button>
               <button
-                onClick={() => handleBulkAction({ type: 'status', value: 'draft' })}
+                onClick={() =>
+                  handleBulkAction({ type: 'status', value: 'draft' })
+                }
                 className="w-full px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
               >
                 Set to Draft

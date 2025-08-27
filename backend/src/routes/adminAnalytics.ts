@@ -1,9 +1,9 @@
 import express from 'express';
-import { requireAdmin } from '../middleware/adminAuth';
-import logger from '../utils/logger';
-import pool from '../database/postgres';
 import { initializeDatabase } from '../database/mongodb';
+import pool from '../database/postgres';
+import { requireAdmin } from '../middleware/adminAuth';
 import Product from '../models/Product';
+import logger from '../utils/logger';
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ const router = express.Router();
 router.get('/overview', requireAdmin, async (req, res) => {
   try {
     const { timeRange = '30d' } = req.query;
-    
+
     // Calculate date range
     let daysBack = 30;
     switch (timeRange) {
@@ -45,7 +45,7 @@ router.get('/overview', requireAdmin, async (req, res) => {
     `;
 
     const revenueResult = await pool.query(revenueQuery, [startDate]);
-    
+
     // Get user statistics
     const userQuery = `
       SELECT 
@@ -61,18 +61,28 @@ router.get('/overview', requireAdmin, async (req, res) => {
     await initializeDatabase();
     const totalProducts = await Product.countDocuments();
     const recentProducts = await Product.countDocuments({
-      createdAt: { $gte: startDate }
+      createdAt: { $gte: startDate },
     });
 
     // Calculate growth percentages (mock calculation for demo)
     const previousPeriodStart = new Date(startDate);
     previousPeriodStart.setDate(previousPeriodStart.getDate() - daysBack);
 
-    const previousRevenueResult = await pool.query(revenueQuery, [previousPeriodStart]);
-    const previousUserResult = await pool.query(userQuery, [previousPeriodStart]);
+    const previousRevenueResult = await pool.query(revenueQuery, [
+      previousPeriodStart,
+    ]);
+    const previousUserResult = await pool.query(userQuery, [
+      previousPeriodStart,
+    ]);
 
-    const currentRevenue = revenueResult.rows.reduce((sum, row) => sum + parseFloat(row.total_revenue), 0);
-    const currentOrders = revenueResult.rows.reduce((sum, row) => sum + parseInt(row.total_orders), 0);
+    const currentRevenue = revenueResult.rows.reduce(
+      (sum, row) => sum + parseFloat(row.total_revenue),
+      0
+    );
+    const currentOrders = revenueResult.rows.reduce(
+      (sum, row) => sum + parseInt(row.total_orders),
+      0
+    );
     const currentUsers = userResult.rows[0]?.total_users || 0;
     const currentAOV = currentOrders > 0 ? currentRevenue / currentOrders : 0;
 
@@ -82,10 +92,20 @@ router.get('/overview', requireAdmin, async (req, res) => {
     const previousUsers = parseInt(currentUsers) * 0.92; // Simulate 8% growth
     const previousAOV = currentAOV * 0.98; // Simulate -2% change
 
-    const revenueGrowth = previousRevenue > 0 ? ((currentRevenue - previousRevenue) / previousRevenue) * 100 : 0;
-    const orderGrowth = previousOrders > 0 ? ((currentOrders - previousOrders) / previousOrders) * 100 : 0;
-    const userGrowth = previousUsers > 0 ? ((currentUsers - previousUsers) / previousUsers) * 100 : 0;
-    const aovGrowth = previousAOV > 0 ? ((currentAOV - previousAOV) / previousAOV) * 100 : 0;
+    const revenueGrowth =
+      previousRevenue > 0
+        ? ((currentRevenue - previousRevenue) / previousRevenue) * 100
+        : 0;
+    const orderGrowth =
+      previousOrders > 0
+        ? ((currentOrders - previousOrders) / previousOrders) * 100
+        : 0;
+    const userGrowth =
+      previousUsers > 0
+        ? ((currentUsers - previousUsers) / previousUsers) * 100
+        : 0;
+    const aovGrowth =
+      previousAOV > 0 ? ((currentAOV - previousAOV) / previousAOV) * 100 : 0;
 
     const overview = {
       totalRevenue: currentRevenue,
@@ -98,7 +118,7 @@ router.get('/overview', requireAdmin, async (req, res) => {
       aovGrowth: Math.round(aovGrowth * 10) / 10,
       totalProducts,
       newProducts: recentProducts,
-      totalPartners: userResult.rows[0]?.total_partners || 0
+      totalPartners: userResult.rows[0]?.total_partners || 0,
     };
 
     logger.info(`📊 Analytics overview requested for ${timeRange} period`);
@@ -110,16 +130,18 @@ router.get('/overview', requireAdmin, async (req, res) => {
       period: {
         start: startDate.toISOString(),
         end: new Date().toISOString(),
-        days: daysBack
-      }
+        days: daysBack,
+      },
     });
-
   } catch (error) {
     logger.error('❌ Error fetching analytics overview:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch analytics overview',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -128,7 +150,7 @@ router.get('/overview', requireAdmin, async (req, res) => {
 router.get('/charts', requireAdmin, async (req, res) => {
   try {
     const { timeRange = '30d', type } = req.query;
-    
+
     let daysBack = 30;
     switch (timeRange) {
       case '7d':
@@ -163,10 +185,10 @@ router.get('/charts', requireAdmin, async (req, res) => {
       `;
 
       const revenueResult = await pool.query(revenueQuery, [startDate]);
-      chartData.revenue = revenueResult.rows.map(row => ({
+      chartData.revenue = revenueResult.rows.map((row) => ({
         date: row.date,
         amount: parseFloat(row.revenue),
-        orders: parseInt(row.orders)
+        orders: parseInt(row.orders),
       }));
     }
 
@@ -184,10 +206,10 @@ router.get('/charts', requireAdmin, async (req, res) => {
       `;
 
       const userResult = await pool.query(userQuery, [startDate]);
-      chartData.users = userResult.rows.map(row => ({
+      chartData.users = userResult.rows.map((row) => ({
         date: row.date,
         newUsers: parseInt(row.new_users),
-        newPartners: parseInt(row.new_partners)
+        newPartners: parseInt(row.new_partners),
       }));
     }
 
@@ -199,18 +221,18 @@ router.get('/charts', requireAdmin, async (req, res) => {
           $group: {
             _id: '$category',
             count: { $sum: 1 },
-            avgPrice: { $avg: '$price' }
-          }
+            avgPrice: { $avg: '$price' },
+          },
         },
         {
-          $sort: { count: -1 }
-        }
+          $sort: { count: -1 },
+        },
       ]);
 
-      chartData.products = categoryStats.map(stat => ({
+      chartData.products = categoryStats.map((stat) => ({
         category: stat._id || 'Unknown',
         count: stat.count,
-        avgPrice: Math.round(stat.avgPrice * 100) / 100
+        avgPrice: Math.round(stat.avgPrice * 100) / 100,
       }));
     }
 
@@ -231,29 +253,33 @@ router.get('/charts', requireAdmin, async (req, res) => {
       `;
 
       const partnerResult = await pool.query(partnerQuery);
-      chartData.partners = partnerResult.rows.map(row => ({
+      chartData.partners = partnerResult.rows.map((row) => ({
         name: row.partner_name,
         email: row.email,
         revenue: parseFloat(row.total_revenue),
-        orders: parseInt(row.total_orders)
+        orders: parseInt(row.total_orders),
       }));
     }
 
-    logger.info(`📈 Chart data requested for type: ${type || 'all'}, period: ${timeRange}`);
+    logger.info(
+      `📈 Chart data requested for type: ${type || 'all'}, period: ${timeRange}`
+    );
 
     res.json({
       success: true,
       data: chartData,
       timeRange,
-      type: type || 'all'
+      type: type || 'all',
     });
-
   } catch (error) {
     logger.error('❌ Error fetching chart data:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch chart data',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -297,44 +323,46 @@ router.get('/performance', requireAdmin, async (req, res) => {
           _id: '$category',
           productCount: { $sum: 1 },
           totalClicks: { $sum: '$clickCount' },
-          avgPrice: { $avg: '$price' }
-        }
+          avgPrice: { $avg: '$price' },
+        },
       },
       {
         $addFields: {
-          marketShare: { $divide: ['$productCount', { $sum: '$productCount' }] }
-        }
+          marketShare: {
+            $divide: ['$productCount', { $sum: '$productCount' }],
+          },
+        },
       },
       {
-        $sort: { totalClicks: -1 }
-      }
+        $sort: { totalClicks: -1 },
+      },
     ]);
 
     const performance = {
-      topProducts: topProducts.map(product => ({
+      topProducts: topProducts.map((product) => ({
         id: product._id,
         name: product.name,
         brand: product.brand,
         clicks: product.clickCount || 0,
         price: product.price,
-        category: product.category
+        category: product.category,
       })),
-      topPartners: topPartnersResult.rows.map(partner => ({
+      topPartners: topPartnersResult.rows.map((partner) => ({
         id: partner.id,
         name: partner.name,
         email: partner.email,
         company: partner.company,
         revenue: parseFloat(partner.revenue),
         orders: parseInt(partner.orders),
-        joinDate: partner.created_at
+        joinDate: partner.created_at,
       })),
-      categories: categoryStats.map(category => ({
+      categories: categoryStats.map((category) => ({
         name: category._id || 'Unknown',
         productCount: category.productCount,
         totalClicks: category.totalClicks,
         avgPrice: Math.round(category.avgPrice * 100) / 100,
-        marketShare: Math.round(category.marketShare * 100)
-      }))
+        marketShare: Math.round(category.marketShare * 100),
+      })),
     };
 
     logger.info(`🎯 Performance metrics requested with limit: ${limit}`);
@@ -342,15 +370,17 @@ router.get('/performance', requireAdmin, async (req, res) => {
     res.json({
       success: true,
       data: performance,
-      limit: parseInt(limit as string)
+      limit: parseInt(limit as string),
     });
-
   } catch (error) {
     logger.error('❌ Error fetching performance metrics:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch performance metrics',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -360,7 +390,7 @@ router.get('/realtime', requireAdmin, async (req, res) => {
   try {
     // Active sessions (mock data - would be from Redis in real implementation)
     const activeUsers = Math.floor(Math.random() * 200) + 50;
-    
+
     // Recent orders
     const recentOrdersQuery = `
       SELECT 
@@ -390,33 +420,36 @@ router.get('/realtime', requireAdmin, async (req, res) => {
     const recentActivity = [
       {
         type: 'order',
-        description: `Neue Bestellung über €${(Math.random() * 200 + 50).toFixed(2)}`,
+        description: `Neue Bestellung über €${(
+          Math.random() * 200 +
+          50
+        ).toFixed(2)}`,
         timestamp: new Date().toISOString(),
-        value: Math.random() * 200 + 50
+        value: Math.random() * 200 + 50,
       },
       {
         type: 'partner',
         description: 'Neuer Partner registriert: AutoDetailing München',
-        timestamp: new Date(Date.now() - 300000).toISOString()
+        timestamp: new Date(Date.now() - 300000).toISOString(),
       },
       {
         type: 'product',
         description: 'Neues Produkt hinzugefügt: Premium Carnauba Wachs',
-        timestamp: new Date(Date.now() - 600000).toISOString()
-      }
+        timestamp: new Date(Date.now() - 600000).toISOString(),
+      },
     ];
 
     const realtimeData = {
       activeUsers,
       currentOrders: processingResult.rows[0]?.count || 0,
-      recentOrders: recentOrdersResult.rows.map(order => ({
+      recentOrders: recentOrdersResult.rows.map((order) => ({
         id: order.id,
         amount: parseFloat(order.amount),
         customerName: order.user_name,
         customerEmail: order.email,
-        timestamp: order.created_at
+        timestamp: order.created_at,
       })),
-      recentActivity
+      recentActivity,
     };
 
     logger.info('⚡ Real-time analytics data requested');
@@ -424,15 +457,17 @@ router.get('/realtime', requireAdmin, async (req, res) => {
     res.json({
       success: true,
       data: realtimeData,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     logger.error('❌ Error fetching real-time analytics:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch real-time analytics',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });

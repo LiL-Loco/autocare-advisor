@@ -1,9 +1,9 @@
 import express from 'express';
-import { requireAdmin } from '../middleware/adminAuth';
-import logger from '../utils/logger';
-import pool from '../database/postgres';
 import { initializeDatabase } from '../database/mongodb';
+import pool from '../database/postgres';
+import { requireAdmin } from '../middleware/adminAuth';
 import Product from '../models/Product';
+import logger from '../utils/logger';
 
 const router = express.Router();
 
@@ -88,7 +88,7 @@ router.get('/', requireAdmin, async (req, res) => {
     const totalReports = parseInt(countResult.rows[0].count);
 
     // Format reports
-    const reports = reportsResult.rows.map(row => ({
+    const reports = reportsResult.rows.map((row) => ({
       id: row.id,
       name: row.name,
       description: row.description,
@@ -97,10 +97,16 @@ router.get('/', requireAdmin, async (req, res) => {
       frequency: row.frequency,
       lastRun: row.last_run,
       nextRun: row.next_run,
-      recipients: typeof row.recipients === 'string' ? JSON.parse(row.recipients) : row.recipients,
+      recipients:
+        typeof row.recipients === 'string'
+          ? JSON.parse(row.recipients)
+          : row.recipients,
       createdBy: row.created_by,
       createdAt: row.created_at,
-      parameters: typeof row.parameters === 'string' ? JSON.parse(row.parameters) : row.parameters
+      parameters:
+        typeof row.parameters === 'string'
+          ? JSON.parse(row.parameters)
+          : row.parameters,
     }));
 
     logger.info(`📊 Retrieved ${reports.length} reports (page ${page})`);
@@ -113,17 +119,19 @@ router.get('/', requireAdmin, async (req, res) => {
           currentPage: parseInt(page as string),
           totalPages: Math.ceil(totalReports / parseInt(limit as string)),
           totalItems: totalReports,
-          itemsPerPage: parseInt(limit as string)
-        }
-      }
+          itemsPerPage: parseInt(limit as string),
+        },
+      },
     });
-
   } catch (error) {
     logger.error('❌ Error fetching reports:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch reports',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -135,14 +143,23 @@ router.get('/templates', requireAdmin, async (req, res) => {
       {
         id: 'revenue',
         name: 'Revenue Report',
-        description: 'Comprehensive revenue analysis with trends and breakdowns',
+        description:
+          'Comprehensive revenue analysis with trends and breakdowns',
         type: 'financial',
         parameters: {
-          dateRange: { type: 'select', options: ['7d', '30d', '90d', '1y'], default: '30d' },
-          groupBy: { type: 'select', options: ['day', 'week', 'month'], default: 'day' },
+          dateRange: {
+            type: 'select',
+            options: ['7d', '30d', '90d', '1y'],
+            default: '30d',
+          },
+          groupBy: {
+            type: 'select',
+            options: ['day', 'week', 'month'],
+            default: 'day',
+          },
           includePartners: { type: 'boolean', default: true },
-          includeCategories: { type: 'boolean', default: true }
-        }
+          includeCategories: { type: 'boolean', default: true },
+        },
       },
       {
         id: 'users',
@@ -150,11 +167,19 @@ router.get('/templates', requireAdmin, async (req, res) => {
         description: 'User behavior, acquisition, and engagement metrics',
         type: 'analytics',
         parameters: {
-          dateRange: { type: 'select', options: ['7d', '30d', '90d', '1y'], default: '30d' },
-          userSegment: { type: 'select', options: ['all', 'new', 'returning', 'premium'], default: 'all' },
+          dateRange: {
+            type: 'select',
+            options: ['7d', '30d', '90d', '1y'],
+            default: '30d',
+          },
+          userSegment: {
+            type: 'select',
+            options: ['all', 'new', 'returning', 'premium'],
+            default: 'all',
+          },
           includeGeography: { type: 'boolean', default: false },
-          includeDeviceInfo: { type: 'boolean', default: false }
-        }
+          includeDeviceInfo: { type: 'boolean', default: false },
+        },
       },
       {
         id: 'products',
@@ -162,39 +187,58 @@ router.get('/templates', requireAdmin, async (req, res) => {
         description: 'Product sales, trends, and inventory analytics',
         type: 'inventory',
         parameters: {
-          dateRange: { type: 'select', options: ['7d', '30d', '90d', '1y'], default: '30d' },
-          category: { type: 'select', options: ['all', 'autowachs', 'reiniger', 'politur'], default: 'all' },
+          dateRange: {
+            type: 'select',
+            options: ['7d', '30d', '90d', '1y'],
+            default: '30d',
+          },
+          category: {
+            type: 'select',
+            options: ['all', 'autowachs', 'reiniger', 'politur'],
+            default: 'all',
+          },
           minSales: { type: 'number', default: 0 },
-          includeInventory: { type: 'boolean', default: true }
-        }
+          includeInventory: { type: 'boolean', default: true },
+        },
       },
       {
         id: 'partners',
         name: 'Partner Performance Report',
-        description: 'Partner activity, commissions, and relationship analytics',
+        description:
+          'Partner activity, commissions, and relationship analytics',
         type: 'partners',
         parameters: {
-          dateRange: { type: 'select', options: ['7d', '30d', '90d', '1y'], default: '30d' },
-          partnerStatus: { type: 'select', options: ['all', 'active', 'inactive', 'pending'], default: 'all' },
+          dateRange: {
+            type: 'select',
+            options: ['7d', '30d', '90d', '1y'],
+            default: '30d',
+          },
+          partnerStatus: {
+            type: 'select',
+            options: ['all', 'active', 'inactive', 'pending'],
+            default: 'all',
+          },
           minRevenue: { type: 'number', default: 0 },
-          includeCommissions: { type: 'boolean', default: true }
-        }
-      }
+          includeCommissions: { type: 'boolean', default: true },
+        },
+      },
     ];
 
     logger.info('📋 Retrieved report templates');
 
     res.json({
       success: true,
-      data: templates
+      data: templates,
     });
-
   } catch (error) {
     logger.error('❌ Error fetching report templates:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch report templates',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -202,20 +246,20 @@ router.get('/templates', requireAdmin, async (req, res) => {
 // Create New Report
 router.post('/', requireAdmin, async (req, res) => {
   try {
-    const { 
-      name, 
-      description, 
-      templateId, 
-      frequency = 'once', 
-      recipients = [], 
-      parameters = {} 
+    const {
+      name,
+      description,
+      templateId,
+      frequency = 'once',
+      recipients = [],
+      parameters = {},
     } = req.body;
 
     // Validate required fields
     if (!name || !templateId) {
       return res.status(400).json({
         success: false,
-        message: 'Name and template ID are required'
+        message: 'Name and template ID are required',
       });
     }
 
@@ -264,7 +308,7 @@ router.post('/', requireAdmin, async (req, res) => {
       nextRun,
       JSON.stringify(recipients),
       adminEmail,
-      JSON.stringify(parameters)
+      JSON.stringify(parameters),
     ];
 
     const result = await pool.query(insertQuery, values);
@@ -286,16 +330,18 @@ router.post('/', requireAdmin, async (req, res) => {
         recipients: JSON.parse(newReport.recipients),
         createdBy: newReport.created_by,
         createdAt: newReport.created_at,
-        parameters: JSON.parse(newReport.parameters)
-      }
+        parameters: JSON.parse(newReport.parameters),
+      },
     });
-
   } catch (error) {
     logger.error('❌ Error creating report:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to create report',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -314,12 +360,15 @@ router.post('/:id/generate', requireAdmin, async (req, res) => {
     if (reportResult.rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Report not found'
+        message: 'Report not found',
       });
     }
 
     const report = reportResult.rows[0];
-    const parameters = typeof report.parameters === 'string' ? JSON.parse(report.parameters) : report.parameters;
+    const parameters =
+      typeof report.parameters === 'string'
+        ? JSON.parse(report.parameters)
+        : report.parameters;
 
     let reportData: any = {};
 
@@ -358,10 +407,9 @@ router.post('/:id/generate', requireAdmin, async (req, res) => {
         reportId: id,
         reportName: report.name,
         generatedAt: new Date().toISOString(),
-        data: reportData
-      }
+        data: reportData,
+      },
     });
-
   } catch (error) {
     // Update report status to error
     const updateQuery = `
@@ -375,7 +423,10 @@ router.post('/:id/generate', requireAdmin, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to generate report',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -393,7 +444,7 @@ router.delete('/:id', requireAdmin, async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Report not found'
+        message: 'Report not found',
       });
     }
 
@@ -401,29 +452,43 @@ router.delete('/:id', requireAdmin, async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Report deleted successfully'
+      message: 'Report deleted successfully',
     });
-
   } catch (error) {
     logger.error('❌ Error deleting report:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to delete report',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
 
 // Helper functions for generating different report types
 async function generateRevenueReport(parameters: any) {
-  const { dateRange = '30d', groupBy = 'day', includePartners = true, includeCategories = true } = parameters;
+  const {
+    dateRange = '30d',
+    groupBy = 'day',
+    includePartners = true,
+    includeCategories = true,
+  } = parameters;
 
   let daysBack = 30;
   switch (dateRange) {
-    case '7d': daysBack = 7; break;
-    case '90d': daysBack = 90; break;
-    case '1y': daysBack = 365; break;
-    default: daysBack = 30;
+    case '7d':
+      daysBack = 7;
+      break;
+    case '90d':
+      daysBack = 90;
+      break;
+    case '1y':
+      daysBack = 365;
+      break;
+    default:
+      daysBack = 30;
   }
 
   const startDate = new Date();
@@ -444,15 +509,21 @@ async function generateRevenueReport(parameters: any) {
 
   const data: any = {
     overview: {
-      totalRevenue: revenueResult.rows.reduce((sum, row) => sum + parseFloat(row.revenue), 0),
-      totalOrders: revenueResult.rows.reduce((sum, row) => sum + parseInt(row.orders), 0),
-      period: dateRange
+      totalRevenue: revenueResult.rows.reduce(
+        (sum, row) => sum + parseFloat(row.revenue),
+        0
+      ),
+      totalOrders: revenueResult.rows.reduce(
+        (sum, row) => sum + parseInt(row.orders),
+        0
+      ),
+      period: dateRange,
     },
-    timeline: revenueResult.rows.map(row => ({
+    timeline: revenueResult.rows.map((row) => ({
       date: row.date,
       revenue: parseFloat(row.revenue),
-      orders: parseInt(row.orders)
-    }))
+      orders: parseInt(row.orders),
+    })),
   };
 
   if (includePartners) {
@@ -470,11 +541,11 @@ async function generateRevenueReport(parameters: any) {
       LIMIT 10
     `;
     const partnersResult = await pool.query(partnersQuery, [startDate]);
-    data.topPartners = partnersResult.rows.map(row => ({
+    data.topPartners = partnersResult.rows.map((row) => ({
       name: row.partner_name,
       email: row.email,
       revenue: parseFloat(row.revenue),
-      orders: parseInt(row.orders)
+      orders: parseInt(row.orders),
     }));
   }
 
@@ -485,15 +556,15 @@ async function generateRevenueReport(parameters: any) {
         $group: {
           _id: '$category',
           productCount: { $sum: 1 },
-          avgPrice: { $avg: '$price' }
-        }
+          avgPrice: { $avg: '$price' },
+        },
       },
-      { $sort: { productCount: -1 } }
+      { $sort: { productCount: -1 } },
     ]);
-    data.categories = categoryStats.map(stat => ({
+    data.categories = categoryStats.map((stat) => ({
       category: stat._id || 'Unknown',
       productCount: stat.productCount,
-      avgPrice: Math.round(stat.avgPrice * 100) / 100
+      avgPrice: Math.round(stat.avgPrice * 100) / 100,
     }));
   }
 
@@ -505,10 +576,17 @@ async function generateUsersReport(parameters: any) {
 
   let daysBack = 30;
   switch (dateRange) {
-    case '7d': daysBack = 7; break;
-    case '90d': daysBack = 90; break;
-    case '1y': daysBack = 365; break;
-    default: daysBack = 30;
+    case '7d':
+      daysBack = 7;
+      break;
+    case '90d':
+      daysBack = 90;
+      break;
+    case '1y':
+      daysBack = 365;
+      break;
+    default:
+      daysBack = 30;
   }
 
   const startDate = new Date();
@@ -538,16 +616,22 @@ async function generateUsersReport(parameters: any) {
 
   return {
     overview: {
-      totalUsers: userResult.rows.reduce((sum, row) => sum + parseInt(row.new_users), 0),
-      totalPartners: userResult.rows.reduce((sum, row) => sum + parseInt(row.new_partners), 0),
+      totalUsers: userResult.rows.reduce(
+        (sum, row) => sum + parseInt(row.new_users),
+        0
+      ),
+      totalPartners: userResult.rows.reduce(
+        (sum, row) => sum + parseInt(row.new_partners),
+        0
+      ),
       period: dateRange,
-      segment: userSegment
+      segment: userSegment,
     },
-    timeline: userResult.rows.map(row => ({
+    timeline: userResult.rows.map((row) => ({
       date: row.date,
       newUsers: parseInt(row.new_users),
-      newPartners: parseInt(row.new_partners)
-    }))
+      newPartners: parseInt(row.new_partners),
+    })),
   };
 }
 
@@ -556,10 +640,17 @@ async function generateProductsReport(parameters: any) {
 
   let daysBack = 30;
   switch (dateRange) {
-    case '7d': daysBack = 7; break;
-    case '90d': daysBack = 90; break;
-    case '1y': daysBack = 365; break;
-    default: daysBack = 30;
+    case '7d':
+      daysBack = 7;
+      break;
+    case '90d':
+      daysBack = 90;
+      break;
+    case '1y':
+      daysBack = 365;
+      break;
+    default:
+      daysBack = 30;
   }
 
   const startDate = new Date();
@@ -568,7 +659,7 @@ async function generateProductsReport(parameters: any) {
   await initializeDatabase();
 
   let matchStage: any = {
-    createdAt: { $gte: startDate }
+    createdAt: { $gte: startDate },
   };
 
   if (category !== 'all') {
@@ -582,10 +673,10 @@ async function generateProductsReport(parameters: any) {
         _id: '$category',
         productCount: { $sum: 1 },
         totalClicks: { $sum: '$clickCount' },
-        avgPrice: { $avg: '$price' }
-      }
+        avgPrice: { $avg: '$price' },
+      },
     },
-    { $sort: { productCount: -1 } }
+    { $sort: { productCount: -1 } },
   ]);
 
   const topProducts = await Product.find(matchStage)
@@ -597,34 +688,45 @@ async function generateProductsReport(parameters: any) {
     overview: {
       totalProducts: await Product.countDocuments(matchStage),
       period: dateRange,
-      category: category
+      category: category,
     },
-    categories: productStats.map(stat => ({
+    categories: productStats.map((stat) => ({
       category: stat._id || 'Unknown',
       productCount: stat.productCount,
       totalClicks: stat.totalClicks,
-      avgPrice: Math.round(stat.avgPrice * 100) / 100
+      avgPrice: Math.round(stat.avgPrice * 100) / 100,
     })),
-    topProducts: topProducts.map(product => ({
+    topProducts: topProducts.map((product) => ({
       id: product._id,
       name: product.name,
       brand: product.brand,
       category: product.category,
       clicks: product.clickCount || 0,
-      price: product.price
-    }))
+      price: product.price,
+    })),
   };
 }
 
 async function generatePartnersReport(parameters: any) {
-  const { dateRange = '30d', partnerStatus = 'all', minRevenue = 0 } = parameters;
+  const {
+    dateRange = '30d',
+    partnerStatus = 'all',
+    minRevenue = 0,
+  } = parameters;
 
   let daysBack = 30;
   switch (dateRange) {
-    case '7d': daysBack = 7; break;
-    case '90d': daysBack = 90; break;
-    case '1y': daysBack = 365; break;
-    default: daysBack = 30;
+    case '7d':
+      daysBack = 7;
+      break;
+    case '90d':
+      daysBack = 90;
+      break;
+    case '1y':
+      daysBack = 365;
+      break;
+    default:
+      daysBack = 30;
   }
 
   const startDate = new Date();
@@ -653,16 +755,19 @@ async function generatePartnersReport(parameters: any) {
     ORDER BY revenue DESC
   `;
 
-  const partnersResult = await pool.query(partnersQuery, [startDate, minRevenue]);
+  const partnersResult = await pool.query(partnersQuery, [
+    startDate,
+    minRevenue,
+  ]);
 
   return {
     overview: {
       totalPartners: partnersResult.rows.length,
       period: dateRange,
       status: partnerStatus,
-      minRevenue: minRevenue
+      minRevenue: minRevenue,
     },
-    partners: partnersResult.rows.map(partner => ({
+    partners: partnersResult.rows.map((partner) => ({
       id: partner.id,
       name: partner.name,
       email: partner.email,
@@ -670,8 +775,8 @@ async function generatePartnersReport(parameters: any) {
       status: partner.status,
       revenue: parseFloat(partner.revenue),
       orders: parseInt(partner.orders),
-      joinDate: partner.created_at
-    }))
+      joinDate: partner.created_at,
+    })),
   };
 }
 

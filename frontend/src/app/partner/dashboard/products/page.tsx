@@ -154,270 +154,272 @@ export default function ProductManagementPage() {
               <Link href="/partner/dashboard/products/import">
                 <Upload className="h-4 w-4 mr-2" />
                 CSV Import
-            </Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/partner/dashboard/products/add">
-              <Plus className="h-4 w-4 mr-2" />
-              Produkt hinzufügen
-            </Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/partner/dashboard/products/list">
-              <Package className="h-4 w-4 mr-2" />
-              Alle Produkte
-            </Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/partner/dashboard/analytics">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Analytics
-            </Link>
-          </Button>
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/partner/dashboard/products/add">
+                <Plus className="h-4 w-4 mr-2" />
+                Produkt hinzufügen
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/partner/dashboard/products/list">
+                <Package className="h-4 w-4 mr-2" />
+                Alle Produkte
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/partner/dashboard/analytics">
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Analytics
+              </Link>
+            </Button>
+          </div>
         </div>
-      </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Gesamt Produkte
-            </CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {stats.totalProducts.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">
-                {stats.activeProducts} aktiv
-              </span>
-              {stats.inactiveProducts > 0 && (
-                <span className="text-red-600 ml-2">
-                  {stats.inactiveProducts} inaktiv
-                </span>
-              )}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Gesamtaufrufe</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {stats.totalViews.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground">Letzten 30 Tage</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Klicks</CardTitle>
-            <div className="h-4 w-4 text-muted-foreground">👆</div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {stats.totalClicks.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {stats.totalViews > 0 &&
-                `${((stats.totalClicks / stats.totalViews) * 100).toFixed(
-                  1
-                )}% CTR`}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Umsatz</CardTitle>
-            <div className="h-4 w-4 text-muted-foreground">💰</div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {formatCurrency(stats.totalRevenue)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Provisionen diesen Monat
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Imports */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Letzte Imports
-              </span>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/partner/dashboard/products/import">
-                  Alle anzeigen
-                </Link>
-              </Button>
-            </CardTitle>
-            <CardDescription>
-              Übersicht über die letzten CSV-Uploads
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="space-y-3">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                  </div>
-                ))}
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Gesamt Produkte
+              </CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {stats.totalProducts.toLocaleString()}
               </div>
-            ) : recentImports.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <FileText className="mx-auto h-8 w-8 text-gray-300 mb-2" />
-                <p className="text-sm">Noch keine Imports durchgeführt</p>
-                <Button variant="link" asChild className="mt-2">
+              <p className="text-xs text-muted-foreground">
+                <span className="text-green-600">
+                  {stats.activeProducts} aktiv
+                </span>
+                {stats.inactiveProducts > 0 && (
+                  <span className="text-red-600 ml-2">
+                    {stats.inactiveProducts} inaktiv
+                  </span>
+                )}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Gesamtaufrufe
+              </CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {stats.totalViews.toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground">Letzten 30 Tage</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Klicks</CardTitle>
+              <div className="h-4 w-4 text-muted-foreground">👆</div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {stats.totalClicks.toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {stats.totalViews > 0 &&
+                  `${((stats.totalClicks / stats.totalViews) * 100).toFixed(
+                    1
+                  )}% CTR`}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Umsatz</CardTitle>
+              <div className="h-4 w-4 text-muted-foreground">💰</div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatCurrency(stats.totalRevenue)}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Provisionen diesen Monat
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Recent Imports */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Letzte Imports
+                </span>
+                <Button variant="ghost" size="sm" asChild>
                   <Link href="/partner/dashboard/products/import">
-                    Ersten Import starten
+                    Alle anzeigen
                   </Link>
                 </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {recentImports.slice(0, 5).map((job) => (
-                  <div
-                    key={job.id}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                  >
+              </CardTitle>
+              <CardDescription>
+                Übersicht über die letzten CSV-Uploads
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : recentImports.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <FileText className="mx-auto h-8 w-8 text-gray-300 mb-2" />
+                  <p className="text-sm">Noch keine Imports durchgeführt</p>
+                  <Button variant="link" asChild className="mt-2">
+                    <Link href="/partner/dashboard/products/import">
+                      Ersten Import starten
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentImports.slice(0, 5).map((job) => (
+                    <div
+                      key={job.id}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    >
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">
+                          {job.original_filename}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {job.total_rows > 0 && (
+                            <>
+                              {job.successful_rows} erfolgreich,{' '}
+                              {job.failed_rows} Fehler
+                              <span className="mx-2">•</span>
+                            </>
+                          )}
+                          {formatDate(job.created_at)}
+                        </p>
+                      </div>
+                      <div className="ml-3">{getStatusBadge(job.status)}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions & Tips */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Schnellzugriff & Tipps
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-blue-500 text-white rounded-full p-1">
+                      <Upload className="h-3 w-3" />
+                    </div>
                     <div className="flex-1">
-                      <p className="font-medium text-sm">
-                        {job.original_filename}
+                      <p className="font-medium text-sm text-blue-900">
+                        CSV Import optimieren
                       </p>
-                      <p className="text-xs text-gray-500">
-                        {job.total_rows > 0 && (
-                          <>
-                            {job.successful_rows} erfolgreich, {job.failed_rows}{' '}
-                            Fehler
-                            <span className="mx-2">•</span>
-                          </>
-                        )}
-                        {formatDate(job.created_at)}
+                      <p className="text-xs text-blue-700 mt-1">
+                        Verwenden Sie unsere CSV-Vorlage für optimale Ergebnisse
+                      </p>
+                      <Button
+                        variant="link"
+                        size="sm"
+                        asChild
+                        className="text-blue-600 p-0 h-auto mt-1"
+                      >
+                        <Link href="/partner/dashboard/products/import">
+                          Vorlage herunterladen
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-green-500 text-white rounded-full p-1">
+                      <TrendingUp className="h-3 w-3" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm text-green-900">
+                        Performance steigern
+                      </p>
+                      <p className="text-xs text-green-700 mt-1">
+                        Hochwertige Produktbilder erhöhen die Klickrate um bis
+                        zu 40%
                       </p>
                     </div>
-                    <div className="ml-3">{getStatusBadge(job.status)}</div>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                </div>
 
-        {/* Quick Actions & Tips */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              Schnellzugriff & Tipps
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <div className="bg-blue-500 text-white rounded-full p-1">
-                    <Upload className="h-3 w-3" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm text-blue-900">
-                      CSV Import optimieren
-                    </p>
-                    <p className="text-xs text-blue-700 mt-1">
-                      Verwenden Sie unsere CSV-Vorlage für optimale Ergebnisse
-                    </p>
-                    <Button
-                      variant="link"
-                      size="sm"
-                      asChild
-                      className="text-blue-600 p-0 h-auto mt-1"
-                    >
-                      <Link href="/partner/dashboard/products/import">
-                        Vorlage herunterladen
-                      </Link>
-                    </Button>
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-amber-500 text-white rounded-full p-1">
+                      <AlertCircle className="h-3 w-3" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm text-amber-900">
+                        Qualität sichern
+                      </p>
+                      <p className="text-xs text-amber-700 mt-1">
+                        Detaillierte Produktbeschreibungen verbessern die
+                        Conversion-Rate
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <div className="bg-green-500 text-white rounded-full p-1">
-                    <TrendingUp className="h-3 w-3" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm text-green-900">
-                      Performance steigern
-                    </p>
-                    <p className="text-xs text-green-700 mt-1">
-                      Hochwertige Produktbilder erhöhen die Klickrate um bis zu
-                      40%
-                    </p>
-                  </div>
+              <div className="pt-3 border-t">
+                <h4 className="font-medium text-sm mb-2">Nützliche Links</h4>
+                <div className="space-y-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                    className="w-full justify-start"
+                  >
+                    <Link href="/partner/dashboard/help">
+                      📖 Hilfe & Dokumentation
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                    className="w-full justify-start"
+                  >
+                    <Link href="/partner/dashboard/support">
+                      💬 Support kontaktieren
+                    </Link>
+                  </Button>
                 </div>
               </div>
-
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <div className="bg-amber-500 text-white rounded-full p-1">
-                    <AlertCircle className="h-3 w-3" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm text-amber-900">
-                      Qualität sichern
-                    </p>
-                    <p className="text-xs text-amber-700 mt-1">
-                      Detaillierte Produktbeschreibungen verbessern die
-                      Conversion-Rate
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t">
-              <h4 className="font-medium text-sm mb-2">Nützliche Links</h4>
-              <div className="space-y-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  asChild
-                  className="w-full justify-start"
-                >
-                  <Link href="/partner/dashboard/help">
-                    📖 Hilfe & Dokumentation
-                  </Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  asChild
-                  className="w-full justify-start"
-                >
-                  <Link href="/partner/dashboard/support">
-                    💬 Support kontaktieren
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </PartnerLayout>
   );

@@ -7,17 +7,16 @@ import {
   ProductPerformanceCard,
   RecommendationTiersCard,
   RevenueCard,
-  StatsCard,
 } from '../../../components/partner/AnalyticsCards';
 import {
   AdvancedChart,
-  EnhancedMetricCard,
   ComparisonChart,
+  EnhancedMetricCard,
+  RealTimeMetrics,
   TrendAnalysis,
-  RealTimeMetrics
 } from '../../../components/partner/analytics/AdvancedCharts';
-import MobileAnalytics from '../../../components/partner/mobile/MobileAnalytics';
 import PartnerLayout from '../../../components/partner/layout/PartnerLayout';
+import MobileAnalytics from '../../../components/partner/mobile/MobileAnalytics';
 import { useAuth } from '../../../context/AuthContext';
 import usePartnerAnalytics from '../../../hooks/usePartnerAnalytics';
 
@@ -29,23 +28,44 @@ interface QuickActionProps {
   onClick: () => void;
 }
 
-function QuickActionCard({ title, description, icon, color, onClick }: QuickActionProps) {
+function QuickActionCard({
+  title,
+  description,
+  icon,
+  color,
+  onClick,
+}: QuickActionProps) {
   const colorClasses = {
     blue: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200',
-    green: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200',
-    purple: 'bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200',
-    yellow: 'bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border-yellow-200',
+    green:
+      'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200',
+    purple:
+      'bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200',
+    yellow:
+      'bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border-yellow-200',
   };
 
   return (
     <button
       onClick={onClick}
-      className={`p-4 rounded-xl border-2 transition-all duration-200 hover:scale-105 hover:shadow-lg w-full text-left ${colorClasses[color as keyof typeof colorClasses]}`}
+      className={`p-4 rounded-xl border-2 transition-all duration-200 hover:scale-105 hover:shadow-lg w-full text-left ${
+        colorClasses[color as keyof typeof colorClasses]
+      }`}
     >
       <div className="flex items-center justify-between mb-2">
         <span className="text-2xl">{icon}</span>
-        <svg className="w-5 h-5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        <svg
+          className="w-5 h-5 opacity-60"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5l7 7-7 7"
+          />
         </svg>
       </div>
       <h3 className="font-semibold text-sm mb-1">{title}</h3>
@@ -62,7 +82,13 @@ interface PerformanceMetricProps {
   icon: string;
 }
 
-function PerformanceMetric({ label, value, change, changeType, icon }: PerformanceMetricProps) {
+function PerformanceMetric({
+  label,
+  value,
+  change,
+  changeType,
+  icon,
+}: PerformanceMetricProps) {
   const changeColors = {
     positive: 'text-emerald-600 bg-emerald-50',
     negative: 'text-red-600 bg-red-50',
@@ -73,7 +99,9 @@ function PerformanceMetric({ label, value, change, changeType, icon }: Performan
     <div className="bg-white p-6 rounded-xl border border-gray-100 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-4">
         <span className="text-2xl">{icon}</span>
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${changeColors[changeType]}`}>
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${changeColors[changeType]}`}
+        >
           {change}
         </span>
       </div>
@@ -167,7 +195,7 @@ export default function PartnerDashboard() {
         date: item.name,
         value: item.value,
       })),
-      engagement: trendData.map(item => ({
+      engagement: trendData.map((item) => ({
         date: item.date,
         views: item.views,
         clicks: item.clicks,
@@ -212,29 +240,29 @@ export default function PartnerDashboard() {
       description: 'Add new products via CSV',
       icon: '📤',
       color: 'blue',
-      onClick: () => router.push('/partner/dashboard/products/upload')
+      onClick: () => router.push('/partner/dashboard/products/upload'),
     },
     {
       title: 'View Analytics',
       description: 'Detailed performance data',
       icon: '📊',
       color: 'green',
-      onClick: () => router.push('/partner/dashboard/analytics')
+      onClick: () => router.push('/partner/dashboard/analytics'),
     },
     {
       title: 'Export Reports',
       description: 'Download business reports',
       icon: '📋',
       color: 'purple',
-      onClick: () => router.push('/partner/dashboard/analytics/exports')
+      onClick: () => router.push('/partner/dashboard/analytics/exports'),
     },
     {
       title: 'Upgrade Plan',
       description: 'Unlock more features',
       icon: '⚡',
       color: 'yellow',
-      onClick: () => router.push('/partner/billing')
-    }
+      onClick: () => router.push('/partner/billing'),
+    },
   ];
 
   return (
@@ -269,8 +297,18 @@ export default function PartnerDashboard() {
               onClick={refreshData}
               className="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg text-white transition-all duration-200 flex items-center"
             >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
               Refresh Data
             </button>
@@ -285,9 +323,11 @@ export default function PartnerDashboard() {
                 <span className="text-2xl">⚠️</span>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800 mb-1">Analytics Error</h3>
+                <h3 className="text-sm font-medium text-red-800 mb-1">
+                  Analytics Error
+                </h3>
                 <p className="text-sm text-red-600">{analyticsError}</p>
-                <button 
+                <button
                   onClick={refreshData}
                   className="mt-3 text-sm text-red-600 hover:text-red-500 underline"
                 >
@@ -300,7 +340,9 @@ export default function PartnerDashboard() {
 
         {/* Quick Actions */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Quick Actions
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {quickActions.map((action, index) => (
               <QuickActionCard key={index} {...action} />
@@ -328,7 +370,9 @@ export default function PartnerDashboard() {
             <div className="hidden lg:block">
               {/* Key Performance Metrics */}
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Key Performance Metrics</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Key Performance Metrics
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   <PerformanceMetric
                     label="Total Products"
@@ -353,7 +397,9 @@ export default function PartnerDashboard() {
                   />
                   <PerformanceMetric
                     label="Conversion Rate"
-                    value={`${analytics.overview.averageConversionRate.toFixed(1)}%`}
+                    value={`${analytics.overview.averageConversionRate.toFixed(
+                      1
+                    )}%`}
                     change="No change"
                     changeType="neutral"
                     icon="🎯"
@@ -361,230 +407,285 @@ export default function PartnerDashboard() {
                 </div>
               </div>
 
-            {/* Revenue Overview */}
-            {revenueData && (
+              {/* Revenue Overview */}
+              {revenueData && (
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                    Revenue Overview
+                  </h2>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2">
+                      <RevenueCard
+                        title="Monthly Revenue"
+                        amount={analytics.overview.monthlyRevenue}
+                        subtitle="Current month performance"
+                        trend={{ value: 12.5, period: 'vs last month' }}
+                      />
+                    </div>
+                    <div className="space-y-4">
+                      <div className="bg-white p-6 rounded-xl border border-gray-100">
+                        <h3 className="font-semibold text-gray-900 mb-2">
+                          Commission Earned
+                        </h3>
+                        <p className="text-2xl font-bold text-emerald-600">
+                          €
+                          {revenueData.revenueByProduct
+                            .reduce((sum, p) => sum + p.commission, 0)
+                            .toLocaleString()}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          5% commission rate
+                        </p>
+                      </div>
+                      <div className="bg-white p-6 rounded-xl border border-gray-100">
+                        <h3 className="font-semibold text-gray-900 mb-2">
+                          Top Category
+                        </h3>
+                        <p className="text-lg font-bold text-blue-600">
+                          {revenueData.revenueByCategory[0]?.category || 'N/A'}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          €
+                          {(
+                            revenueData.revenueByCategory[0]?.revenue || 0
+                          ).toLocaleString()}{' '}
+                          revenue
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Performance Insights */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ProductPerformanceCard
+                  products={analytics.performance.topPerformingProducts}
+                />
+                <RecommendationTiersCard
+                  tiers={analytics.recommendations.recommendationsByTier}
+                  totalRecommendations={
+                    analytics.recommendations.totalRecommendations
+                  }
+                  avgScore={analytics.recommendations.avgScore}
+                />
+              </div>
+
+              {/* Market Insights */}
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Revenue Overview</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Market Insights
+                </h2>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2">
-                    <RevenueCard
-                      title="Monthly Revenue"
-                      amount={analytics.overview.monthlyRevenue}
-                      subtitle="Current month performance"
-                      trend={{ value: 12.5, period: 'vs last month' }}
-                    />
-                  </div>
-                  <div className="space-y-4">
-                    <div className="bg-white p-6 rounded-xl border border-gray-100">
-                      <h3 className="font-semibold text-gray-900 mb-2">Commission Earned</h3>
-                      <p className="text-2xl font-bold text-emerald-600">
-                        €{revenueData.revenueByProduct.reduce((sum, p) => sum + p.commission, 0).toLocaleString()}
-                      </p>
-                      <p className="text-sm text-gray-500">5% commission rate</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-xl border border-gray-100">
-                      <h3 className="font-semibold text-gray-900 mb-2">Top Category</h3>
-                      <p className="text-lg font-bold text-blue-600">
-                        {revenueData.revenueByCategory[0]?.category || 'N/A'}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        €{(revenueData.revenueByCategory[0]?.revenue || 0).toLocaleString()} revenue
-                      </p>
-                    </div>
+                  <InsightsCard
+                    title="Most Searched Problems"
+                    data={analytics.insights.mostSearchedProblems.map((p) => ({
+                      name: p.problem,
+                      value: p.count,
+                      label: 'searches',
+                    }))}
+                    color="blue"
+                  />
+                  <InsightsCard
+                    title="Top Vehicle Brands"
+                    data={analytics.insights.topVehicleBrands.map((b) => ({
+                      name: b.brand,
+                      value: b.count,
+                      label: 'requests',
+                    }))}
+                    color="green"
+                  />
+                  <InsightsCard
+                    title="Seasonal Trends"
+                    data={analytics.insights.seasonalTrends.map((s) => ({
+                      name: s.season,
+                      value: s.popularity,
+                      label: '%',
+                    }))}
+                    color="purple"
+                  />
+                </div>
+              </div>
+
+              {/* Recent Activity Table */}
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Recent Activity
+                  </h2>
+                  <button className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors">
+                    View all activity →
+                  </button>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Views
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Clicks
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Revenue
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Conversion Rate
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {analytics.performance.recentActivity.map(
+                          (day, index) => {
+                            const conversionRate =
+                              day.views > 0
+                                ? (day.clicks / day.views) * 100
+                                : 0;
+                            return (
+                              <tr
+                                key={index}
+                                className="hover:bg-gray-50 transition-colors"
+                              >
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {new Date(day.date).toLocaleDateString()}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  {day.views.toLocaleString()}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  {day.clicks.toLocaleString()}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                  €{day.revenue.toLocaleString()}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  <span
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      conversionRate > 5
+                                        ? 'bg-emerald-100 text-emerald-800'
+                                        : conversionRate > 2
+                                        ? 'bg-yellow-100 text-yellow-800'
+                                        : 'bg-red-100 text-red-800'
+                                    }`}
+                                  >
+                                    {conversionRate.toFixed(1)}%
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          }
+                        )}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* Performance Insights */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <ProductPerformanceCard
-                products={analytics.performance.topPerformingProducts}
-              />
-              <RecommendationTiersCard
-                tiers={analytics.recommendations.recommendationsByTier}
-                totalRecommendations={analytics.recommendations.totalRecommendations}
-                avgScore={analytics.recommendations.avgScore}
-              />
-            </div>
+              {/* Enhanced Analytics Section */}
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Enhanced Analytics
+                </h2>
 
-            {/* Market Insights */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Market Insights</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <InsightsCard
-                  title="Most Searched Problems"
-                  data={analytics.insights.mostSearchedProblems.map((p) => ({
-                    name: p.problem,
-                    value: p.count,
-                    label: 'searches',
-                  }))}
-                  color="blue"
-                />
-                <InsightsCard
-                  title="Top Vehicle Brands"
-                  data={analytics.insights.topVehicleBrands.map((b) => ({
-                    name: b.brand,
-                    value: b.count,
-                    label: 'requests',
-                  }))}
-                  color="green"
-                />
-                <InsightsCard
-                  title="Seasonal Trends"
-                  data={analytics.insights.seasonalTrends.map((s) => ({
-                    name: s.season,
-                    value: s.popularity,
-                    label: '%',
-                  }))}
-                  color="purple"
-                />
-              </div>
-            </div>
+                {/* Real-time Metrics */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    Real-time Metrics
+                  </h3>
+                  <RealTimeMetrics data={realTimeData} />
+                </div>
 
-            {/* Recent Activity Table */}
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
-                <button className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors">
-                  View all activity →
-                </button>
-              </div>
-              <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Date
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Views
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Clicks
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Revenue
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Conversion Rate
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {analytics.performance.recentActivity.map((day, index) => {
-                        const conversionRate = day.views > 0 ? (day.clicks / day.views) * 100 : 0;
-                        return (
-                          <tr key={index} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              {new Date(day.date).toLocaleDateString()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {day.views.toLocaleString()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {day.clicks.toLocaleString()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                              €{day.revenue.toLocaleString()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                conversionRate > 5 ? 'bg-emerald-100 text-emerald-800' :
-                                conversionRate > 2 ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-red-100 text-red-800'
-                              }`}>
-                                {conversionRate.toFixed(1)}%
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                {/* Enhanced Metric Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                  <EnhancedMetricCard
+                    title="Monthly Revenue"
+                    value={`€${analytics.overview.monthlyRevenue.toLocaleString()}`}
+                    change={{
+                      value: 12.5,
+                      period: 'vs last month',
+                      type: 'increase',
+                    }}
+                    icon="💰"
+                    trend={miniTrendData}
+                    color="green"
+                  />
+                  <EnhancedMetricCard
+                    title="Product Views"
+                    value={analytics.overview.totalViews.toLocaleString()}
+                    change={{
+                      value: 8.2,
+                      period: 'vs last month',
+                      type: 'increase',
+                    }}
+                    icon="👁️"
+                    trend={miniTrendData}
+                    color="blue"
+                  />
+                  <EnhancedMetricCard
+                    title="Click Rate"
+                    value={`${analytics.overview.averageConversionRate.toFixed(
+                      1
+                    )}%`}
+                    change={{
+                      value: 2.1,
+                      period: 'vs last month',
+                      type: 'decrease',
+                    }}
+                    icon="👆"
+                    trend={miniTrendData}
+                    color="purple"
+                  />
+                  <EnhancedMetricCard
+                    title="Active Products"
+                    value={analytics.overview.totalProducts.toString()}
+                    change={{
+                      value: 5.5,
+                      period: 'vs last month',
+                      type: 'increase',
+                    }}
+                    icon="📦"
+                    trend={miniTrendData}
+                    color="yellow"
+                  />
+                </div>
+
+                {/* Advanced Charts Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                  <AdvancedChart
+                    data={revenueChartData}
+                    title="Monthly Revenue Trend"
+                    type="area"
+                    height={350}
+                    colorScheme="success"
+                  />
+                  <AdvancedChart
+                    data={productPerformanceData}
+                    title="Top Product Categories"
+                    type="pie"
+                    height={350}
+                    colorScheme="primary"
+                  />
+                </div>
+
+                {/* Comparison and Trend Analysis */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+                  <ComparisonChart
+                    data={comparisonData}
+                    title="Performance Comparison (This Month vs Last Month)"
+                    height={300}
+                  />
+                  <TrendAnalysis
+                    data={trendData}
+                    title="7-Day Performance Trends"
+                    height={300}
+                  />
                 </div>
               </div>
-            </div>
-
-            {/* Enhanced Analytics Section */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Enhanced Analytics</h2>
-              
-              {/* Real-time Metrics */}
-              <div className="mb-8">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Real-time Metrics</h3>
-                <RealTimeMetrics data={realTimeData} />
-              </div>
-
-              {/* Enhanced Metric Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <EnhancedMetricCard
-                  title="Monthly Revenue"
-                  value={`€${analytics.overview.monthlyRevenue.toLocaleString()}`}
-                  change={{ value: 12.5, period: 'vs last month', type: 'increase' }}
-                  icon="💰"
-                  trend={miniTrendData}
-                  color="green"
-                />
-                <EnhancedMetricCard
-                  title="Product Views"
-                  value={analytics.overview.totalViews.toLocaleString()}
-                  change={{ value: 8.2, period: 'vs last month', type: 'increase' }}
-                  icon="👁️"
-                  trend={miniTrendData}
-                  color="blue"
-                />
-                <EnhancedMetricCard
-                  title="Click Rate"
-                  value={`${analytics.overview.averageConversionRate.toFixed(1)}%`}
-                  change={{ value: 2.1, period: 'vs last month', type: 'decrease' }}
-                  icon="👆"
-                  trend={miniTrendData}
-                  color="purple"
-                />
-                <EnhancedMetricCard
-                  title="Active Products"
-                  value={analytics.overview.totalProducts.toString()}
-                  change={{ value: 5.5, period: 'vs last month', type: 'increase' }}
-                  icon="📦"
-                  trend={miniTrendData}
-                  color="yellow"
-                />
-              </div>
-
-              {/* Advanced Charts Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <AdvancedChart
-                  data={revenueChartData}
-                  title="Monthly Revenue Trend"
-                  type="area"
-                  height={350}
-                  colorScheme="success"
-                />
-                <AdvancedChart
-                  data={productPerformanceData}
-                  title="Top Product Categories"
-                  type="pie"
-                  height={350}
-                  colorScheme="primary"
-                />
-              </div>
-
-              {/* Comparison and Trend Analysis */}
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
-                <ComparisonChart
-                  data={comparisonData}
-                  title="Performance Comparison (This Month vs Last Month)"
-                  height={300}
-                />
-                <TrendAnalysis
-                  data={trendData}
-                  title="7-Day Performance Trends"
-                  height={300}
-                />
-              </div>
-            </div>
             </div>
           </>
         )}

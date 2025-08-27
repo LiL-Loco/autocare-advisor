@@ -34,8 +34,8 @@ export default function OfflinePage() {
   }, [router]);
 
   const handleRetry = () => {
-    setRetryCount(prev => prev + 1);
-    
+    setRetryCount((prev) => prev + 1);
+
     // Try to reload the page
     if (navigator.onLine) {
       router.push('/partner/dashboard');
@@ -71,33 +71,38 @@ export default function OfflinePage() {
         </div>
 
         {/* Status indicator */}
-        <div className={`inline-flex items-center px-4 py-2 rounded-full mb-6 transition-all duration-300 ${
-          isOnline 
-            ? 'bg-green-500/20 border border-green-400/30 text-green-100' 
-            : 'bg-red-500/20 border border-red-400/30 text-red-100'
-        }`}>
-          <div className={`w-2 h-2 rounded-full mr-2 animate-pulse ${
-            isOnline ? 'bg-green-400' : 'bg-red-400'
-          }`}></div>
-          {isOnline ? 'Connection Restored' : 'You\'re Offline'}
+        <div
+          className={`inline-flex items-center px-4 py-2 rounded-full mb-6 transition-all duration-300 ${
+            isOnline
+              ? 'bg-green-500/20 border border-green-400/30 text-green-100'
+              : 'bg-red-500/20 border border-red-400/30 text-red-100'
+          }`}
+        >
+          <div
+            className={`w-2 h-2 rounded-full mr-2 animate-pulse ${
+              isOnline ? 'bg-green-400' : 'bg-red-400'
+            }`}
+          ></div>
+          {isOnline ? 'Connection Restored' : "You're Offline"}
         </div>
 
         {/* Main content */}
         <h1 className="text-4xl font-bold text-white mb-4">
           {isOnline ? 'Back Online!' : 'No Connection'}
         </h1>
-        
+
         <p className="text-blue-100 text-lg mb-8 leading-relaxed">
-          {isOnline 
+          {isOnline
             ? 'Great! Your connection has been restored. Redirecting you to the dashboard...'
-            : 'Don\'t worry, your AutoCare Partner Portal works offline too! You can still view cached data and your dashboard.'
-          }
+            : "Don't worry, your AutoCare Partner Portal works offline too! You can still view cached data and your dashboard."}
         </p>
 
         {/* Offline features */}
         {!isOnline && (
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 mb-8">
-            <h3 className="text-lg font-semibold text-white mb-4">What you can do offline:</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              What you can do offline:
+            </h3>
             <div className="space-y-3 text-sm text-blue-100">
               <div className="flex items-center">
                 <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>

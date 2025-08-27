@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Types for API Management
 interface APIKey {
@@ -59,33 +59,35 @@ const APIManagementInterface: React.FC = () => {
       method: 'GET',
       description: 'Retrieve all products for the partner',
       rateLimit: '1000/hour',
-      authentication: true
+      authentication: true,
     },
     {
       path: '/api/v1/products',
       method: 'POST',
       description: 'Create a new product',
       rateLimit: '100/hour',
-      authentication: true
+      authentication: true,
     },
     {
       path: '/api/v1/analytics/performance',
       method: 'GET',
       description: 'Get performance analytics data',
       rateLimit: '500/hour',
-      authentication: true
+      authentication: true,
     },
     {
       path: '/api/v1/orders',
       method: 'GET',
       description: 'Retrieve order information',
       rateLimit: '2000/hour',
-      authentication: true
+      authentication: true,
     },
   ]);
-  
+
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'keys' | 'webhooks' | 'endpoints' | 'integrations'>('keys');
+  const [activeTab, setActiveTab] = useState<
+    'keys' | 'webhooks' | 'endpoints' | 'integrations'
+  >('keys');
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [showWebhookModal, setShowWebhookModal] = useState(false);
 
@@ -101,7 +103,7 @@ const APIManagementInterface: React.FC = () => {
         createdAt: '2024-01-15T10:30:00Z',
         lastUsed: '2024-08-26T14:22:00Z',
         usage: { total: 45230, thisMonth: 8520, limit: 10000 },
-        environment: 'production'
+        environment: 'production',
       },
       {
         id: 'key-2',
@@ -112,8 +114,8 @@ const APIManagementInterface: React.FC = () => {
         createdAt: '2024-02-10T09:15:00Z',
         lastUsed: '2024-08-25T16:45:00Z',
         usage: { total: 12450, thisMonth: 2340, limit: 5000 },
-        environment: 'development'
-      }
+        environment: 'development',
+      },
     ];
 
     const mockWebhooks: Webhook[] = [
@@ -126,7 +128,7 @@ const APIManagementInterface: React.FC = () => {
         secret: 'whsec_7f8d9e2a1b3c4d5e6f7g8h9i0j1k2l3m',
         lastTriggered: '2024-08-26T12:30:00Z',
         successRate: 98.5,
-        retryCount: 3
+        retryCount: 3,
       },
       {
         id: 'wh-2',
@@ -137,8 +139,8 @@ const APIManagementInterface: React.FC = () => {
         secret: 'whsec_1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p',
         lastTriggered: '2024-08-25T18:15:00Z',
         successRate: 95.2,
-        retryCount: 5
-      }
+        retryCount: 5,
+      },
     ];
 
     const mockIntegrations: Integration[] = [
@@ -149,7 +151,7 @@ const APIManagementInterface: React.FC = () => {
         status: 'connected',
         lastSync: '2024-08-26T14:00:00Z',
         icon: '🛒',
-        description: 'Sync products and orders with your Shopify store'
+        description: 'Sync products and orders with your Shopify store',
       },
       {
         id: 'int-2',
@@ -158,7 +160,7 @@ const APIManagementInterface: React.FC = () => {
         status: 'connected',
         lastSync: '2024-08-26T13:30:00Z',
         icon: '📊',
-        description: 'Track performance metrics and user behavior'
+        description: 'Track performance metrics and user behavior',
       },
       {
         id: 'int-3',
@@ -167,8 +169,8 @@ const APIManagementInterface: React.FC = () => {
         status: 'disconnected',
         lastSync: '2024-08-20T10:15:00Z',
         icon: '📧',
-        description: 'Automated email marketing and customer communication'
-      }
+        description: 'Automated email marketing and customer communication',
+      },
     ];
 
     setTimeout(() => {
@@ -213,7 +215,8 @@ const APIManagementInterface: React.FC = () => {
     // In a real app, show a toast notification
   };
 
-  const formatDate = (dateStr: string) => new Date(dateStr).toLocaleString('de-DE');
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleString('de-DE');
 
   if (loading) {
     return (
@@ -237,7 +240,7 @@ const APIManagementInterface: React.FC = () => {
           <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
             View Documentation
           </button>
-          <button 
+          <button
             onClick={() => setShowKeyModal(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
@@ -253,8 +256,12 @@ const APIManagementInterface: React.FC = () => {
             { key: 'keys', label: 'API Keys', count: apiKeys.length },
             { key: 'webhooks', label: 'Webhooks', count: webhooks.length },
             { key: 'endpoints', label: 'Endpoints', count: endpoints.length },
-            { key: 'integrations', label: 'Integrations', count: integrations.length }
-          ].map(tab => (
+            {
+              key: 'integrations',
+              label: 'Integrations',
+              count: integrations.length,
+            },
+          ].map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as any)}
@@ -276,23 +283,38 @@ const APIManagementInterface: React.FC = () => {
       {/* API Keys Tab */}
       {activeTab === 'keys' && (
         <div className="space-y-6">
-          {apiKeys.map(key => (
-            <div key={key.id} className="bg-white rounded-lg border border-gray-200 p-6">
+          {apiKeys.map((key) => (
+            <div
+              key={key.id}
+              className="bg-white rounded-lg border border-gray-200 p-6"
+            >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center">
-                    <h3 className="text-lg font-medium text-gray-900">{key.name}</h3>
-                    <span className={`ml-3 inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(key.status)}`}>
+                    <h3 className="text-lg font-medium text-gray-900">
+                      {key.name}
+                    </h3>
+                    <span
+                      className={`ml-3 inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(
+                        key.status
+                      )}`}
+                    >
                       {key.status}
                     </span>
-                    <span className={`ml-2 inline-flex px-2 py-1 text-xs font-medium rounded-full ${getEnvironmentColor(key.environment)}`}>
+                    <span
+                      className={`ml-2 inline-flex px-2 py-1 text-xs font-medium rounded-full ${getEnvironmentColor(
+                        key.environment
+                      )}`}
+                    >
                       {key.environment}
                     </span>
                   </div>
-                  
+
                   <div className="mt-4 space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        API Key
+                      </label>
                       <div className="flex items-center">
                         <code className="flex-1 bg-gray-50 px-3 py-2 rounded border text-sm font-mono">
                           {key.key.substring(0, 20)}...
@@ -305,48 +327,71 @@ const APIManagementInterface: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       <div>
                         <span className="text-gray-500">Created:</span>
-                        <span className="ml-1 font-medium">{formatDate(key.createdAt)}</span>
+                        <span className="ml-1 font-medium">
+                          {formatDate(key.createdAt)}
+                        </span>
                       </div>
                       <div>
                         <span className="text-gray-500">Last Used:</span>
-                        <span className="ml-1 font-medium">{formatDate(key.lastUsed)}</span>
+                        <span className="ml-1 font-medium">
+                          {formatDate(key.lastUsed)}
+                        </span>
                       </div>
                       <div>
                         <span className="text-gray-500">Usage This Month:</span>
-                        <span className="ml-1 font-medium">{key.usage.thisMonth.toLocaleString()} / {key.usage.limit.toLocaleString()}</span>
+                        <span className="ml-1 font-medium">
+                          {key.usage.thisMonth.toLocaleString()} /{' '}
+                          {key.usage.limit.toLocaleString()}
+                        </span>
                       </div>
                     </div>
-                    
+
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Permissions</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Permissions
+                      </label>
                       <div className="flex flex-wrap gap-2">
-                        {key.permissions.map(permission => (
-                          <span key={permission} className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                        {key.permissions.map((permission) => (
+                          <span
+                            key={permission}
+                            className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded"
+                          >
                             {permission}
                           </span>
                         ))}
                       </div>
                     </div>
-                    
+
                     <div>
                       <div className="flex items-center justify-between text-sm mb-1">
                         <span>Usage Progress</span>
-                        <span>{((key.usage.thisMonth / key.usage.limit) * 100).toFixed(1)}%</span>
+                        <span>
+                          {(
+                            (key.usage.thisMonth / key.usage.limit) *
+                            100
+                          ).toFixed(1)}
+                          %
+                        </span>
                       </div>
                       <div className="bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-blue-600 h-2 rounded-full transition-all"
-                          style={{ width: `${Math.min((key.usage.thisMonth / key.usage.limit) * 100, 100)}%` }}
+                          style={{
+                            width: `${Math.min(
+                              (key.usage.thisMonth / key.usage.limit) * 100,
+                              100
+                            )}%`,
+                          }}
                         ></div>
                       </div>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="ml-6 flex flex-col space-y-2">
                   <button className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">
                     Edit
@@ -368,56 +413,78 @@ const APIManagementInterface: React.FC = () => {
       {activeTab === 'webhooks' && (
         <div className="space-y-6">
           <div className="flex justify-end">
-            <button 
+            <button
               onClick={() => setShowWebhookModal(true)}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Add Webhook
             </button>
           </div>
-          
-          {webhooks.map(webhook => (
-            <div key={webhook.id} className="bg-white rounded-lg border border-gray-200 p-6">
+
+          {webhooks.map((webhook) => (
+            <div
+              key={webhook.id}
+              className="bg-white rounded-lg border border-gray-200 p-6"
+            >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center">
-                    <h3 className="text-lg font-medium text-gray-900">{webhook.name}</h3>
-                    <span className={`ml-3 inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(webhook.status)}`}>
+                    <h3 className="text-lg font-medium text-gray-900">
+                      {webhook.name}
+                    </h3>
+                    <span
+                      className={`ml-3 inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(
+                        webhook.status
+                      )}`}
+                    >
                       {webhook.status}
                     </span>
                   </div>
-                  
+
                   <div className="mt-4 space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Endpoint URL</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Endpoint URL
+                      </label>
                       <code className="block bg-gray-50 px-3 py-2 rounded border text-sm font-mono">
                         {webhook.url}
                       </code>
                     </div>
-                    
+
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Events</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Events
+                      </label>
                       <div className="flex flex-wrap gap-2">
-                        {webhook.events.map(event => (
-                          <span key={event} className="inline-flex px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded">
+                        {webhook.events.map((event) => (
+                          <span
+                            key={event}
+                            className="inline-flex px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded"
+                          >
                             {event}
                           </span>
                         ))}
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                       <div>
                         <span className="text-gray-500">Last Triggered:</span>
-                        <span className="block font-medium">{formatDate(webhook.lastTriggered)}</span>
+                        <span className="block font-medium">
+                          {formatDate(webhook.lastTriggered)}
+                        </span>
                       </div>
                       <div>
                         <span className="text-gray-500">Success Rate:</span>
-                        <span className="block font-medium text-green-600">{webhook.successRate}%</span>
+                        <span className="block font-medium text-green-600">
+                          {webhook.successRate}%
+                        </span>
                       </div>
                       <div>
                         <span className="text-gray-500">Max Retries:</span>
-                        <span className="block font-medium">{webhook.retryCount}</span>
+                        <span className="block font-medium">
+                          {webhook.retryCount}
+                        </span>
                       </div>
                       <div>
                         <span className="text-gray-500">Secret:</span>
@@ -428,7 +495,7 @@ const APIManagementInterface: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="ml-6 flex flex-col space-y-2">
                   <button className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors">
                     Test
@@ -450,7 +517,9 @@ const APIManagementInterface: React.FC = () => {
       {activeTab === 'endpoints' && (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Available API Endpoints</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Available API Endpoints
+            </h2>
           </div>
           <div className="divide-y divide-gray-200">
             {endpoints.map((endpoint, index) => (
@@ -458,15 +527,22 @@ const APIManagementInterface: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center">
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded ${
-                        endpoint.method === 'GET' ? 'bg-green-100 text-green-800' :
-                        endpoint.method === 'POST' ? 'bg-blue-100 text-blue-800' :
-                        endpoint.method === 'PUT' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-medium rounded ${
+                          endpoint.method === 'GET'
+                            ? 'bg-green-100 text-green-800'
+                            : endpoint.method === 'POST'
+                            ? 'bg-blue-100 text-blue-800'
+                            : endpoint.method === 'PUT'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
                         {endpoint.method}
                       </span>
-                      <code className="ml-3 text-lg font-mono">{endpoint.path}</code>
+                      <code className="ml-3 text-lg font-mono">
+                        {endpoint.path}
+                      </code>
                     </div>
                     <p className="mt-2 text-gray-600">{endpoint.description}</p>
                     <div className="mt-3 flex items-center space-x-6 text-sm text-gray-500">
@@ -474,15 +550,35 @@ const APIManagementInterface: React.FC = () => {
                       <span className="flex items-center">
                         {endpoint.authentication ? (
                           <>
-                            <svg className="w-4 h-4 mr-1 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            <svg
+                              className="w-4 h-4 mr-1 text-green-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                              />
                             </svg>
                             Authentication Required
                           </>
                         ) : (
                           <>
-                            <svg className="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                            <svg
+                              className="w-4 h-4 mr-1 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+                              />
                             </svg>
                             Public Endpoint
                           </>
@@ -503,36 +599,53 @@ const APIManagementInterface: React.FC = () => {
       {/* Integrations Tab */}
       {activeTab === 'integrations' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {integrations.map(integration => (
-            <div key={integration.id} className="bg-white rounded-lg border border-gray-200 p-6">
+          {integrations.map((integration) => (
+            <div
+              key={integration.id}
+              className="bg-white rounded-lg border border-gray-200 p-6"
+            >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
                   <span className="text-2xl mr-3">{integration.icon}</span>
-                  <h3 className="text-lg font-medium text-gray-900">{integration.name}</h3>
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {integration.name}
+                  </h3>
                 </div>
-                <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(integration.status)}`}>
+                <span
+                  className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(
+                    integration.status
+                  )}`}
+                >
                   {integration.status}
                 </span>
               </div>
-              
-              <p className="text-sm text-gray-600 mb-4">{integration.description}</p>
-              
+
+              <p className="text-sm text-gray-600 mb-4">
+                {integration.description}
+              </p>
+
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Type:</span>
-                  <span className="font-medium capitalize">{integration.type}</span>
+                  <span className="font-medium capitalize">
+                    {integration.type}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Last Sync:</span>
-                  <span className="font-medium">{formatDate(integration.lastSync)}</span>
+                  <span className="font-medium">
+                    {formatDate(integration.lastSync)}
+                  </span>
                 </div>
               </div>
-              
-              <button className={`w-full mt-4 px-4 py-2 rounded-lg transition-colors ${
-                integration.status === 'connected'
-                  ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}>
+
+              <button
+                className={`w-full mt-4 px-4 py-2 rounded-lg transition-colors ${
+                  integration.status === 'connected'
+                    ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
                 {integration.status === 'connected' ? 'Disconnect' : 'Connect'}
               </button>
             </div>
@@ -545,20 +658,39 @@ const APIManagementInterface: React.FC = () => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Create API Key</h3>
+              <h3 className="text-lg font-bold text-gray-900">
+                Create API Key
+              </h3>
               <button onClick={() => setShowKeyModal(false)}>
-                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Key Name</label>
-                <input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Key Name
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Environment</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Environment
+                </label>
                 <select className="w-full px-3 py-2 border border-gray-300 rounded-lg">
                   <option value="development">Development</option>
                   <option value="staging">Staging</option>
@@ -566,11 +698,21 @@ const APIManagementInterface: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Permissions</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Permissions
+                </label>
                 <div className="space-y-2">
-                  {['read:products', 'write:products', 'read:analytics', 'read:orders'].map(perm => (
+                  {[
+                    'read:products',
+                    'write:products',
+                    'read:analytics',
+                    'read:orders',
+                  ].map((perm) => (
                     <label key={perm} className="flex items-center">
-                      <input type="checkbox" className="rounded border-gray-300" />
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300"
+                      />
                       <span className="ml-2 text-sm">{perm}</span>
                     </label>
                   ))}

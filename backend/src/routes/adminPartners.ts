@@ -1,19 +1,26 @@
 import express from 'express';
-import { requireAdmin } from '../middleware/adminAuth';
-import logger from '../utils/logger';
-import pool from '../database/postgres';
 import { initializeDatabase } from '../database/mongodb';
+import pool from '../database/postgres';
+import { requireAdmin } from '../middleware/adminAuth';
 import Product from '../models/Product';
+import logger from '../utils/logger';
 
 const router = express.Router();
 
 // Get All Partners
 router.get('/', requireAdmin, async (req, res) => {
   try {
-    const { page = 1, limit = 10, search, status, sortBy = 'created_at', sortOrder = 'DESC' } = req.query;
-    
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      status,
+      sortBy = 'created_at',
+      sortOrder = 'DESC',
+    } = req.query;
+
     const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
-    
+
     let whereClause = "WHERE role = 'partner'";
     const queryParams = [];
     let paramCounter = 1;
@@ -33,8 +40,16 @@ router.get('/', requireAdmin, async (req, res) => {
     }
 
     // Validate sort column
-    const validSortColumns = ['name', 'email', 'company', 'created_at', 'last_login'];
-    const sortColumn = validSortColumns.includes(sortBy as string) ? sortBy : 'created_at';
+    const validSortColumns = [
+      'name',
+      'email',
+      'company',
+      'created_at',
+      'last_login',
+    ];
+    const sortColumn = validSortColumns.includes(sortBy as string)
+      ? sortBy
+      : 'created_at';
     const sortDirection = sortOrder === 'ASC' ? 'ASC' : 'DESC';
 
     // Get partners with pagination
@@ -80,22 +95,24 @@ router.get('/', requireAdmin, async (req, res) => {
     await initializeDatabase();
     const partnersWithProducts = await Promise.all(
       partnersResult.rows.map(async (partner) => {
-        const productCount = await Product.countDocuments({ 
-          partnerId: partner.id.toString() 
+        const productCount = await Product.countDocuments({
+          partnerId: partner.id.toString(),
         });
-        
+
         return {
           ...partner,
           total_revenue: parseFloat(partner.total_revenue),
           total_orders: parseInt(partner.total_orders),
           product_count: productCount,
           created_at: partner.created_at,
-          last_login: partner.last_login
+          last_login: partner.last_login,
         };
       })
     );
 
-    logger.info(`👥 Retrieved ${partnersResult.rows.length} partners (page ${page})`);
+    logger.info(
+      `👥 Retrieved ${partnersResult.rows.length} partners (page ${page})`
+    );
 
     res.json({
       success: true,
@@ -107,17 +124,19 @@ router.get('/', requireAdmin, async (req, res) => {
           totalItems: totalPartners,
           itemsPerPage: parseInt(limit as string),
           hasNextPage: offset + partnersResult.rows.length < totalPartners,
-          hasPrevPage: parseInt(page as string) > 1
-        }
-      }
+          hasPrevPage: parseInt(page as string) > 1,
+        },
+      },
     });
-
   } catch (error) {
     logger.error('❌ Error fetching partners:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch partners',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -151,8 +170,16 @@ router.get('/stats', requireAdmin, async (req, res) => {
 
     // Monthly growth statistics
     const currentDate = new Date();
-    const lastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
-    const thisMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const lastMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - 1,
+      1
+    );
+    const thisMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1
+    );
 
     const growthQuery = `
       SELECT 
@@ -168,7 +195,10 @@ router.get('/stats', requireAdmin, async (req, res) => {
     // Product statistics
     await initializeDatabase();
     const totalProducts = await Product.countDocuments();
-    const productsPerPartner = stats.total_partners > 0 ? totalProducts / parseInt(stats.total_partners) : 0;
+    const productsPerPartner =
+      stats.total_partners > 0
+        ? totalProducts / parseInt(stats.total_partners)
+        : 0;
 
     const statistics = {
       totalPartners: parseInt(stats.total_partners),
@@ -182,25 +212,30 @@ router.get('/stats', requireAdmin, async (req, res) => {
       growth: {
         lastMonth: parseInt(growth.last_month_partners),
         thisMonth: parseInt(growth.this_month_partners),
-        growthRate: growth.last_month_partners > 0 
-          ? ((growth.this_month_partners - growth.last_month_partners) / growth.last_month_partners) * 100 
-          : 0
-      }
+        growthRate:
+          growth.last_month_partners > 0
+            ? ((growth.this_month_partners - growth.last_month_partners) /
+                growth.last_month_partners) *
+              100
+            : 0,
+      },
     };
 
     logger.info('📊 Partner statistics retrieved');
 
     res.json({
       success: true,
-      data: statistics
+      data: statistics,
     });
-
   } catch (error) {
     logger.error('❌ Error fetching partner statistics:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch partner statistics',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -236,7 +271,7 @@ router.get('/:id', requireAdmin, async (req, res) => {
     if (partnerResult.rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Partner not found'
+        message: 'Partner not found',
       });
     }
 
@@ -266,9 +301,18 @@ router.get('/:id', requireAdmin, async (req, res) => {
       .limit(10);
 
     // Calculate performance metrics
-    const totalRevenue = ordersResult.rows.reduce((sum, order) => sum + parseFloat(order.amount), 0);
-    const avgOrderValue = ordersResult.rows.length > 0 ? totalRevenue / ordersResult.rows.length : 0;
-    const totalClicks = products.reduce((sum, product) => sum + (product.clickCount || 0), 0);
+    const totalRevenue = ordersResult.rows.reduce(
+      (sum, order) => sum + parseFloat(order.amount),
+      0
+    );
+    const avgOrderValue =
+      ordersResult.rows.length > 0
+        ? totalRevenue / ordersResult.rows.length
+        : 0;
+    const totalClicks = products.reduce(
+      (sum, product) => sum + (product.clickCount || 0),
+      0
+    );
 
     const partnerDetails = {
       ...partner,
@@ -277,36 +321,38 @@ router.get('/:id', requireAdmin, async (req, res) => {
         totalOrders: ordersResult.rows.length,
         avgOrderValue: Math.round(avgOrderValue * 100) / 100,
         totalProducts: products.length,
-        totalClicks
+        totalClicks,
       },
-      recentOrders: ordersResult.rows.map(order => ({
+      recentOrders: ordersResult.rows.map((order) => ({
         ...order,
-        amount: parseFloat(order.amount)
+        amount: parseFloat(order.amount),
       })),
-      recentProducts: products.map(product => ({
+      recentProducts: products.map((product) => ({
         id: product._id,
         name: product.name,
         brand: product.brand,
         category: product.category,
         price: product.price,
         clickCount: product.clickCount || 0,
-        createdAt: product.createdAt
-      }))
+        createdAt: product.createdAt,
+      })),
     };
 
     logger.info(`👤 Retrieved details for partner: ${partner.email}`);
 
     res.json({
       success: true,
-      data: partnerDetails
+      data: partnerDetails,
     });
-
   } catch (error) {
     logger.error('❌ Error fetching partner details:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch partner details',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -322,7 +368,8 @@ router.patch('/:id/status', requireAdmin, async (req, res) => {
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid status. Must be one of: active, inactive, pending, suspended'
+        message:
+          'Invalid status. Must be one of: active, inactive, pending, suspended',
       });
     }
 
@@ -349,24 +396,28 @@ router.patch('/:id/status', requireAdmin, async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Partner not found'
+        message: 'Partner not found',
       });
     }
 
-    logger.info(`✏️ Updated partner ${result.rows[0].email} status to: ${status}`);
+    logger.info(
+      `✏️ Updated partner ${result.rows[0].email} status to: ${status}`
+    );
 
     res.json({
       success: true,
       message: 'Partner status updated successfully',
-      data: result.rows[0]
+      data: result.rows[0],
     });
-
   } catch (error) {
     logger.error('❌ Error updating partner status:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to update partner status',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -392,7 +443,7 @@ router.delete('/:id', requireAdmin, async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Partner not found or already deleted'
+        message: 'Partner not found or already deleted',
       });
     }
 
@@ -400,11 +451,11 @@ router.delete('/:id', requireAdmin, async (req, res) => {
     await initializeDatabase();
     await Product.updateMany(
       { partnerId: id.toString() },
-      { 
-        $set: { 
+      {
+        $set: {
           isActive: false,
-          deletedAt: new Date()
-        }
+          deletedAt: new Date(),
+        },
       }
     );
 
@@ -413,15 +464,17 @@ router.delete('/:id', requireAdmin, async (req, res) => {
     res.json({
       success: true,
       message: 'Partner deleted successfully',
-      data: result.rows[0]
+      data: result.rows[0],
     });
-
   } catch (error) {
     logger.error('❌ Error deleting partner:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to delete partner',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -467,12 +520,12 @@ router.get('/:id/analytics', requireAdmin, async (req, res) => {
 
     // Get product performance
     await initializeDatabase();
-    const productPerformance = await Product.find({ 
+    const productPerformance = await Product.find({
       partnerId: id.toString(),
-      createdAt: { $gte: startDate }
+      createdAt: { $gte: startDate },
     })
-    .select('name category clickCount price createdAt')
-    .sort({ clickCount: -1 });
+      .select('name category clickCount price createdAt')
+      .sort({ clickCount: -1 });
 
     // Get category distribution
     const categoryStats = await Product.aggregate([
@@ -481,37 +534,46 @@ router.get('/:id/analytics', requireAdmin, async (req, res) => {
         $group: {
           _id: '$category',
           productCount: { $sum: 1 },
-          totalClicks: { $sum: '$clickCount' }
-        }
+          totalClicks: { $sum: '$clickCount' },
+        },
       },
-      { $sort: { productCount: -1 } }
+      { $sort: { productCount: -1 } },
     ]);
 
     const analytics = {
-      revenue: revenueResult.rows.map(row => ({
+      revenue: revenueResult.rows.map((row) => ({
         date: row.date,
         revenue: parseFloat(row.daily_revenue),
-        orders: parseInt(row.daily_orders)
+        orders: parseInt(row.daily_orders),
       })),
-      productPerformance: productPerformance.map(product => ({
+      productPerformance: productPerformance.map((product) => ({
         id: product._id,
         name: product.name,
         category: product.category,
         clicks: product.clickCount || 0,
         price: product.price,
-        createdAt: product.createdAt
+        createdAt: product.createdAt,
       })),
-      categoryDistribution: categoryStats.map(stat => ({
+      categoryDistribution: categoryStats.map((stat) => ({
         category: stat._id || 'Unknown',
         productCount: stat.productCount,
-        totalClicks: stat.totalClicks
+        totalClicks: stat.totalClicks,
       })),
       summary: {
-        totalRevenue: revenueResult.rows.reduce((sum, row) => sum + parseFloat(row.daily_revenue), 0),
-        totalOrders: revenueResult.rows.reduce((sum, row) => sum + parseInt(row.daily_orders), 0),
+        totalRevenue: revenueResult.rows.reduce(
+          (sum, row) => sum + parseFloat(row.daily_revenue),
+          0
+        ),
+        totalOrders: revenueResult.rows.reduce(
+          (sum, row) => sum + parseInt(row.daily_orders),
+          0
+        ),
         totalProducts: productPerformance.length,
-        totalClicks: productPerformance.reduce((sum, product) => sum + (product.clickCount || 0), 0)
-      }
+        totalClicks: productPerformance.reduce(
+          (sum, product) => sum + (product.clickCount || 0),
+          0
+        ),
+      },
     };
 
     logger.info(`📈 Analytics retrieved for partner ${id} (${timeRange})`);
@@ -522,16 +584,18 @@ router.get('/:id/analytics', requireAdmin, async (req, res) => {
       timeRange,
       period: {
         start: startDate.toISOString(),
-        end: new Date().toISOString()
-      }
+        end: new Date().toISOString(),
+      },
     });
-
   } catch (error) {
     logger.error('❌ Error fetching partner analytics:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch partner analytics',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });

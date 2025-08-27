@@ -12,29 +12,36 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed }) => {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+const PWAInstallPrompt: React.FC<PWAInstallProps> = ({
+  onInstalled,
+  onDismissed,
+}) => {
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
-  const [platform, setPlatform] = useState<'ios' | 'android' | 'desktop' | 'other'>('other');
+  const [platform, setPlatform] = useState<
+    'ios' | 'android' | 'desktop' | 'other'
+  >('other');
   const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
     // Check if app is already running in standalone mode
     const checkStandalone = () => {
       if (typeof window === 'undefined') return;
-      
-      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches ||
-                             (window.navigator as any).standalone === true ||
-                             document.referrer.includes('android-app://');
+
+      const isStandaloneMode =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone === true ||
+        document.referrer.includes('android-app://');
       setIsStandalone(isStandaloneMode);
     };
 
     // Detect platform
     const detectPlatform = () => {
       if (typeof window === 'undefined') return;
-      
+
       const userAgent = navigator.userAgent;
       if (/iPad|iPhone|iPod/.test(userAgent)) {
         setPlatform('ios');
@@ -54,7 +61,7 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
       const event = e as BeforeInstallPromptEvent;
       setDeferredPrompt(event);
       setIsInstallable(true);
-      
+
       // Show prompt after a delay if not in standalone mode
       setTimeout(() => {
         if (!isStandalone) {
@@ -77,7 +84,10 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
       window.addEventListener('appinstalled', handleAppInstalled);
 
       return () => {
-        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.removeEventListener(
+          'beforeinstallprompt',
+          handleBeforeInstallPrompt
+        );
         window.removeEventListener('appinstalled', handleAppInstalled);
       };
     }
@@ -87,7 +97,10 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const dismissedTime = localStorage.getItem('pwa-install-dismissed');
-      if (dismissedTime && Date.now() - parseInt(dismissedTime) < 24 * 60 * 60 * 1000) {
+      if (
+        dismissedTime &&
+        Date.now() - parseInt(dismissedTime) < 24 * 60 * 60 * 1000
+      ) {
         setIsDismissed(true);
       }
     }
@@ -99,16 +112,16 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
     try {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      
+
       console.log('[PWA] User choice:', outcome);
-      
+
       if (outcome === 'accepted') {
         setShowPrompt(false);
         onInstalled?.();
       } else {
         onDismissed?.();
       }
-      
+
       setDeferredPrompt(null);
     } catch (error) {
       console.error('[PWA] Install prompt error:', error);
@@ -118,7 +131,7 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
   const handleDismiss = () => {
     setShowPrompt(false);
     onDismissed?.();
-    
+
     // Don't show again for 24 hours (only on client side)
     if (typeof window !== 'undefined') {
       localStorage.setItem('pwa-install-dismissed', Date.now().toString());
@@ -133,9 +146,9 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
           steps: [
             'Tap the Share button',
             'Scroll down and tap "Add to Home Screen"',
-            'Tap "Add" to install the app'
+            'Tap "Add" to install the app',
           ],
-          icon: '📱'
+          icon: '📱',
         };
       case 'android':
         return {
@@ -143,9 +156,9 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
           steps: [
             'Tap "Add to Home Screen" in your browser menu',
             'Or use the install button below',
-            'Access the app directly from your home screen'
+            'Access the app directly from your home screen',
           ],
-          icon: '🤖'
+          icon: '🤖',
         };
       case 'desktop':
         return {
@@ -153,9 +166,9 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
           steps: [
             'Click the install button below',
             'Or look for the install icon in your address bar',
-            'Access the app from your desktop or taskbar'
+            'Access the app from your desktop or taskbar',
           ],
-          icon: '💻'
+          icon: '💻',
         };
       default:
         return {
@@ -163,9 +176,9 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
           steps: [
             'Add this app to your home screen',
             'Access it like a native app',
-            'Works offline with cached data'
+            'Works offline with cached data',
           ],
-          icon: '⚡'
+          icon: '⚡',
         };
     }
   };
@@ -187,7 +200,9 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
               <span className="text-2xl">{instructions.icon}</span>
               <div>
                 <h3 className="font-semibold text-lg">{instructions.title}</h3>
-                <p className="text-sm text-blue-100">Get the full app experience</p>
+                <p className="text-sm text-blue-100">
+                  Get the full app experience
+                </p>
               </div>
             </div>
             <button
@@ -195,8 +210,18 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
               className="text-white/80 hover:text-white transition-colors"
               aria-label="Dismiss install prompt"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -210,14 +235,18 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
                 <div className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">
                   {index + 1}
                 </div>
-                <p className="text-sm text-gray-700 dark:text-gray-300">{step}</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {step}
+                </p>
               </div>
             ))}
           </div>
 
           {/* Features */}
           <div className="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-3 mb-4">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">App Benefits:</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+              App Benefits:
+            </p>
             <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 dark:text-gray-400">
               <div className="flex items-center">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></span>
@@ -245,8 +274,18 @@ const PWAInstallPrompt: React.FC<PWAInstallProps> = ({ onInstalled, onDismissed 
                 onClick={handleInstallClick}
                 className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
                 <span>Install App</span>
               </button>

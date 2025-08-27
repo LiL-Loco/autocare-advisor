@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface NetworkStatus {
   isOnline: boolean;
@@ -19,11 +19,15 @@ interface PWAManagerProps {
 }
 
 const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
-  const [networkStatus, setNetworkStatus] = useState<NetworkStatus>({ 
-    isOnline: typeof window !== 'undefined' ? navigator.onLine : true 
+  const [networkStatus, setNetworkStatus] = useState<NetworkStatus>({
+    isOnline: typeof window !== 'undefined' ? navigator.onLine : true,
   });
-  const [cacheInfo, setCacheInfo] = useState<CacheInfo>({ size: 0, lastUpdated: null });
-  const [serviceWorkerRegistration, setServiceWorkerRegistration] = useState<ServiceWorkerRegistration | null>(null);
+  const [cacheInfo, setCacheInfo] = useState<CacheInfo>({
+    size: 0,
+    lastUpdated: null,
+  });
+  const [serviceWorkerRegistration, setServiceWorkerRegistration] =
+    useState<ServiceWorkerRegistration | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
 
@@ -37,11 +41,14 @@ const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js', {
         scope: '/',
-        updateViaCache: 'none'
+        updateViaCache: 'none',
       });
 
       setServiceWorkerRegistration(registration);
-      console.log('[PWA] Service worker registered successfully:', registration.scope);
+      console.log(
+        '[PWA] Service worker registered successfully:',
+        registration.scope
+      );
 
       // Listen for service worker updates
       registration.addEventListener('updatefound', () => {
@@ -49,7 +56,10 @@ const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
         if (!newWorker) return;
 
         newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          if (
+            newWorker.state === 'installed' &&
+            navigator.serviceWorker.controller
+          ) {
             console.log('[PWA] New service worker available');
             setUpdateAvailable(true);
             setShowUpdatePrompt(true);
@@ -62,7 +72,6 @@ const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
         console.log('[PWA] Service worker controller changed - reloading');
         window.location.reload();
       });
-
     } catch (error) {
       console.error('[PWA] Service worker registration failed:', error);
     }
@@ -76,26 +85,27 @@ const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
       ...(connection && {
         effectiveType: connection.effectiveType,
         downlink: connection.downlink,
-        rtt: connection.rtt
-      })
+        rtt: connection.rtt,
+      }),
     };
-    
+
     setNetworkStatus(newStatus);
     onStatusChange?.(newStatus);
   }, [onStatusChange]);
 
   // Get cache information
   const updateCacheInfo = useCallback(async () => {
-    if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
+    if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller)
+      return;
 
     try {
       const messageChannel = new MessageChannel();
-      
+
       const cacheSize = await new Promise<number>((resolve) => {
         messageChannel.port1.onmessage = (event) => {
           resolve(event.data.cacheSize || 0);
         };
-        
+
         navigator.serviceWorker.controller?.postMessage(
           { type: 'GET_CACHE_SIZE' },
           [messageChannel.port2]
@@ -104,7 +114,7 @@ const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
 
       setCacheInfo({
         size: cacheSize,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       });
     } catch (error) {
       console.error('[PWA] Failed to get cache info:', error);
@@ -128,9 +138,9 @@ const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
     try {
       const cacheNames = await caches.keys();
       await Promise.all(
-        cacheNames.map(cacheName => caches.delete(cacheName))
+        cacheNames.map((cacheName) => caches.delete(cacheName))
       );
-      
+
       setCacheInfo({ size: 0, lastUpdated: new Date() });
       console.log('[PWA] Cache cleared successfully');
     } catch (error) {
@@ -140,7 +150,8 @@ const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
 
   // Sync offline data
   const syncOfflineData = useCallback(async () => {
-    if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
+    if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller)
+      return;
 
     try {
       // Trigger background sync if supported
@@ -177,7 +188,7 @@ const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
       updateNetworkStatus();
       syncOfflineData();
     };
-    
+
     const handleOffline = () => updateNetworkStatus();
 
     window.addEventListener('online', handleOnline);
@@ -191,24 +202,34 @@ const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
       window.removeEventListener('offline', handleOffline);
       clearInterval(cacheUpdateInterval);
     };
-  }, [registerServiceWorker, updateNetworkStatus, updateCacheInfo, syncOfflineData]);
+  }, [
+    registerServiceWorker,
+    updateNetworkStatus,
+    updateCacheInfo,
+    syncOfflineData,
+  ]);
 
   return (
     <>
       {/* Network status indicator */}
       <div className="fixed top-4 right-4 z-40">
-        <div className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
-          networkStatus.isOnline
-            ? 'bg-green-100 text-green-800 border border-green-200'
-            : 'bg-red-100 text-red-800 border border-red-200'
-        }`}>
+        <div
+          className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
+            networkStatus.isOnline
+              ? 'bg-green-100 text-green-800 border border-green-200'
+              : 'bg-red-100 text-red-800 border border-red-200'
+          }`}
+        >
           <div className="flex items-center space-x-1">
-            <div className={`w-2 h-2 rounded-full animate-pulse ${
-              networkStatus.isOnline ? 'bg-green-500' : 'bg-red-500'
-            }`}></div>
+            <div
+              className={`w-2 h-2 rounded-full animate-pulse ${
+                networkStatus.isOnline ? 'bg-green-500' : 'bg-red-500'
+              }`}
+            ></div>
             <span>
               {networkStatus.isOnline ? 'Online' : 'Offline'}
-              {networkStatus.effectiveType && ` (${networkStatus.effectiveType})`}
+              {networkStatus.effectiveType &&
+                ` (${networkStatus.effectiveType})`}
             </span>
           </div>
         </div>
@@ -221,8 +242,18 @@ const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                  <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  <svg
+                    className="w-4 h-4 text-blue-600 dark:text-blue-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
                   </svg>
                 </div>
               </div>
@@ -231,7 +262,8 @@ const PWAManager: React.FC<PWAManagerProps> = ({ onStatusChange }) => {
                   Update Available
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  A new version of the app is ready. Update now for the latest features.
+                  A new version of the app is ready. Update now for the latest
+                  features.
                 </p>
                 <div className="flex space-x-2 mt-3">
                   <button

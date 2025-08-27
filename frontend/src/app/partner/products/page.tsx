@@ -1,17 +1,19 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Upload, Plus, BarChart3, Users, Bell } from 'lucide-react';
-import CSVUpload from '../../../components/partner/csv/CSVUpload';
-import ProductManagementInterface from '../../../components/partner/products/ProductManagementInterface';
-import BulkOperations from '../../../components/partner/products/BulkOperations';
-import CustomerInsights from '../../../components/partner/customers/CustomerInsights';
-import NotificationSystem from '../../../components/partner/notifications/NotificationSystem';
-import PartnerLayout from '../../../components/partner/layout/PartnerLayout';
+import { BarChart3, Bell, Plus, Upload, Users } from 'lucide-react';
 import { useState } from 'react';
+import CSVUpload from '../../../components/partner/csv/CSVUpload';
+import CustomerInsights from '../../../components/partner/customers/CustomerInsights';
+import PartnerLayout from '../../../components/partner/layout/PartnerLayout';
+import NotificationSystem from '../../../components/partner/notifications/NotificationSystem';
+import BulkOperations from '../../../components/partner/products/BulkOperations';
+import ProductManagementInterface from '../../../components/partner/products/ProductManagementInterface';
 
 export default function ProductsPage() {
-  const [activeTab, setActiveTab] = useState<'products' | 'upload' | 'customers' | 'notifications'>('products');
+  const [activeTab, setActiveTab] = useState<
+    'products' | 'upload' | 'customers' | 'notifications'
+  >('products');
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
   const handleBulkDelete = async (productIds: string[]) => {
@@ -31,7 +33,10 @@ export default function ProductsPage() {
     // Implement export functionality
   };
 
-  const handleBulkToggleVisibility = async (productIds: string[], visible: boolean) => {
+  const handleBulkToggleVisibility = async (
+    productIds: string[],
+    visible: boolean
+  ) => {
     console.log('Bulk visibility toggle:', productIds, visible);
     // Implement API call
     setSelectedProducts([]);
@@ -68,13 +73,16 @@ export default function ProductsPage() {
               {activeTab === 'notifications' && 'Notifications'}
             </h1>
             <p className="text-gray-600 mt-1">
-              {activeTab === 'products' && 'Manage your automotive products and inventory'}
+              {activeTab === 'products' &&
+                'Manage your automotive products and inventory'}
               {activeTab === 'upload' && 'Upload your product catalog via CSV'}
-              {activeTab === 'customers' && 'Understand your customer base and preferences'}
-              {activeTab === 'notifications' && 'Stay updated with real-time alerts'}
+              {activeTab === 'customers' &&
+                'Understand your customer base and preferences'}
+              {activeTab === 'notifications' &&
+                'Stay updated with real-time alerts'}
             </p>
           </div>
-          
+
           {activeTab === 'products' && (
             <div className="flex items-center space-x-3">
               <Button variant="outline">
@@ -129,17 +137,19 @@ export default function ProductsPage() {
               onClearSelection={handleClearSelection}
               onDuplicateProducts={handleDuplicateProducts}
             />
-            
+
             {/* Product Management */}
             <ProductManagementInterface />
           </>
         )}
 
         {activeTab === 'upload' && <CSVUpload partnerId={mockPartnerId} />}
-        
+
         {activeTab === 'customers' && <CustomerInsights />}
-        
-        {activeTab === 'notifications' && <NotificationSystem partnerId={mockPartnerId} />}
+
+        {activeTab === 'notifications' && (
+          <NotificationSystem partnerId={mockPartnerId} />
+        )}
       </div>
     </PartnerLayout>
   );

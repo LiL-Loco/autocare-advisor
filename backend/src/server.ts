@@ -7,8 +7,8 @@ import helmet from 'helmet';
 
 // Import routes
 import adminRouter from './routes/admin';
-import adminModerationRouter from './routes/adminModeration';
 import adminAnalyticsRouter from './routes/adminAnalytics';
+import adminModerationRouter from './routes/adminModeration';
 import adminPartnersRouter from './routes/adminPartners';
 import adminReportsRouter from './routes/adminReports';
 import adminSettingsRouter from './routes/adminSettings';

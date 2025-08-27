@@ -1,7 +1,7 @@
 import express from 'express';
+import pool from '../database/postgres';
 import { requireAdmin } from '../middleware/adminAuth';
 import logger from '../utils/logger';
-import pool from '../database/postgres';
 
 const router = express.Router();
 
@@ -14,21 +14,21 @@ router.get('/', requireAdmin, async (req, res) => {
       FROM system_settings
       ORDER BY category, setting_key
     `;
-    
+
     const result = await pool.query(settingsQuery);
-    
+
     // Group settings by category
     const settings: any = {
       general: {},
       security: {},
       notifications: {},
       api: {},
-      database: {}
+      database: {},
     };
 
-    result.rows.forEach(row => {
+    result.rows.forEach((row) => {
       const { category, setting_key, setting_value, is_sensitive } = row;
-      
+
       if (settings[category]) {
         // Parse JSON values
         let value;
@@ -56,7 +56,7 @@ router.get('/', requireAdmin, async (req, res) => {
         adminEmail: 'admin@autocare-advisor.com',
         timezone: 'Europe/Berlin',
         language: 'de',
-        maintenanceMode: false
+        maintenanceMode: false,
       };
     }
 
@@ -67,7 +67,7 @@ router.get('/', requireAdmin, async (req, res) => {
         sessionTimeout: 1440,
         maxLoginAttempts: 5,
         allowedIpAddresses: ['192.168.1.0/24', '10.0.0.0/8'],
-        sslEnabled: true
+        sslEnabled: true,
       };
     }
 
@@ -78,11 +78,17 @@ router.get('/', requireAdmin, async (req, res) => {
         NOW() as current_time
     `;
     const dbStatus = await pool.query(dbStatusQuery);
-    
+
     settings.database.connectionStatus = 'connected';
-    settings.database.totalConnections = parseInt(dbStatus.rows[0].total_connections);
-    settings.database.lastBackup = new Date(Date.now() - 86400000).toISOString();
-    settings.database.nextBackup = new Date(Date.now() + 86400000).toISOString();
+    settings.database.totalConnections = parseInt(
+      dbStatus.rows[0].total_connections
+    );
+    settings.database.lastBackup = new Date(
+      Date.now() - 86400000
+    ).toISOString();
+    settings.database.nextBackup = new Date(
+      Date.now() + 86400000
+    ).toISOString();
     settings.database.autoBackup = true;
     settings.database.backupRetention = 30;
 
@@ -100,8 +106,11 @@ router.get('/', requireAdmin, async (req, res) => {
     }
 
     settings.api.rateLimit = settings.api.rateLimit || 1000;
-    settings.api.allowedOrigins = settings.api.allowedOrigins || ['https://app.autocare-advisor.com'];
-    settings.api.webhookUrl = settings.api.webhookUrl || 'https://api.autocare-advisor.com/webhooks';
+    settings.api.allowedOrigins = settings.api.allowedOrigins || [
+      'https://app.autocare-advisor.com',
+    ];
+    settings.api.webhookUrl =
+      settings.api.webhookUrl || 'https://api.autocare-advisor.com/webhooks';
 
     // Notification defaults
     if (Object.keys(settings.notifications).length === 0) {
@@ -113,13 +122,13 @@ router.get('/', requireAdmin, async (req, res) => {
           newUsers: true,
           newOrders: true,
           systemErrors: true,
-          securityAlerts: true
+          securityAlerts: true,
         },
         userNotifications: {
           orderUpdates: true,
           newsletters: true,
-          promotions: false
-        }
+          promotions: false,
+        },
       };
     }
 
@@ -127,15 +136,17 @@ router.get('/', requireAdmin, async (req, res) => {
 
     res.json({
       success: true,
-      data: settings
+      data: settings,
     });
-
   } catch (error) {
     logger.error('❌ Error fetching system settings:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch system settings',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -148,16 +159,22 @@ router.put('/', requireAdmin, async (req, res) => {
     if (!category || !settings) {
       return res.status(400).json({
         success: false,
-        message: 'Category and settings are required'
+        message: 'Category and settings are required',
       });
     }
 
     // Validate category
-    const validCategories = ['general', 'security', 'notifications', 'api', 'database'];
+    const validCategories = [
+      'general',
+      'security',
+      'notifications',
+      'api',
+      'database',
+    ];
     if (!validCategories.includes(category)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid category'
+        message: 'Invalid category',
       });
     }
 
@@ -182,16 +199,18 @@ router.put('/', requireAdmin, async (req, res) => {
       message: 'Settings updated successfully',
       data: {
         category,
-        updatedAt: new Date().toISOString()
-      }
+        updatedAt: new Date().toISOString(),
+      },
     });
-
   } catch (error) {
     logger.error('❌ Error updating system settings:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to update system settings',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -223,24 +242,29 @@ router.get('/users', requireAdmin, async (req, res) => {
 
     const result = await pool.query(adminUsersQuery);
 
-    const adminUsers = result.rows.map(user => ({
+    const adminUsers = result.rows.map((user) => ({
       ...user,
-      permissions: typeof user.permissions === 'string' ? JSON.parse(user.permissions || '[]') : (user.permissions || [])
+      permissions:
+        typeof user.permissions === 'string'
+          ? JSON.parse(user.permissions || '[]')
+          : user.permissions || [],
     }));
 
     logger.info(`👥 Retrieved ${adminUsers.length} admin users`);
 
     res.json({
       success: true,
-      data: adminUsers
+      data: adminUsers,
     });
-
   } catch (error) {
     logger.error('❌ Error fetching admin users:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch admin users',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -254,7 +278,7 @@ router.post('/users', requireAdmin, async (req, res) => {
     if (!name || !email) {
       return res.status(400).json({
         success: false,
-        message: 'Name and email are required'
+        message: 'Name and email are required',
       });
     }
 
@@ -263,7 +287,7 @@ router.post('/users', requireAdmin, async (req, res) => {
     if (!validRoles.includes(role)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid role. Must be admin or moderator'
+        message: 'Invalid role. Must be admin or moderator',
       });
     }
 
@@ -276,7 +300,7 @@ router.post('/users', requireAdmin, async (req, res) => {
     if (existingUser.rows.length > 0) {
       return res.status(400).json({
         success: false,
-        message: 'User with this email already exists'
+        message: 'User with this email already exists',
       });
     }
 
@@ -305,7 +329,7 @@ router.post('/users', requireAdmin, async (req, res) => {
       email,
       passwordHash,
       role,
-      JSON.stringify(permissions)
+      JSON.stringify(permissions),
     ]);
 
     const newUser = result.rows[0];
@@ -317,16 +341,18 @@ router.post('/users', requireAdmin, async (req, res) => {
       message: 'Admin user created successfully',
       data: {
         ...newUser,
-        tempPassword: tempPassword // In real app, this would be sent via email
-      }
+        tempPassword: tempPassword, // In real app, this would be sent via email
+      },
     });
-
   } catch (error) {
     logger.error('❌ Error creating admin user:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to create admin user',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -375,7 +401,7 @@ router.put('/users/:id', requireAdmin, async (req, res) => {
     if (updateFields.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'No valid fields to update'
+        message: 'No valid fields to update',
       });
     }
 
@@ -394,7 +420,7 @@ router.put('/users/:id', requireAdmin, async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Admin user not found'
+        message: 'Admin user not found',
       });
     }
 
@@ -405,16 +431,18 @@ router.put('/users/:id', requireAdmin, async (req, res) => {
       message: 'Admin user updated successfully',
       data: {
         ...result.rows[0],
-        permissions: JSON.parse(result.rows[0].permissions || '[]')
-      }
+        permissions: JSON.parse(result.rows[0].permissions || '[]'),
+      },
     });
-
   } catch (error) {
     logger.error('❌ Error updating admin user:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to update admin user',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -428,12 +456,12 @@ router.post('/database/backup', requireAdmin, async (req, res) => {
 
     // Simulate backup process
     logger.info('🗄️ Starting database backup...');
-    
+
     // In real implementation, this would:
     // 1. Create a database dump
     // 2. Upload to cloud storage
     // 3. Update backup log
-    
+
     // Mock backup success
     setTimeout(async () => {
       try {
@@ -442,8 +470,12 @@ router.post('/database/backup', requireAdmin, async (req, res) => {
           INSERT INTO backup_log (backup_id, backup_type, status, created_at, file_size)
           VALUES ($1, 'manual', 'completed', $2, $3)
         `;
-        
-        await pool.query(logQuery, [backupId, backupDate, Math.floor(Math.random() * 1000000) + 500000]);
+
+        await pool.query(logQuery, [
+          backupId,
+          backupDate,
+          Math.floor(Math.random() * 1000000) + 500000,
+        ]);
         logger.info(`✅ Database backup completed: ${backupId}`);
       } catch (logError) {
         logger.error('❌ Error logging backup:', logError);
@@ -456,16 +488,18 @@ router.post('/database/backup', requireAdmin, async (req, res) => {
       data: {
         backupId,
         startedAt: backupDate,
-        status: 'in_progress'
-      }
+        status: 'in_progress',
+      },
     });
-
   } catch (error) {
     logger.error('❌ Error starting database backup:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to start database backup',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -478,14 +512,16 @@ router.post('/api-keys', requireAdmin, async (req, res) => {
     if (!name) {
       return res.status(400).json({
         success: false,
-        message: 'API key name is required'
+        message: 'API key name is required',
       });
     }
 
     // Generate API key
-    const apiKey = 'ak_' + Math.random().toString(36).substring(2, 15) + 
-                         Math.random().toString(36).substring(2, 15) + 
-                         Math.random().toString(36).substring(2, 15);
+    const apiKey =
+      'ak_' +
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
 
     // Store in database
     const insertQuery = `
@@ -506,7 +542,7 @@ router.post('/api-keys', requireAdmin, async (req, res) => {
     const result = await pool.query(insertQuery, [
       name,
       apiKeyHash,
-      JSON.stringify(permissions)
+      JSON.stringify(permissions),
     ]);
 
     logger.info(`🔑 Generated new API key: ${name}`);
@@ -518,16 +554,18 @@ router.post('/api-keys', requireAdmin, async (req, res) => {
         id: result.rows[0].id,
         name: result.rows[0].name,
         apiKey: apiKey, // Only shown once
-        createdAt: result.rows[0].created_at
-      }
+        createdAt: result.rows[0].created_at,
+      },
     });
-
   } catch (error) {
     logger.error('❌ Error generating API key:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to generate API key',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });
@@ -542,13 +580,13 @@ router.get('/health', requireAdmin, async (req, res) => {
       memory: process.memoryUsage(),
       database: {
         postgresql: 'connected',
-        mongodb: 'connected'
+        mongodb: 'connected',
       },
       services: {
         api: 'operational',
         auth: 'operational',
-        fileUpload: 'operational'
-      }
+        fileUpload: 'operational',
+      },
     };
 
     // Test database connection
@@ -564,15 +602,17 @@ router.get('/health', requireAdmin, async (req, res) => {
 
     res.json({
       success: true,
-      data: health
+      data: health,
     });
-
   } catch (error) {
     logger.error('❌ Error performing health check:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to perform health check',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 });

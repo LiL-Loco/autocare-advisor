@@ -1,114 +1,122 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import AdminLayout from '@/components/admin/AdminLayout'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { 
-  Settings,
-  Users,
-  Shield,
-  Database,
-  Bell,
-  Mail,
-  Palette,
-  Globe,
-  Lock,
-  Key,
-  Server,
+import AdminLayout from '@/components/admin/AdminLayout';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import {
   Activity,
-  AlertCircle,
+  Bell,
   CheckCircle,
-  Trash2,
-  Plus,
+  Database,
   Edit,
-  Save,
-  RefreshCw,
   Eye,
-  EyeOff,
-  Timer
-} from 'lucide-react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+  Globe,
+  Key,
+  Mail,
+  Plus,
+  RefreshCw,
+  Save,
+  Shield,
+  Timer,
+  Trash2,
+  Users,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface SystemSettings {
   general: {
-    siteName: string
-    siteDescription: string
-    siteUrl: string
-    adminEmail: string
-    timezone: string
-    language: string
-    maintenanceMode: boolean
-  }
+    siteName: string;
+    siteDescription: string;
+    siteUrl: string;
+    adminEmail: string;
+    timezone: string;
+    language: string;
+    maintenanceMode: boolean;
+  };
   security: {
-    twoFactorRequired: boolean
-    passwordMinLength: number
-    sessionTimeout: number
-    maxLoginAttempts: number
-    allowedIpAddresses: string[]
-    sslEnabled: boolean
-  }
+    twoFactorRequired: boolean;
+    passwordMinLength: number;
+    sessionTimeout: number;
+    maxLoginAttempts: number;
+    allowedIpAddresses: string[];
+    sslEnabled: boolean;
+  };
   notifications: {
-    emailEnabled: boolean
-    smsEnabled: boolean
-    pushEnabled: boolean
+    emailEnabled: boolean;
+    smsEnabled: boolean;
+    pushEnabled: boolean;
     adminNotifications: {
-      newUsers: boolean
-      newOrders: boolean
-      systemErrors: boolean
-      securityAlerts: boolean
-    }
+      newUsers: boolean;
+      newOrders: boolean;
+      systemErrors: boolean;
+      securityAlerts: boolean;
+    };
     userNotifications: {
-      orderUpdates: boolean
-      newsletters: boolean
-      promotions: boolean
-    }
-  }
+      orderUpdates: boolean;
+      newsletters: boolean;
+      promotions: boolean;
+    };
+  };
   api: {
-    rateLimit: number
-    allowedOrigins: string[]
-    webhookUrl: string
-    apiKeysCount: number
-  }
+    rateLimit: number;
+    allowedOrigins: string[];
+    webhookUrl: string;
+    apiKeysCount: number;
+  };
   database: {
-    connectionStatus: 'connected' | 'disconnected' | 'error'
-    lastBackup: string
-    nextBackup: string
-    autoBackup: boolean
-    backupRetention: number
-  }
+    connectionStatus: 'connected' | 'disconnected' | 'error';
+    lastBackup: string;
+    nextBackup: string;
+    autoBackup: boolean;
+    backupRetention: number;
+  };
 }
 
 interface AdminUser {
-  id: string
-  name: string
-  email: string
-  role: 'super_admin' | 'admin' | 'moderator'
-  status: 'active' | 'inactive'
-  lastLogin: string
-  permissions: string[]
+  id: string;
+  name: string;
+  email: string;
+  role: 'super_admin' | 'admin' | 'moderator';
+  status: 'active' | 'inactive';
+  lastLogin: string;
+  permissions: string[];
 }
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<SystemSettings | null>(null)
-  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([])
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({})
-  const [newApiKey, setNewApiKey] = useState('')
+  const [settings, setSettings] = useState<SystemSettings | null>(null);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [newApiKey, setNewApiKey] = useState('');
 
   useEffect(() => {
-    fetchSettings()
-    fetchAdminUsers()
-  }, [])
+    fetchSettings();
+    fetchAdminUsers();
+  }, []);
 
   const fetchSettings = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
 
       // Simulierte Settings-Daten
       const mockSettings: SystemSettings = {
@@ -119,7 +127,7 @@ export default function SettingsPage() {
           adminEmail: 'admin@autocare-advisor.com',
           timezone: 'Europe/Berlin',
           language: 'de',
-          maintenanceMode: false
+          maintenanceMode: false,
         },
         security: {
           twoFactorRequired: true,
@@ -127,7 +135,7 @@ export default function SettingsPage() {
           sessionTimeout: 1440,
           maxLoginAttempts: 5,
           allowedIpAddresses: ['192.168.1.0/24', '10.0.0.0/8'],
-          sslEnabled: true
+          sslEnabled: true,
         },
         notifications: {
           emailEnabled: true,
@@ -137,36 +145,39 @@ export default function SettingsPage() {
             newUsers: true,
             newOrders: true,
             systemErrors: true,
-            securityAlerts: true
+            securityAlerts: true,
           },
           userNotifications: {
             orderUpdates: true,
             newsletters: true,
-            promotions: false
-          }
+            promotions: false,
+          },
         },
         api: {
           rateLimit: 1000,
-          allowedOrigins: ['https://app.autocare-advisor.com', 'https://partner.autocare-advisor.com'],
+          allowedOrigins: [
+            'https://app.autocare-advisor.com',
+            'https://partner.autocare-advisor.com',
+          ],
           webhookUrl: 'https://api.autocare-advisor.com/webhooks',
-          apiKeysCount: 3
+          apiKeysCount: 3,
         },
         database: {
           connectionStatus: 'connected',
           lastBackup: new Date(Date.now() - 86400000).toISOString(),
           nextBackup: new Date(Date.now() + 86400000).toISOString(),
           autoBackup: true,
-          backupRetention: 30
-        }
-      }
+          backupRetention: 30,
+        },
+      };
 
-      setSettings(mockSettings)
+      setSettings(mockSettings);
     } catch (err) {
-      console.error('Error fetching settings:', err)
+      console.error('Error fetching settings:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchAdminUsers = async () => {
     try {
@@ -179,7 +190,7 @@ export default function SettingsPage() {
           role: 'super_admin',
           status: 'active',
           lastLogin: new Date(Date.now() - 3600000).toISOString(),
-          permissions: ['all']
+          permissions: ['all'],
         },
         {
           id: '2',
@@ -188,7 +199,7 @@ export default function SettingsPage() {
           role: 'admin',
           status: 'active',
           lastLogin: new Date(Date.now() - 7200000).toISOString(),
-          permissions: ['users', 'products', 'orders', 'reports']
+          permissions: ['users', 'products', 'orders', 'reports'],
         },
         {
           id: '3',
@@ -197,42 +208,45 @@ export default function SettingsPage() {
           role: 'moderator',
           status: 'active',
           lastLogin: new Date(Date.now() - 86400000).toISOString(),
-          permissions: ['moderation', 'reports']
-        }
-      ]
+          permissions: ['moderation', 'reports'],
+        },
+      ];
 
-      setAdminUsers(mockUsers)
+      setAdminUsers(mockUsers);
     } catch (err) {
-      console.error('Error fetching admin users:', err)
+      console.error('Error fetching admin users:', err);
     }
-  }
+  };
 
   const handleSaveSettings = async () => {
     try {
-      setSaving(true)
+      setSaving(true);
       // Implement settings save logic
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('Settings saved:', settings)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log('Settings saved:', settings);
     } catch (err) {
-      console.error('Error saving settings:', err)
+      console.error('Error saving settings:', err);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleBackupDatabase = async () => {
     try {
-      console.log('Starting database backup...')
+      console.log('Starting database backup...');
       // Implement backup logic
     } catch (err) {
-      console.error('Error backing up database:', err)
+      console.error('Error backing up database:', err);
     }
-  }
+  };
 
   const generateApiKey = () => {
-    const key = 'ak_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-    setNewApiKey(key)
-  }
+    const key =
+      'ak_' +
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
+    setNewApiKey(key);
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('de-DE', {
@@ -240,22 +254,22 @@ export default function SettingsPage() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
+      minute: '2-digit',
+    });
+  };
 
   const getRoleColor = (role: AdminUser['role']) => {
     switch (role) {
       case 'super_admin':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 text-red-800';
       case 'admin':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-blue-100 text-blue-800';
       case 'moderator':
-        return 'bg-green-100 text-green-800'
+        return 'bg-green-100 text-green-800';
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   if (loading || !settings) {
     return (
@@ -269,7 +283,7 @@ export default function SettingsPage() {
           </div>
         </div>
       </AdminLayout>
-    )
+    );
   }
 
   return (
@@ -278,8 +292,12 @@ export default function SettingsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">System Settings</h1>
-            <p className="text-gray-600">Manage platform configuration and administrative settings</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              System Settings
+            </h1>
+            <p className="text-gray-600">
+              Manage platform configuration and administrative settings
+            </p>
           </div>
           <div className="flex gap-3">
             <Button variant="outline" onClick={fetchSettings}>
@@ -314,68 +332,106 @@ export default function SettingsPage() {
                   <Globe className="h-5 w-5" />
                   Site Configuration
                 </CardTitle>
-                <CardDescription>Basic site settings and information</CardDescription>
+                <CardDescription>
+                  Basic site settings and information
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Site Name</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Site Name
+                    </label>
                     <Input
                       value={settings.general.siteName}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        general: { ...settings.general, siteName: e.target.value }
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          general: {
+                            ...settings.general,
+                            siteName: e.target.value,
+                          },
+                        })
+                      }
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Admin Email</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Admin Email
+                    </label>
                     <Input
                       type="email"
                       value={settings.general.adminEmail}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        general: { ...settings.general, adminEmail: e.target.value }
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          general: {
+                            ...settings.general,
+                            adminEmail: e.target.value,
+                          },
+                        })
+                      }
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="text-sm font-medium mb-2 block">Site Description</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Site Description
+                    </label>
                     <Textarea
                       value={settings.general.siteDescription}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        general: { ...settings.general, siteDescription: e.target.value }
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          general: {
+                            ...settings.general,
+                            siteDescription: e.target.value,
+                          },
+                        })
+                      }
                       rows={3}
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Site URL</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Site URL
+                    </label>
                     <Input
                       value={settings.general.siteUrl}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        general: { ...settings.general, siteUrl: e.target.value }
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          general: {
+                            ...settings.general,
+                            siteUrl: e.target.value,
+                          },
+                        })
+                      }
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Timezone</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Timezone
+                    </label>
                     <Select
                       value={settings.general.timezone}
-                      onValueChange={(value) => setSettings({
-                        ...settings,
-                        general: { ...settings.general, timezone: value }
-                      })}
+                      onValueChange={(value) =>
+                        setSettings({
+                          ...settings,
+                          general: { ...settings.general, timezone: value },
+                        })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Europe/Berlin">Europe/Berlin</SelectItem>
+                        <SelectItem value="Europe/Berlin">
+                          Europe/Berlin
+                        </SelectItem>
                         <SelectItem value="UTC">UTC</SelectItem>
-                        <SelectItem value="America/New_York">America/New_York</SelectItem>
+                        <SelectItem value="America/New_York">
+                          America/New_York
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -383,15 +439,22 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between py-2">
                   <div>
                     <p className="font-medium">Maintenance Mode</p>
-                    <p className="text-sm text-gray-600">Put the site in maintenance mode</p>
+                    <p className="text-sm text-gray-600">
+                      Put the site in maintenance mode
+                    </p>
                   </div>
                   <input
                     type="checkbox"
                     checked={settings.general.maintenanceMode}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      general: { ...settings.general, maintenanceMode: e.target.checked }
-                    })}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        general: {
+                          ...settings.general,
+                          maintenanceMode: e.target.checked,
+                        },
+                      })
+                    }
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                 </div>
@@ -406,80 +469,120 @@ export default function SettingsPage() {
                   <Shield className="h-5 w-5" />
                   Security Settings
                 </CardTitle>
-                <CardDescription>Configure authentication and security policies</CardDescription>
+                <CardDescription>
+                  Configure authentication and security policies
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between py-2">
                   <div>
-                    <p className="font-medium">Two-Factor Authentication Required</p>
-                    <p className="text-sm text-gray-600">Require 2FA for all admin users</p>
+                    <p className="font-medium">
+                      Two-Factor Authentication Required
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Require 2FA for all admin users
+                    </p>
                   </div>
                   <input
                     type="checkbox"
                     checked={settings.security.twoFactorRequired}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      security: { ...settings.security, twoFactorRequired: e.target.checked }
-                    })}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        security: {
+                          ...settings.security,
+                          twoFactorRequired: e.target.checked,
+                        },
+                      })
+                    }
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Minimum Password Length</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Minimum Password Length
+                    </label>
                     <Input
                       type="number"
                       min="6"
                       max="50"
                       value={settings.security.passwordMinLength}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        security: { ...settings.security, passwordMinLength: parseInt(e.target.value) }
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          security: {
+                            ...settings.security,
+                            passwordMinLength: parseInt(e.target.value),
+                          },
+                        })
+                      }
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Session Timeout (minutes)</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Session Timeout (minutes)
+                    </label>
                     <Input
                       type="number"
                       min="15"
                       max="2880"
                       value={settings.security.sessionTimeout}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        security: { ...settings.security, sessionTimeout: parseInt(e.target.value) }
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          security: {
+                            ...settings.security,
+                            sessionTimeout: parseInt(e.target.value),
+                          },
+                        })
+                      }
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Max Login Attempts</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Max Login Attempts
+                    </label>
                     <Input
                       type="number"
                       min="3"
                       max="10"
                       value={settings.security.maxLoginAttempts}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        security: { ...settings.security, maxLoginAttempts: parseInt(e.target.value) }
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          security: {
+                            ...settings.security,
+                            maxLoginAttempts: parseInt(e.target.value),
+                          },
+                        })
+                      }
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Allowed IP Addresses</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Allowed IP Addresses
+                  </label>
                   <Textarea
                     placeholder="192.168.1.0/24&#10;10.0.0.0/8"
                     value={settings.security.allowedIpAddresses.join('\n')}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      security: { 
-                        ...settings.security, 
-                        allowedIpAddresses: e.target.value.split('\n').filter(ip => ip.trim()) 
-                      }
-                    })}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        security: {
+                          ...settings.security,
+                          allowedIpAddresses: e.target.value
+                            .split('\n')
+                            .filter((ip) => ip.trim()),
+                        },
+                      })
+                    }
                     rows={3}
                   />
-                  <p className="text-xs text-gray-500 mt-1">One IP address or CIDR block per line</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    One IP address or CIDR block per line
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -493,28 +596,41 @@ export default function SettingsPage() {
                     <Bell className="h-5 w-5" />
                     Admin Notifications
                   </CardTitle>
-                  <CardDescription>Configure notifications for administrators</CardDescription>
+                  <CardDescription>
+                    Configure notifications for administrators
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {Object.entries(settings.notifications.adminNotifications).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between py-2">
+                  {Object.entries(
+                    settings.notifications.adminNotifications
+                  ).map(([key, value]) => (
+                    <div
+                      key={key}
+                      className="flex items-center justify-between py-2"
+                    >
                       <div>
-                        <p className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                        <p className="text-sm text-gray-600">Get notified about {key.toLowerCase()}</p>
+                        <p className="font-medium capitalize">
+                          {key.replace(/([A-Z])/g, ' $1').trim()}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Get notified about {key.toLowerCase()}
+                        </p>
                       </div>
                       <input
                         type="checkbox"
                         checked={value}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          notifications: {
-                            ...settings.notifications,
-                            adminNotifications: {
-                              ...settings.notifications.adminNotifications,
-                              [key]: e.target.checked
-                            }
-                          }
-                        })}
+                        onChange={(e) =>
+                          setSettings({
+                            ...settings,
+                            notifications: {
+                              ...settings.notifications,
+                              adminNotifications: {
+                                ...settings.notifications.adminNotifications,
+                                [key]: e.target.checked,
+                              },
+                            },
+                          })
+                        }
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
                     </div>
@@ -528,32 +644,45 @@ export default function SettingsPage() {
                     <Mail className="h-5 w-5" />
                     User Notifications
                   </CardTitle>
-                  <CardDescription>Default notification settings for users</CardDescription>
+                  <CardDescription>
+                    Default notification settings for users
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {Object.entries(settings.notifications.userNotifications).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between py-2">
-                      <div>
-                        <p className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                        <p className="text-sm text-gray-600">Default setting for {key.toLowerCase()}</p>
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={value}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          notifications: {
-                            ...settings.notifications,
-                            userNotifications: {
-                              ...settings.notifications.userNotifications,
-                              [key]: e.target.checked
-                            }
+                  {Object.entries(settings.notifications.userNotifications).map(
+                    ([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex items-center justify-between py-2"
+                      >
+                        <div>
+                          <p className="font-medium capitalize">
+                            {key.replace(/([A-Z])/g, ' $1').trim()}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            Default setting for {key.toLowerCase()}
+                          </p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={value}
+                          onChange={(e) =>
+                            setSettings({
+                              ...settings,
+                              notifications: {
+                                ...settings.notifications,
+                                userNotifications: {
+                                  ...settings.notifications.userNotifications,
+                                  [key]: e.target.checked,
+                                },
+                              },
+                            })
                           }
-                        })}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      />
-                    </div>
-                  ))}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                      </div>
+                    )
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -566,25 +695,36 @@ export default function SettingsPage() {
                   <Key className="h-5 w-5" />
                   API Configuration
                 </CardTitle>
-                <CardDescription>Manage API settings and integration options</CardDescription>
+                <CardDescription>
+                  Manage API settings and integration options
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Rate Limit (requests/hour)</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Rate Limit (requests/hour)
+                    </label>
                     <Input
                       type="number"
                       min="100"
                       max="10000"
                       value={settings.api.rateLimit}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        api: { ...settings.api, rateLimit: parseInt(e.target.value) }
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          api: {
+                            ...settings.api,
+                            rateLimit: parseInt(e.target.value),
+                          },
+                        })
+                      }
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Active API Keys</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Active API Keys
+                    </label>
                     <div className="flex items-center gap-2">
                       <Input value={settings.api.apiKeysCount} disabled />
                       <Button variant="outline" size="sm">
@@ -594,28 +734,38 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Allowed Origins</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Allowed Origins
+                  </label>
                   <Textarea
                     placeholder="https://app.example.com&#10;https://api.example.com"
                     value={settings.api.allowedOrigins.join('\n')}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      api: { 
-                        ...settings.api, 
-                        allowedOrigins: e.target.value.split('\n').filter(origin => origin.trim()) 
-                      }
-                    })}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        api: {
+                          ...settings.api,
+                          allowedOrigins: e.target.value
+                            .split('\n')
+                            .filter((origin) => origin.trim()),
+                        },
+                      })
+                    }
                     rows={3}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Webhook URL</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Webhook URL
+                  </label>
                   <Input
                     value={settings.api.webhookUrl}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      api: { ...settings.api, webhookUrl: e.target.value }
-                    })}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        api: { ...settings.api, webhookUrl: e.target.value },
+                      })
+                    }
                     placeholder="https://your-webhook-url.com/webhook"
                   />
                 </div>
@@ -630,10 +780,18 @@ export default function SettingsPage() {
                   {newApiKey && (
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <div className="flex items-center gap-2">
-                        <Input value={newApiKey} readOnly className="font-mono text-sm" />
-                        <Button variant="outline" size="sm">Copy</Button>
+                        <Input
+                          value={newApiKey}
+                          readOnly
+                          className="font-mono text-sm"
+                        />
+                        <Button variant="outline" size="sm">
+                          Copy
+                        </Button>
                       </div>
-                      <p className="text-xs text-orange-600 mt-2">⚠️ Save this key securely - it won't be shown again!</p>
+                      <p className="text-xs text-orange-600 mt-2">
+                        ⚠️ Save this key securely - it won't be shown again!
+                      </p>
                     </div>
                   )}
                 </div>
@@ -648,24 +806,34 @@ export default function SettingsPage() {
                   <Database className="h-5 w-5" />
                   Database Management
                 </CardTitle>
-                <CardDescription>Database status, backups, and maintenance</CardDescription>
+                <CardDescription>
+                  Database status, backups, and maintenance
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="text-center p-4 bg-green-50 rounded-lg">
                     <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                    <p className="font-medium text-green-700">Database Connected</p>
-                    <p className="text-sm text-green-600">All systems operational</p>
+                    <p className="font-medium text-green-700">
+                      Database Connected
+                    </p>
+                    <p className="text-sm text-green-600">
+                      All systems operational
+                    </p>
                   </div>
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <Activity className="h-8 w-8 text-blue-500 mx-auto mb-2" />
                     <p className="font-medium text-blue-700">Last Backup</p>
-                    <p className="text-sm text-blue-600">{formatDate(settings.database.lastBackup)}</p>
+                    <p className="text-sm text-blue-600">
+                      {formatDate(settings.database.lastBackup)}
+                    </p>
                   </div>
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
                     <Timer className="h-8 w-8 text-purple-500 mx-auto mb-2" />
                     <p className="font-medium text-purple-700">Next Backup</p>
-                    <p className="text-sm text-purple-600">{formatDate(settings.database.nextBackup)}</p>
+                    <p className="text-sm text-purple-600">
+                      {formatDate(settings.database.nextBackup)}
+                    </p>
                   </div>
                 </div>
 
@@ -673,30 +841,44 @@ export default function SettingsPage() {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h4 className="font-medium">Backup Settings</h4>
-                      <p className="text-sm text-gray-600">Configure automatic database backups</p>
+                      <p className="text-sm text-gray-600">
+                        Configure automatic database backups
+                      </p>
                     </div>
                     <input
                       type="checkbox"
                       checked={settings.database.autoBackup}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        database: { ...settings.database, autoBackup: e.target.checked }
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          database: {
+                            ...settings.database,
+                            autoBackup: e.target.checked,
+                          },
+                        })
+                      }
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Backup Retention (days)</label>
+                      <label className="text-sm font-medium mb-2 block">
+                        Backup Retention (days)
+                      </label>
                       <Input
                         type="number"
                         min="7"
                         max="365"
                         value={settings.database.backupRetention}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          database: { ...settings.database, backupRetention: parseInt(e.target.value) }
-                        })}
+                        onChange={(e) =>
+                          setSettings({
+                            ...settings,
+                            database: {
+                              ...settings.database,
+                              backupRetention: parseInt(e.target.value),
+                            },
+                          })
+                        }
                       />
                     </div>
                     <div className="flex items-end">
@@ -720,7 +902,9 @@ export default function SettingsPage() {
                       <Users className="h-5 w-5" />
                       Admin Users
                     </CardTitle>
-                    <CardDescription>Manage administrator accounts and permissions</CardDescription>
+                    <CardDescription>
+                      Manage administrator accounts and permissions
+                    </CardDescription>
                   </div>
                   <Button>
                     <Plus className="h-4 w-4 mr-2" />
@@ -731,24 +915,36 @@ export default function SettingsPage() {
               <CardContent>
                 <div className="space-y-4">
                   {adminUsers.map((user) => (
-                    <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div
+                      key={user.id}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                           <span className="text-blue-600 font-medium">
-                            {user.name.split(' ').map(n => n[0]).join('')}
+                            {user.name
+                              .split(' ')
+                              .map((n) => n[0])
+                              .join('')}
                           </span>
                         </div>
                         <div>
                           <p className="font-medium">{user.name}</p>
                           <p className="text-sm text-gray-600">{user.email}</p>
-                          <p className="text-xs text-gray-500">Last login: {formatDate(user.lastLogin)}</p>
+                          <p className="text-xs text-gray-500">
+                            Last login: {formatDate(user.lastLogin)}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Badge className={getRoleColor(user.role)}>
                           {user.role.replace('_', ' ').toUpperCase()}
                         </Badge>
-                        <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
+                        <Badge
+                          variant={
+                            user.status === 'active' ? 'default' : 'secondary'
+                          }
+                        >
                           {user.status}
                         </Badge>
                         <div className="flex gap-1">
@@ -771,5 +967,5 @@ export default function SettingsPage() {
         </Tabs>
       </div>
     </AdminLayout>
-  )
+  );
 }

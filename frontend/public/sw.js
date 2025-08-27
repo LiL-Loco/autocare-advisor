@@ -23,16 +23,17 @@ const API_ENDPOINTS = [
   '/api/partner/analytics',
   '/api/partner/products',
   '/api/partner/profile',
-  '/api/health'
+  '/api/health',
 ];
 
 // Install event - Cache static assets
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
   console.log('[SW] Installing service worker...');
-  
+
   event.waitUntil(
-    caches.open(STATIC_CACHE)
-      .then(cache => {
+    caches
+      .open(STATIC_CACHE)
+      .then((cache) => {
         console.log('[SW] Caching static assets');
         return cache.addAll(STATIC_ASSETS);
       })
@@ -40,21 +41,22 @@ self.addEventListener('install', event => {
         console.log('[SW] Static assets cached successfully');
         return self.skipWaiting();
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('[SW] Error caching static assets:', error);
       })
   );
 });
 
 // Activate event - Clean up old caches
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
   console.log('[SW] Activating service worker...');
-  
+
   event.waitUntil(
-    caches.keys()
-      .then(cacheNames => {
+    caches
+      .keys()
+      .then((cacheNames) => {
         return Promise.all(
-          cacheNames.map(cacheName => {
+          cacheNames.map((cacheName) => {
             if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
               console.log('[SW] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
@@ -70,7 +72,7 @@ self.addEventListener('activate', event => {
 });
 
 // Fetch event - Handle different caching strategies
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
@@ -99,37 +101,40 @@ self.addEventListener('fetch', event => {
 async function networkFirst(request) {
   try {
     const networkResponse = await fetch(request);
-    
+
     if (networkResponse.ok) {
       const cache = await caches.open(DYNAMIC_CACHE);
       cache.put(request, networkResponse.clone());
     }
-    
+
     return networkResponse;
   } catch (error) {
     console.log('[SW] Network failed, trying cache:', error);
-    
+
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     // Return offline data for analytics if available
     if (request.url.includes('/api/partner/analytics')) {
-      return new Response(JSON.stringify({
-        overview: {
-          totalProducts: 0,
-          totalViews: 0,
-          totalClicks: 0,
-          monthlyRevenue: 0,
-          averageConversionRate: 0
-        },
-        offline: true
-      }), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({
+          overview: {
+            totalProducts: 0,
+            totalViews: 0,
+            totalClicks: 0,
+            monthlyRevenue: 0,
+            averageConversionRate: 0,
+          },
+          offline: true,
+        }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
     }
-    
+
     throw error;
   }
 }
@@ -137,11 +142,11 @@ async function networkFirst(request) {
 // Cache-first strategy for static assets
 async function cacheFirst(request) {
   const cachedResponse = await caches.match(request);
-  
+
   if (cachedResponse) {
     return cachedResponse;
   }
-  
+
   try {
     const networkResponse = await fetch(request);
     const cache = await caches.open(DYNAMIC_CACHE);
@@ -160,16 +165,17 @@ async function navigationHandler(request) {
     return networkResponse;
   } catch (error) {
     console.log('[SW] Navigation failed, serving offline page:', error);
-    
+
     const cache = await caches.open(STATIC_CACHE);
     const offlinePage = await cache.match('/offline');
-    
+
     if (offlinePage) {
       return offlinePage;
     }
-    
+
     // Fallback offline HTML
-    return new Response(`
+    return new Response(
+      `
       <!DOCTYPE html>
       <html>
         <head>
@@ -213,20 +219,22 @@ async function navigationHandler(request) {
           <button onclick="window.location.reload()">Try Again</button>
         </body>
       </html>
-    `, {
-      headers: { 'Content-Type': 'text/html' }
-    });
+    `,
+      {
+        headers: { 'Content-Type': 'text/html' },
+      }
+    );
   }
 }
 
 // Background sync for offline actions
-self.addEventListener('sync', event => {
+self.addEventListener('sync', (event) => {
   console.log('[SW] Background sync triggered:', event.tag);
-  
+
   if (event.tag === 'product-sync') {
     event.waitUntil(syncOfflineProductData());
   }
-  
+
   if (event.tag === 'analytics-sync') {
     event.waitUntil(syncOfflineAnalytics());
   }
@@ -236,18 +244,22 @@ self.addEventListener('sync', event => {
 async function syncOfflineProductData() {
   try {
     const offlineData = await getOfflineProductData();
-    
+
     if (offlineData.length > 0) {
-      console.log('[SW] Syncing offline product data:', offlineData.length, 'items');
-      
+      console.log(
+        '[SW] Syncing offline product data:',
+        offlineData.length,
+        'items'
+      );
+
       for (const data of offlineData) {
         await fetch('/api/partner/products', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
         });
       }
-      
+
       // Clear offline storage after successful sync
       await clearOfflineProductData();
       console.log('[SW] Product data synced successfully');
@@ -258,47 +270,47 @@ async function syncOfflineProductData() {
 }
 
 // Push notification handling
-self.addEventListener('push', event => {
+self.addEventListener('push', (event) => {
   console.log('[SW] Push notification received');
-  
+
   const options = {
-    body: event.data ? event.data.text() : 'New update available in your Partner Portal',
+    body: event.data
+      ? event.data.text()
+      : 'New update available in your Partner Portal',
     icon: '/icon-192x192.png',
     badge: '/badge-72x72.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
-      primaryKey: '2'
+      primaryKey: '2',
     },
     actions: [
       {
         action: 'explore',
         title: 'Open Dashboard',
-        icon: '/icon-192x192.png'
+        icon: '/icon-192x192.png',
       },
       {
         action: 'close',
         title: 'Dismiss',
-        icon: '/icon-192x192.png'
-      }
-    ]
+        icon: '/icon-192x192.png',
+      },
+    ],
   };
-  
+
   event.waitUntil(
     self.registration.showNotification('AutoCare Partner Portal', options)
   );
 });
 
 // Handle notification clicks
-self.addEventListener('notificationclick', event => {
+self.addEventListener('notificationclick', (event) => {
   console.log('[SW] Notification clicked:', event.action);
-  
+
   event.notification.close();
-  
+
   if (event.action === 'explore') {
-    event.waitUntil(
-      clients.openWindow('/partner/dashboard')
-    );
+    event.waitUntil(clients.openWindow('/partner/dashboard'));
   }
 });
 
@@ -314,13 +326,13 @@ async function clearOfflineProductData() {
 }
 
 // Performance monitoring
-self.addEventListener('message', event => {
+self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
-  
+
   if (event.data && event.data.type === 'GET_CACHE_SIZE') {
-    getCacheSize().then(size => {
+    getCacheSize().then((size) => {
       event.ports[0].postMessage({ cacheSize: size });
     });
   }
@@ -329,11 +341,11 @@ self.addEventListener('message', event => {
 async function getCacheSize() {
   const cacheNames = await caches.keys();
   let totalSize = 0;
-  
+
   for (const cacheName of cacheNames) {
     const cache = await caches.open(cacheName);
     const requests = await cache.keys();
-    
+
     for (const request of requests) {
       const response = await cache.match(request);
       if (response) {
@@ -342,7 +354,7 @@ async function getCacheSize() {
       }
     }
   }
-  
+
   return totalSize;
 }
 

@@ -1,35 +1,33 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Eye, 
-  MousePointer, 
-  Euro,
-  ChevronLeft,
-  ChevronRight,
-  Maximize2,
-  Minimize2
-} from 'lucide-react';
-import { TouchButton, MobileCard } from './MobileOptimized';
 import { Badge } from '@/components/ui/badge';
 import {
-  AreaChart,
+  ChevronLeft,
+  ChevronRight,
+  Euro,
+  Eye,
+  Maximize2,
+  Minimize2,
+  MousePointer,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react';
+import { useRef, useState } from 'react';
+import {
   Area,
+  AreaChart,
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
 } from 'recharts';
+import { MobileCard, TouchButton } from './MobileOptimized';
 
 interface MobileAnalyticsProps {
   data: {
@@ -54,7 +52,9 @@ interface MobileAnalyticsProps {
 }
 
 export default function MobileAnalytics({ data }: MobileAnalyticsProps) {
-  const [activeChart, setActiveChart] = useState<'revenue' | 'engagement' | 'products'>('revenue');
+  const [activeChart, setActiveChart] = useState<
+    'revenue' | 'engagement' | 'products'
+  >('revenue');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +73,7 @@ export default function MobileAnalytics({ data }: MobileAnalyticsProps) {
 
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
@@ -156,7 +156,13 @@ export default function MobileAnalytics({ data }: MobileAnalyticsProps) {
             variant="outline"
             size="sm"
             onClick={() => setIsFullscreen(!isFullscreen)}
-            icon={isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            icon={
+              isFullscreen ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )
+            }
           >
             {isFullscreen ? 'Exit' : 'Expand'}
           </TouchButton>
@@ -177,7 +183,7 @@ export default function MobileAnalytics({ data }: MobileAnalyticsProps) {
           >
             Previous
           </TouchButton>
-          
+
           <div className="flex space-x-1">
             {['revenue', 'engagement', 'products'].map((chart, index) => (
               <button
@@ -196,7 +202,8 @@ export default function MobileAnalytics({ data }: MobileAnalyticsProps) {
             onClick={() => {
               const charts = ['revenue', 'engagement', 'products'] as const;
               const currentIndex = charts.indexOf(activeChart);
-              if (currentIndex < charts.length - 1) setActiveChart(charts[currentIndex + 1]);
+              if (currentIndex < charts.length - 1)
+                setActiveChart(charts[currentIndex + 1]);
             }}
             disabled={activeChart === 'products'}
           >
@@ -207,7 +214,9 @@ export default function MobileAnalytics({ data }: MobileAnalyticsProps) {
 
         {/* Chart Container with Touch Support */}
         <div
-          className={`transition-all duration-300 ${isFullscreen ? 'h-96' : 'h-64'}`}
+          className={`transition-all duration-300 ${
+            isFullscreen ? 'h-96' : 'h-64'
+          }`}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -217,34 +226,34 @@ export default function MobileAnalytics({ data }: MobileAnalyticsProps) {
               <AreaChart data={data.chartData.revenue}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#10B981" stopOpacity={0.1}/>
+                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#10B981" stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12, fill: '#666' }}
                 />
-                <YAxis 
+                <YAxis
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12, fill: '#666' }}
                 />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
                     backgroundColor: 'white',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    fontSize: '14px'
+                    fontSize: '14px',
                   }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="value" 
+                <Area
+                  type="monotone"
+                  dataKey="value"
                   stroke="#10B981"
                   fill="url(#colorRevenue)"
                   strokeWidth={3}
@@ -255,39 +264,39 @@ export default function MobileAnalytics({ data }: MobileAnalyticsProps) {
             ) : activeChart === 'engagement' ? (
               <LineChart data={data.chartData.engagement}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12, fill: '#666' }}
                 />
-                <YAxis 
+                <YAxis
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12, fill: '#666' }}
                 />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
                     backgroundColor: 'white',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    fontSize: '14px'
+                    fontSize: '14px',
                   }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="views" 
-                  stroke="#3B82F6" 
+                <Line
+                  type="monotone"
+                  dataKey="views"
+                  stroke="#3B82F6"
                   strokeWidth={3}
                   name="Views"
                   dot={{ fill: '#3B82F6', strokeWidth: 2, r: 6 }}
                   activeDot={{ r: 8 }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="clicks" 
-                  stroke="#8B5CF6" 
+                <Line
+                  type="monotone"
+                  dataKey="clicks"
+                  stroke="#8B5CF6"
                   strokeWidth={3}
                   name="Clicks"
                   dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 6 }}
@@ -303,22 +312,26 @@ export default function MobileAnalytics({ data }: MobileAnalyticsProps) {
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
-                  label={({ name, percent }: { name: string; percent?: number }) => 
-                    `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`
-                  }
+                  label={({
+                    name,
+                    percent,
+                  }: {
+                    name: string;
+                    percent?: number;
+                  }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
                   labelLine={false}
                 >
                   {data.chartData.products.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
                     backgroundColor: 'white',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    fontSize: '14px'
+                    fontSize: '14px',
                   }}
                 />
               </PieChart>
@@ -334,8 +347,10 @@ export default function MobileAnalytics({ data }: MobileAnalyticsProps) {
             {activeChart === 'products' && 'Product Performance Distribution'}
           </p>
           <p className="text-xs text-gray-600 mt-1">
-            {activeChart === 'revenue' && 'Daily revenue performance over the last month'}
-            {activeChart === 'engagement' && 'Views and clicks comparison over time'}
+            {activeChart === 'revenue' &&
+              'Daily revenue performance over the last month'}
+            {activeChart === 'engagement' &&
+              'Views and clicks comparison over time'}
             {activeChart === 'products' && 'Top performing product categories'}
           </p>
         </div>
@@ -357,7 +372,7 @@ function MetricCard({ icon, title, value, growth, color }: MetricCardProps) {
     emerald: 'from-emerald-500 to-emerald-600',
     blue: 'from-blue-500 to-blue-600',
     purple: 'from-purple-500 to-purple-600',
-    yellow: 'from-yellow-500 to-yellow-600'
+    yellow: 'from-yellow-500 to-yellow-600',
   };
 
   const getGrowthIcon = (growth: number) => {
@@ -377,7 +392,11 @@ function MetricCard({ icon, title, value, growth, color }: MetricCardProps) {
       <div className={`bg-gradient-to-r ${colorClasses[color]} p-3`}>
         <div className="flex items-center justify-between">
           <span className="text-2xl opacity-80">{icon}</span>
-          <div className={`px-2 py-1 rounded-full text-xs font-medium ${getGrowthColor(growth)}`}>
+          <div
+            className={`px-2 py-1 rounded-full text-xs font-medium ${getGrowthColor(
+              growth
+            )}`}
+          >
             <div className="flex items-center space-x-1">
               {getGrowthIcon(growth)}
               <span>
@@ -388,7 +407,7 @@ function MetricCard({ icon, title, value, growth, color }: MetricCardProps) {
           </div>
         </div>
       </div>
-      
+
       <div className="p-3">
         <h3 className="text-xs font-medium text-gray-600 mb-1">{title}</h3>
         <p className="text-xl font-bold text-gray-900 mb-1">{value}</p>
