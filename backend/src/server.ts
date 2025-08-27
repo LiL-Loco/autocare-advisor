@@ -7,6 +7,11 @@ import helmet from 'helmet';
 
 // Import routes
 import adminRouter from './routes/admin';
+import adminModerationRouter from './routes/adminModeration';
+import adminAnalyticsRouter from './routes/adminAnalytics';
+import adminPartnersRouter from './routes/adminPartners';
+import adminReportsRouter from './routes/adminReports';
+import adminSettingsRouter from './routes/adminSettings';
 import authRouter from './routes/auth';
 import { initializeBillingRoutes } from './routes/billing';
 import healthRouter from './routes/health';
@@ -64,6 +69,11 @@ app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/billing', initializeBillingRoutes(billingPool));
 app.use('/api/admin', adminRouter);
+app.use('/api/admin/moderation', adminModerationRouter);
+app.use('/api/admin/analytics', adminAnalyticsRouter);
+app.use('/api/admin/partners', adminPartnersRouter);
+app.use('/api/admin/reports', adminReportsRouter);
+app.use('/api/admin/settings', adminSettingsRouter);
 app.use('/api/invitations', invitationsRouter);
 app.use('/api/product-management', productManagementRouter);
 app.use('/api/products', productsRouter);
@@ -83,6 +93,11 @@ app.get('/', (req, res) => {
       auth: '/api/auth',
       billing: '/api/billing',
       admin: '/api/admin',
+      adminModeration: '/api/admin/moderation',
+      adminAnalytics: '/api/admin/analytics',
+      adminPartners: '/api/admin/partners',
+      adminReports: '/api/admin/reports',
+      adminSettings: '/api/admin/settings',
       invitations: '/api/invitations',
       products: '/api/products',
       productManagement: '/api/products/management',
@@ -137,16 +152,14 @@ async function startServer() {
       );
       logger.info(`🗄️ MongoDB Database: Connected & Ready`);
 
-      // Log available API endpoints
-      logger.info('API Endpoints:');
-      logger.info('  🏥 GET  /api/health - Health check');
-      logger.info('  🔐 POST /api/auth/* - Authentication');
-      logger.info('  � POST /api/billing/* - Payments & Subscriptions');
-      logger.info('  �👥 GET  /api/admin/* - Admin management');
-      logger.info('  📧 POST /api/invitations/* - B2B Invitations');
-      logger.info('  🛍️ GET  /api/products - Product catalog');
-      logger.info('  🤖 POST /api/recommendations - Get recommendations');
-      logger.info('  🤝 GET  /api/partners - Partner management');
+      // Log admin endpoints
+      logger.info('Admin Endpoints:');
+      logger.info('  👑 GET  /api/admin/* - Admin management');
+      logger.info('  �️ GET  /api/admin/moderation/* - Content moderation');
+      logger.info('  � GET  /api/admin/analytics/* - System analytics');
+      logger.info('  � GET  /api/admin/partners/* - Partner management');
+      logger.info('  📋 GET  /api/admin/reports/* - Report generation');
+      logger.info('  ⚙️ GET  /api/admin/settings/* - System settings');
 
       // Log authentication endpoints
       logger.info('Authentication Endpoints:');

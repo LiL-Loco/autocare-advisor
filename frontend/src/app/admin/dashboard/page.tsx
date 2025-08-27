@@ -1,160 +1,528 @@
-'use client';
-
+import AdminLayout from '@/components/admin/AdminLayout';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
-  CheckCircleIcon,
-  ClockIcon,
-  EnvelopeIcon,
-  UserGroupIcon,
-} from '@heroicons/react/24/outline';
-import axios from 'axios';
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  AlertTriangle,
+  BarChart3,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  Download,
+  Package,
+  RefreshCw,
+  Users,
+  XCircle,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface DashboardStats {
-  totalInvitations: number;
-  pendingInvitations: number;
-  acceptedInvitations: number;
-  expiredInvitations: number;
+  overview: {
+    totalPartners: number;
+    totalProducts: number;
+    pendingModeration: number;
+    monthlyRevenue: number;
+    averageApprovalTime: number;
+  };
+  moderation: {
+    pending: number;
+    approved: number;
+    rejected: number;
+    processing: number;
+  };
+  partners: {
+    activePartners: number;
+    newThisMonth: number;
+    topPartnersByProducts: Array<{
+      id: string;
+      name: string;
+      email: string;
+      productCount: number;
+    }>;
+  };
+  products: {
+    totalProducts: number;
+    newThisMonth: number;
+    topCategories: Array<{
+      name: string;
+      count: number;
+      percentage: number;
+    }>;
+  };
+  activity: {
+    recentApprovals: Array<{
+      id: string;
+      productName: string;
+      partnerName: string;
+      approvedAt: string;
+    }>;
+    recentRejections: Array<{
+      id: string;
+      productName: string;
+      partnerName: string;
+      reason: string;
+      rejectedAt: string;
+    }>;
+  };
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<DashboardStats>({
-    totalInvitations: 0,
-    pendingInvitations: 0,
-    acceptedInvitations: 0,
-    expiredInvitations: 0,
-  });
+  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
+  const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    fetchStats();
+    fetchDashboardStats();
   }, []);
 
-  const fetchStats = async () => {
+  const fetchDashboardStats = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/invitations`);
-      const invitations = response.data.invitations;
+      setLoading(true);
+      setError(null);
 
-      const stats = {
-        totalInvitations: invitations.length,
-        pendingInvitations: invitations.filter(
-          (inv: any) => inv.status === 'pending'
-        ).length,
-        acceptedInvitations: invitations.filter(
-          (inv: any) => inv.status === 'accepted'
-        ).length,
-        expiredInvitations: invitations.filter(
-          (inv: any) => inv.status === 'expired'
-        ).length,
-      };
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/stats/dashboard`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-      setStats(stats);
-    } catch (error) {
-      console.error('Error fetching stats:', error);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        setStats(result.data);
+      } else {
+        throw new Error(result.error || 'Failed to fetch dashboard stats');
+      }
+    } catch (err: any) {
+      console.error('Error fetching dashboard stats:', err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const statCards = [
-    {
-      name: 'Total Invitations',
-      value: stats.totalInvitations,
-      icon: UserGroupIcon,
-      color: 'bg-blue-500',
-    },
-    {
-      name: 'Pending',
-      value: stats.pendingInvitations,
-      icon: ClockIcon,
-      color: 'bg-yellow-500',
-    },
-    {
-      name: 'Accepted',
-      value: stats.acceptedInvitations,
-      icon: CheckCircleIcon,
-      color: 'bg-green-500',
-    },
-    {
-      name: 'Expired',
-      value: stats.expiredInvitations,
-      icon: EnvelopeIcon,
-      color: 'bg-red-500',
-    },
-  ];
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchDashboardStats();
+    setRefreshing(false);
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('de-DE', {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(amount);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const formatDuration = (hours: number) => {
+    if (hours < 24) {
+      return `${Math.round(hours)} Stunden`;
+    } else {
+      const days = Math.floor(hours / 24);
+      const remainingHours = Math.round(hours % 24);
+      return `${days} Tag${days !== 1 ? 'e' : ''}${
+        remainingHours > 0 ? `, ${remainingHours}h` : ''
+      }`;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <RefreshCw className="h-8 w-8 animate-spin mx-auto text-gray-400" />
+            <p className="mt-2 text-gray-600">Loading dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !stats) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            {error || 'Failed to load dashboard data'}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchDashboardStats}
+              className="ml-4"
+            >
+              Try Again
+            </Button>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
-    <div className="px-4 py-6 sm:px-0">
-      <div className="border-4 border-dashed border-gray-200 rounded-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
-          Admin Dashboard
-        </h1>
-
-        {loading ? (
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+    <AdminLayout>
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Admin Dashboard
+            </h1>
+            <p className="text-gray-600">System overview and key metrics</p>
           </div>
-        ) : (
-          <>
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-              {statCards.map((stat) => (
-                <div
-                  key={stat.name}
-                  className="bg-white overflow-hidden shadow rounded-lg"
-                >
-                  <div className="p-5">
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={refreshing}
+            >
+              {refreshing ? (
+                <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              Refresh
+            </Button>
+            <Button variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Export Report
+            </Button>
+          </div>
+        </div>
+
+        {/* Key Metrics Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Partners
+              </CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {stats.overview.totalPartners}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                +{stats.partners.newThisMonth} this month
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Products
+              </CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {stats.overview.totalProducts}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                +{stats.products.newThisMonth} this month
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Pending Review
+              </CardTitle>
+              <Clock className="h-4 w-4 text-orange-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">
+                {stats.moderation.pending}
+              </div>
+              <p className="text-xs text-muted-foreground">Needs attention</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Monthly Revenue
+              </CardTitle>
+              <DollarSign className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">
+                {formatCurrency(stats.overview.monthlyRevenue)}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                From subscriptions
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Avg. Approval Time
+              </CardTitle>
+              <BarChart3 className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">
+                {formatDuration(stats.overview.averageApprovalTime)}
+              </div>
+              <p className="text-xs text-muted-foreground">Processing time</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Moderation Status */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Moderation Queue Status</CardTitle>
+              <CardDescription>
+                Current status of product moderation
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Clock className="h-4 w-4 text-orange-500 mr-2" />
+                    <span>Pending Review</span>
+                  </div>
+                  <Badge
+                    variant="secondary"
+                    className="bg-orange-100 text-orange-700"
+                  >
+                    {stats.moderation.pending}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                    <span>Approved Today</span>
+                  </div>
+                  <Badge
+                    variant="secondary"
+                    className="bg-green-100 text-green-700"
+                  >
+                    {stats.moderation.approved}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <XCircle className="h-4 w-4 text-red-500 mr-2" />
+                    <span>Rejected</span>
+                  </div>
+                  <Badge
+                    variant="secondary"
+                    className="bg-red-100 text-red-700"
+                  >
+                    {stats.moderation.rejected}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <AlertTriangle className="h-4 w-4 text-blue-500 mr-2" />
+                    <span>In Processing</span>
+                  </div>
+                  <Badge
+                    variant="secondary"
+                    className="bg-blue-100 text-blue-700"
+                  >
+                    {stats.moderation.processing}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Top Product Categories</CardTitle>
+              <CardDescription>Most popular product categories</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {stats.products.topCategories.map((category, index) => (
+                  <div
+                    key={category.name}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex items-center">
-                      <div className="flex-shrink-0">
-                        <div className={`${stat.color} p-3 rounded-md`}>
-                          <stat.icon className="h-6 w-6 text-white" />
-                        </div>
-                      </div>
-                      <div className="ml-5 w-0 flex-1">
-                        <dl>
-                          <dt className="text-sm font-medium text-gray-500 truncate">
-                            {stat.name}
-                          </dt>
-                          <dd className="text-lg font-medium text-gray-900">
-                            {stat.value}
-                          </dd>
-                        </dl>
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3" />
+                      <span className="text-sm font-medium">
+                        {category.name}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold">{category.count}</div>
+                      <div className="text-xs text-gray-500">
+                        {category.percentage}%
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-white shadow rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                  Quick Actions
-                </h3>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <a
-                    href="/admin/invitations"
-                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    <UserGroupIcon className="w-5 h-5 mr-2" />
-                    Manage Invitations
-                  </a>
-                  <a
-                    href="/admin/invitations/new"
-                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                  >
-                    <EnvelopeIcon className="w-5 h-5 mr-2" />
-                    Send New Invitation
-                  </a>
-                </div>
+                ))}
               </div>
-            </div>
-          </>
-        )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Activity and Top Partners */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Top Partners by Products</CardTitle>
+              <CardDescription>Most active partners this month</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Partner</TableHead>
+                    <TableHead>Products</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {stats.partners.topPartnersByProducts.map(
+                    (partner, index) => (
+                      <TableRow key={partner.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{partner.name}</p>
+                            <p className="text-sm text-gray-500">
+                              {partner.email}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {partner.productCount}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>Latest moderation decisions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="approvals">
+                <TabsList className="mb-4">
+                  <TabsTrigger value="approvals">Recent Approvals</TabsTrigger>
+                  <TabsTrigger value="rejections">
+                    Recent Rejections
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="approvals">
+                  <div className="space-y-3">
+                    {stats.activity.recentApprovals.length === 0 ? (
+                      <p className="text-sm text-gray-500 text-center py-4">
+                        No recent approvals
+                      </p>
+                    ) : (
+                      stats.activity.recentApprovals.map((approval) => (
+                        <div
+                          key={approval.id}
+                          className="flex items-center justify-between border-l-4 border-green-500 pl-3 py-2"
+                        >
+                          <div>
+                            <p className="text-sm font-medium">
+                              {approval.productName}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              by {approval.partnerName}
+                            </p>
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {formatDate(approval.approvedAt)}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="rejections">
+                  <div className="space-y-3">
+                    {stats.activity.recentRejections.length === 0 ? (
+                      <p className="text-sm text-gray-500 text-center py-4">
+                        No recent rejections
+                      </p>
+                    ) : (
+                      stats.activity.recentRejections.map((rejection) => (
+                        <div
+                          key={rejection.id}
+                          className="flex items-center justify-between border-l-4 border-red-500 pl-3 py-2"
+                        >
+                          <div>
+                            <p className="text-sm font-medium">
+                              {rejection.productName}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              by {rejection.partnerName}
+                            </p>
+                            <p className="text-xs text-red-600">
+                              {rejection.reason}
+                            </p>
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {formatDate(rejection.rejectedAt)}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }
