@@ -21,6 +21,7 @@ import partnersRouter from './routes/partners';
 import productManagementRouter from './routes/productManagement';
 import productsRouter from './routes/products';
 import recommendationsRouter from './routes/recommendations';
+import simpleAdminAuthRouter from './routes/simpleAdminAuth';
 
 // Import middleware
 import errorHandler from './middleware/errorHandler';
@@ -67,6 +68,7 @@ app.use(express.urlencoded({ extended: true }));
 // API Routes
 app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/simple-auth', simpleAdminAuthRouter); // Fallback Admin Auth
 app.use('/api/billing', initializeBillingRoutes(billingPool));
 app.use('/api/admin', adminRouter);
 app.use('/api/admin/moderation', adminModerationRouter);

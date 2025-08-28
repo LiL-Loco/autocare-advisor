@@ -38,8 +38,9 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        'http://localhost:5001/api/auth/admin/login',
+      // First try the simple auth endpoint as fallback
+      let response = await fetch(
+        'http://localhost:5001/api/simple-auth/admin/login',
         {
           method: 'POST',
           headers: {
@@ -48,6 +49,18 @@ export default function AdminLoginPage() {
           body: JSON.stringify({ email, password }),
         }
       );
+
+      // If simple auth fails, try regular auth endpoint
+      if (!response.ok) {
+        console.log('Simple auth failed, trying regular auth endpoint...');
+        response = await fetch('http://localhost:5001/api/auth/admin/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
