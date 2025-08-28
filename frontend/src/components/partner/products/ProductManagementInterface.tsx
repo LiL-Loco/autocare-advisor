@@ -1,25 +1,58 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 // Types for Product Management
 interface Product {
-  id: string;
+  _id: string;
   name: string;
-  sku: string;
+  description?: string;
+  brand: string;
   category: string;
+  subcategory?: string;
   price: number;
-  stock: number;
-  status: 'active' | 'inactive' | 'draft';
-  performance: {
-    views: number;
-    clicks: number;
-    conversions: number;
-    revenue: number;
+  originalPrice?: number;
+  images: string[];
+  features: string[];
+  isActive: boolean;
+  inStock: boolean;
+  availabilityStatus: string;
+  partnerId: string;
+  partnerShopName: string;
+  partnerShopUrl: string;
+  tier?: 'basic' | 'professional' | 'enterprise';
+  tags?: string[];
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: string;
+  lastModifiedBy?: string;
+}
+
+interface PaginationResponse {
+  products: Product[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalProducts: number;
+    hasMore: boolean;
+    limit: number;
   };
-  lastUpdated: string;
-  tags: string[];
+  filters: {
+    categories: string[];
+    brands: string[];
+    priceRange: { min: number; max: number };
+  };
+}
+
+interface ProductAnalytics {
+  totalProducts: number;
+  activeProducts: number;
+  inactiveProducts: number;
+  categories: Array<{ name: string; count: number }>;
+  brands: Array<{ name: string; count: number }>;
+  averagePrice: number;
+  totalValue: number;
 }
 
 interface ProductFilters {
@@ -38,7 +71,8 @@ interface BulkAction {
 
 const ProductManagementInterface: React.FC = () => {
   const router = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [paginationData, setPaginationData] =
+    useState<PaginationResponse | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [filters, setFilters] = useState<ProductFilters>({});
   const [loading, setLoading] = useState(true);
@@ -46,81 +80,115 @@ const ProductManagementInterface: React.FC = () => {
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(25);
+  const [error, setError] = useState<string | null>(null);
+  const [analytics, setAnalytics] = useState<ProductAnalytics | null>(null);
 
-  // Mock data for demonstration
-  useEffect(() => {
-    const mockProducts: Product[] = Array.from({ length: 150 }, (_, i) => ({
-      id: `prod-${i + 1}`,
-      name: `AutoCare Product ${i + 1}`,
-      sku: `AC-${String(i + 1).padStart(4, '0')}`,
-      category: [
-        'Engine Oil',
-        'Brake Pads',
-        'Air Filters',
-        'Spark Plugs',
-        'Tires',
-      ][i % 5],
-      price: 25 + Math.floor(Math.random() * 200),
-      stock: Math.floor(Math.random() * 100),
-      status: ['active', 'inactive', 'draft'][Math.floor(Math.random() * 3)] as
-        | 'active'
-        | 'inactive'
-        | 'draft',
-      performance: {
-        views: Math.floor(Math.random() * 1000),
-        clicks: Math.floor(Math.random() * 100),
-        conversions: Math.floor(Math.random() * 20),
-        revenue: Math.floor(Math.random() * 5000),
-      },
-      lastUpdated: new Date(
-        Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000
-      ).toISOString(),
-      tags: ['popular', 'bestseller', 'new', 'discounted'].slice(
-        0,
-        Math.floor(Math.random() * 3)
-      ),
-    }));
+  // Get current user's partner ID from localStorage/context
+  const getPartnerId = () => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('partnerId') || 'demo-partner-id';
+    }
+    return 'demo-partner-id';
+  };
 
-    setTimeout(() => {
-      setProducts(mockProducts);
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const queryParams = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: itemsPerPage.toString(),
+        ...(filters.search && { search: filters.search }),
+        ...(filters.status && {
+          isActive: filters.status === 'active' ? 'true' : 'false',
+        }),
+        ...(filters.category && { category: filters.category }),
+        ...(filters.sortBy && { sortBy: filters.sortBy }),
+        ...(filters.sortOrder && { sortOrder: filters.sortOrder }),
+      });
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products?${queryParams}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch products: ${response.statusText}`);
+      }
+
+      const data: PaginationResponse = await response.json();
+      setPaginationData(data);
+    } catch (error: any) {
+      console.error('Failed to fetch products:', error);
+      setError(error.message);
+      // Fallback to empty data
+      setPaginationData({
+        products: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 0,
+          totalProducts: 0,
+          hasMore: false,
+          limit: itemsPerPage,
+        },
+        filters: {
+          categories: [],
+          brands: [],
+          priceRange: { min: 0, max: 1000 },
+        },
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
+  }, [currentPage, itemsPerPage, filters]);
+
+  const fetchAnalytics = useCallback(async () => {
+    try {
+      const partnerId = getPartnerId();
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/analytics/${partnerId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data: ProductAnalytics = await response.json();
+        setAnalytics(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch analytics:', error);
+    }
   }, []);
 
-  // Filter and sort products
-  const filteredProducts = products
-    .filter((product) => {
-      if (filters.status && product.status !== filters.status) return false;
-      if (filters.category && product.category !== filters.category)
-        return false;
-      if (
-        filters.search &&
-        !product.name.toLowerCase().includes(filters.search.toLowerCase()) &&
-        !product.sku.toLowerCase().includes(filters.search.toLowerCase())
-      )
-        return false;
-      if (
-        filters.priceRange &&
-        (product.price < filters.priceRange[0] ||
-          product.price > filters.priceRange[1])
-      )
-        return false;
-      return true;
-    })
-    .sort((a, b) => {
-      if (!filters.sortBy) return 0;
-      const aValue = a[filters.sortBy as keyof Product] as any;
-      const bValue = b[filters.sortBy as keyof Product] as any;
-      const modifier = filters.sortOrder === 'desc' ? -1 : 1;
-      return aValue > bValue ? modifier : aValue < bValue ? -modifier : 0;
-    });
+  useEffect(() => {
+    fetchProducts();
+    fetchAnalytics();
+  }, [fetchProducts, fetchAnalytics]);
 
-  // Pagination
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Get products and pagination from API response
+  const products = paginationData?.products || [];
+  const pagination = paginationData?.pagination || {
+    currentPage: 1,
+    totalPages: 0,
+    totalProducts: 0,
+    hasMore: false,
+    limit: itemsPerPage,
+  };
+  const availableFilters = paginationData?.filters || {
+    categories: [],
+    brands: [],
+    priceRange: { min: 0, max: 1000 },
+  };
 
   const handleSelectProduct = (productId: string) => {
     setSelectedProducts((prev) =>
@@ -132,54 +200,112 @@ const ProductManagementInterface: React.FC = () => {
 
   const handleSelectAll = () => {
     setSelectedProducts(
-      selectedProducts.length === paginatedProducts.length
+      selectedProducts.length === products.length
         ? []
-        : paginatedProducts.map((p) => p.id)
+        : products.map((p) => p._id)
     );
   };
 
-  const handleBulkAction = (action: BulkAction) => {
-    setProducts(
-      (prev) =>
-        prev
-          .map((product) => {
-            if (!selectedProducts.includes(product.id)) return product;
+  const handleBulkAction = async (action: BulkAction) => {
+    try {
+      setLoading(true);
+      const partnerId = getPartnerId();
 
-            switch (action.type) {
-              case 'status':
-                return { ...product, status: action.value };
-              case 'category':
-                return { ...product, category: action.value };
-              case 'pricing':
-                return {
-                  ...product,
-                  price: product.price * (1 + action.value / 100),
-                };
-              case 'delete':
-                return null;
-              default:
-                return product;
+      switch (action.type) {
+        case 'status':
+          await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/products/bulk-update`,
+            {
+              method: 'PUT',
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                productIds: selectedProducts,
+                updateData: { isActive: action.value === 'active' },
+                partnerId,
+              }),
             }
-          })
-          .filter(Boolean) as Product[]
-    );
+          );
+          break;
+        case 'delete':
+          await Promise.all(
+            selectedProducts.map((id) =>
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`, {
+                method: 'DELETE',
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+              })
+            )
+          );
+          break;
+      }
 
-    setSelectedProducts([]);
-    setShowBulkModal(false);
-    setBulkActionMode(false);
+      // Refresh products after bulk action
+      await fetchProducts();
+      await fetchAnalytics();
+      setSelectedProducts([]);
+      setShowBulkModal(false);
+      setBulkActionMode(false);
+    } catch (error) {
+      console.error('Bulk action failed:', error);
+      setError('Bulk action failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'inactive':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+  const deleteProduct = async (productId: string) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        await fetchProducts();
+        await fetchAnalytics();
+      } else {
+        throw new Error('Failed to delete product');
+      }
+    } catch (error) {
+      console.error('Delete product failed:', error);
+      setError('Failed to delete product. Please try again.');
     }
+  };
+
+  const getStatusColor = (isActive: boolean, inStock: boolean) => {
+    if (isActive && inStock) {
+      return 'bg-green-100 text-green-800 border-green-200';
+    } else if (isActive && !inStock) {
+      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    } else {
+      return 'bg-red-100 text-red-800 border-red-200';
+    }
+  };
+
+  const getStatusText = (isActive: boolean, inStock: boolean) => {
+    if (isActive && inStock) return 'Active';
+    if (isActive && !inStock) return 'Out of Stock';
+    return 'Inactive';
+  };
+
+  const handleFilterChange = (newFilters: Partial<ProductFilters>) => {
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   const formatCurrency = (amount: number) => `€${amount.toFixed(2)}`;
@@ -190,6 +316,24 @@ const ProductManagementInterface: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <span className="ml-3 text-gray-600">Loading products...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="text-red-600 mb-2">⚠️ Error loading products</div>
+          <p className="text-gray-600">{error}</p>
+          <button
+            onClick={() => fetchProducts()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
@@ -203,7 +347,7 @@ const ProductManagementInterface: React.FC = () => {
             Product Management
           </h1>
           <p className="text-gray-600 mt-1">
-            {filteredProducts.length} products • {selectedProducts.length}{' '}
+            {pagination.totalProducts} products • {selectedProducts.length}{' '}
             selected
           </p>
         </div>
@@ -279,43 +423,38 @@ const ProductManagementInterface: React.FC = () => {
               type="text"
               placeholder="Search products..."
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, search: e.target.value }))
-              }
+              onChange={(e) => handleFilterChange({ search: e.target.value })}
             />
           </div>
           <div>
             <select
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
+                handleFilterChange({
                   status: e.target.value || undefined,
-                }))
+                })
               }
             >
               <option value="">All Statuses</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
-              <option value="draft">Draft</option>
             </select>
           </div>
           <div>
             <select
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
+                handleFilterChange({
                   category: e.target.value || undefined,
-                }))
+                })
               }
             >
               <option value="">All Categories</option>
-              <option value="Engine Oil">Engine Oil</option>
-              <option value="Brake Pads">Brake Pads</option>
-              <option value="Air Filters">Air Filters</option>
-              <option value="Spark Plugs">Spark Plugs</option>
-              <option value="Tires">Tires</option>
+              {availableFilters.categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -323,11 +462,10 @@ const ProductManagementInterface: React.FC = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               onChange={(e) => {
                 const [sortBy, sortOrder] = e.target.value.split('-');
-                setFilters((prev) => ({
-                  ...prev,
+                handleFilterChange({
                   sortBy: sortBy || undefined,
                   sortOrder: (sortOrder as 'asc' | 'desc') || 'asc',
-                }));
+                });
               }}
             >
               <option value="">Sort by...</option>
@@ -354,7 +492,8 @@ const ProductManagementInterface: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={
-                      selectedProducts.length === paginatedProducts.length
+                      selectedProducts.length === products.length &&
+                      products.length > 0
                     }
                     onChange={handleSelectAll}
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -384,13 +523,13 @@ const ProductManagementInterface: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedProducts.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50">
+              {products.map((product) => (
+                <tr key={product._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
-                      checked={selectedProducts.includes(product.id)}
-                      onChange={() => handleSelectProduct(product.id)}
+                      checked={selectedProducts.includes(product._id)}
+                      onChange={() => handleSelectProduct(product._id)}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                   </td>
@@ -400,13 +539,13 @@ const ProductManagementInterface: React.FC = () => {
                         {product.name}
                       </div>
                       <div className="text-sm text-gray-500">
-                        SKU: {product.sku}
+                        Brand: {product.brand}
                       </div>
-                      {product.tags.length > 0 && (
+                      {product.tags && product.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
-                          {product.tags.map((tag) => (
+                          {product.tags.map((tag, index) => (
                             <span
-                              key={tag}
+                              key={index}
                               className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
                             >
                               {tag}
@@ -423,31 +562,38 @@ const ProductManagementInterface: React.FC = () => {
                     {formatCurrency(product.price)}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
-                    {product.stock}
+                    {product.inStock ? 'In Stock' : 'Out of Stock'}
                   </td>
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(
-                        product.status
+                        product.isActive,
+                        product.inStock
                       )}`}
                     >
-                      {product.status}
+                      {getStatusText(product.isActive, product.inStock)}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm space-y-1">
-                      <div>Views: {product.performance.views}</div>
-                      <div>
-                        Revenue: {formatCurrency(product.performance.revenue)}
-                      </div>
+                      <div>Tier: {product.tier || 'Basic'}</div>
+                      <div>Updated: {formatDate(product.updatedAt)}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm font-medium">
                     <div className="flex space-x-2">
-                      <button className="text-blue-600 hover:text-blue-900">
+                      <button
+                        onClick={() =>
+                          router.push(`/partner/products/edit/${product._id}`)
+                        }
+                        className="text-blue-600 hover:text-blue-900"
+                      >
                         Edit
                       </button>
-                      <button className="text-red-600 hover:text-red-900">
+                      <button
+                        onClick={() => deleteProduct(product._id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
                         Delete
                       </button>
                     </div>
@@ -462,26 +608,33 @@ const ProductManagementInterface: React.FC = () => {
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-700">
-          Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
-          {Math.min(currentPage * itemsPerPage, filteredProducts.length)} of{' '}
-          {filteredProducts.length} results
+          Showing {(pagination.currentPage - 1) * itemsPerPage + 1} to{' '}
+          {Math.min(
+            pagination.currentPage * itemsPerPage,
+            pagination.totalProducts
+          )}{' '}
+          of {pagination.totalProducts} results
         </div>
         <div className="flex items-center space-x-2">
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
+            onClick={() =>
+              handlePageChange(Math.max(pagination.currentPage - 1, 1))
+            }
+            disabled={pagination.currentPage === 1}
             className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
           <span className="px-3 py-2 text-sm font-medium text-gray-700">
-            Page {currentPage} of {totalPages}
+            Page {pagination.currentPage} of {pagination.totalPages}
           </span>
           <button
             onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              handlePageChange(
+                Math.min(pagination.currentPage + 1, pagination.totalPages)
+              )
             }
-            disabled={currentPage === totalPages}
+            disabled={pagination.currentPage === pagination.totalPages}
             className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next

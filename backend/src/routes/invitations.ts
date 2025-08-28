@@ -130,6 +130,7 @@ router.post('/:token/accept', async (req: Request, res: Response) => {
     // Generate authentication tokens
     const payload: JWTPayload = {
       userId: user.id,
+      id: user.id, // Alias for userId
       email: user.email,
       role: user.role,
       tenantId: user.tenant_id,

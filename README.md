@@ -78,9 +78,9 @@
 
 ## 🎯 Project Overview
 
-- **Team**: CLEANtastic
+- **Team**: GLANZtastic
 - **Development Timeline**: 18 months (4 phases)
-- **Linear Project**: [AutoCare Advisor - SaaS Development](https://linear.app/cleantastic)
+- **Linear Project**: [AutoCare Advisor - SaaS Development](https://linear.app/GLANZtastic)
 - **Tech Stack**: Node.js, React, TypeScript, PostgreSQL, MongoDB, AWS
 
 ## 🏗️ Architecture
@@ -321,7 +321,7 @@ git commit -m "feat(CL-123): implement recommendation engine"
 
 ## 🤝 Contributing
 
-1. **Check Linear Issues** - Pick up tasks from [AutoCare Advisor Project](https://linear.app/cleantastic)
+1. **Check Linear Issues** - Pick up tasks from [AutoCare Advisor Project](https://linear.app/GLANZtastic)
 2. **Follow TypeScript Standards** - Strict typing required
 3. **Write Tests** - Minimum 90% coverage
 4. **Rule-Based Only** - No AI/ML libraries allowed
@@ -335,9 +335,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙋‍♂️ Support
 
-### Team CLEANtastic
+### Team GLANZtastic
 
-- **Project Management**: [Linear Workspace](https://linear.app/cleantastic)
+- **Project Management**: [Linear Workspace](https://linear.app/GLANZtastic)
 - **Development Questions**: Create an issue in this repository
 - **Business Inquiries**: Contact via Linear project
 
@@ -349,4 +349,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ by Team CLEANtastic** | **Powered by Rule-Based Intelligence**
+**Built with ❤️ by Team GLANZtastic** | **Powered by Rule-Based Intelligence**

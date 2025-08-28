@@ -165,7 +165,7 @@ Please pay special attention to:
 
 ---
 
-**Team CLEANtastic Internal Checklist:**
+**Team GLANZtastic Internal Checklist:**
 
 - [ ] Aligns with project phase goals
 - [ ] B2B SaaS model compatibility

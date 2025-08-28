@@ -97,7 +97,7 @@ Describe any alternative solutions or features you've considered.
 
 ---
 
-**Team CLEANtastic Internal Notes:**
+**Team GLANZtastic Internal Notes:**
 
 - Aligns with B2B SaaS strategy: [ ] Yes / [ ] No
 - Rule-based approach compatible: [ ] Yes / [ ] No

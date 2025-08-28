@@ -49,7 +49,7 @@ export default function DatenschutzPage() {
 
           <h1 className="text-4xl font-bold mb-4">Datenschutzerklärung</h1>
           <p className="text-xl text-slate-300">
-            Schutz Ihrer persönlichen Daten bei CLEANtastic
+            Schutz Ihrer persönlichen Daten bei GLANZtastic
           </p>
         </div>
       </section>
@@ -91,7 +91,7 @@ export default function DatenschutzPage() {
                 <div className="bg-slate-50 p-4 rounded-lg">
                   <div className="text-slate-600">
                     <p className="font-semibold text-neutral-950">
-                      CLEANtastic GmbH
+                      GLANZtastic GmbH
                     </p>
                     <p>Max Mustermann</p>
                     <p>Musterstraße 123</p>
@@ -101,7 +101,7 @@ export default function DatenschutzPage() {
                       12345678
                       <br />
                       <span className="font-medium">E-Mail:</span>{' '}
-                      info@cleantastic.de
+                      info@GLANZtastic.de
                     </p>
                   </div>
                 </div>

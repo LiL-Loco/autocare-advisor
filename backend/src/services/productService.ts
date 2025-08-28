@@ -63,6 +63,7 @@ export interface PaginationOptions {
   limit?: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  search?: string;
 }
 
 export interface BulkImportResult {
@@ -81,93 +82,92 @@ class ProductService {
     createdBy: string
   ): Promise<IProduct> {
     try {
-      // Validate partner exists
-      if (!mongoose.Types.ObjectId.isValid(productData.partnerId)) {
-        throw new Error('Invalid partner ID');
+      // Handle both ObjectId and string partner IDs for flexibility
+      let partnerIdValue: any;
+      let createdByValue: any;
+
+      if (mongoose.Types.ObjectId.isValid(productData.partnerId)) {
+        partnerIdValue = new mongoose.Types.ObjectId(productData.partnerId);
+      } else {
+        // For demo purposes, allow string partner IDs
+        partnerIdValue = productData.partnerId;
+      }
+
+      if (mongoose.Types.ObjectId.isValid(createdBy)) {
+        createdByValue = new mongoose.Types.ObjectId(createdBy);
+      } else {
+        createdByValue = createdBy;
       }
 
       // Generate default values
       const newProduct = new Product({
         ...productData,
-        partnerId: new mongoose.Types.ObjectId(productData.partnerId),
-        createdBy: new mongoose.Types.ObjectId(createdBy),
-        lastModifiedBy: new mongoose.Types.ObjectId(createdBy),
+        partnerId: partnerIdValue,
+        createdBy: createdByValue,
+        lastModifiedBy: createdByValue,
 
         // Default matching criteria if not provided
-        suitableFor: {
+        suitableFor: productData.suitableFor || {
           vehicleTypes: ['ALL'],
           vehicleBrands: ['ALL'],
           paintTypes: ['ALL'],
-          paintColors: ['ALL'],
-          vehicleAge: { min: 0, max: 50 },
-          ...productData.suitableFor,
+          experienceLevel: 'ALL',
         },
-
-        // Default problem solving if not provided
-        solves: {
+        solves: productData.solves || {
           problems: [],
           applications: [],
-          careAreas: [],
-          ...productData.solves,
         },
+        usage: productData.usage || {
+          instructions: '',
+          applicationMethods: [],
+          safetyPrecautions: [],
+        },
+        specifications: productData.specifications || {},
 
-        // Default usage context
-        usage: {
-          experienceLevel: ['Anfänger', 'Fortgeschritten'],
-          frequency: ['Wöchentlich'],
-          timeRequired: 15,
-          seasonality: ['ALL'],
-          ...productData.usage,
-        },
+        // Metadata
+        isActive: true,
+        inStock: true,
+        availabilityStatus: 'in_stock',
       });
 
       const savedProduct = await newProduct.save();
 
       logger.info('Product created successfully', {
         productId: savedProduct._id,
-        name: savedProduct.name,
-        partnerId: savedProduct.partnerId,
+        partnerId: productData.partnerId,
         createdBy,
       });
 
       return savedProduct;
     } catch (error: any) {
-      logger.error('Failed to create product', {
+      logger.error('Product creation failed', {
+        productData: { ...productData, partnerId: productData.partnerId },
         error: error.message,
-        productData,
       });
-      throw new Error(`Product creation failed: ${error.message}`);
+      throw error;
     }
   }
 
   /**
    * Get product by ID
    */
-  async getProductById(
-    productId: string,
-    incrementView: boolean = false
-  ): Promise<IProduct | null> {
+  async getProductById(productId: string): Promise<IProduct | null> {
     try {
       if (!mongoose.Types.ObjectId.isValid(productId)) {
         throw new Error('Invalid product ID');
       }
 
       const product = await Product.findById(productId)
-        .populate('partnerId', 'company_name email first_name last_name')
-        .populate('createdBy', 'first_name last_name email');
-
-      if (product && incrementView) {
-        product.viewCount += 1;
-        await product.save();
-      }
+        .populate('partnerId', 'companyName email')
+        .exec();
 
       return product;
     } catch (error: any) {
-      logger.error('Failed to get product by ID', {
-        error: error.message,
+      logger.error('Get product by ID failed', {
         productId,
+        error: error.message,
       });
-      throw new Error(`Failed to retrieve product: ${error.message}`);
+      throw error;
     }
   }
 
@@ -176,7 +176,8 @@ class ProductService {
    */
   async updateProduct(
     productId: string,
-    updateData: ProductUpdateData
+    updateData: ProductUpdateData,
+    updatedBy: string
   ): Promise<IProduct | null> {
     try {
       if (!mongoose.Types.ObjectId.isValid(productId)) {
@@ -187,499 +188,463 @@ class ProductService {
         productId,
         {
           ...updateData,
-          lastModifiedBy: new mongoose.Types.ObjectId(
-            updateData.lastModifiedBy
-          ),
+          lastModifiedBy: new mongoose.Types.ObjectId(updatedBy),
           updatedAt: new Date(),
         },
-        {
-          new: true,
-          runValidators: true,
-        }
-      ).populate('partnerId', 'company_name email');
+        { new: true, runValidators: true }
+      ).populate('partnerId', 'companyName email');
 
       if (!updatedProduct) {
         throw new Error('Product not found');
       }
 
       logger.info('Product updated successfully', {
-        productId: updatedProduct._id,
-        name: updatedProduct.name,
-        lastModifiedBy: updateData.lastModifiedBy,
+        productId,
+        updatedBy,
+        updatedFields: Object.keys(updateData),
       });
 
       return updatedProduct;
     } catch (error: any) {
-      logger.error('Failed to update product', {
-        error: error.message,
+      logger.error('Product update failed', {
         productId,
         updateData,
+        error: error.message,
       });
-      throw new Error(`Product update failed: ${error.message}`);
+      throw error;
     }
   }
 
   /**
-   * Delete product (soft delete by setting isActive = false)
+   * Delete product
    */
-  async deleteProduct(productId: string, deletedBy: string): Promise<boolean> {
+  async deleteProduct(productId: string): Promise<boolean> {
     try {
       if (!mongoose.Types.ObjectId.isValid(productId)) {
         throw new Error('Invalid product ID');
       }
 
-      const result = await Product.findByIdAndUpdate(productId, {
-        isActive: false,
-        lastModifiedBy: new mongoose.Types.ObjectId(deletedBy),
-        updatedAt: new Date(),
-      });
+      const result = await Product.findByIdAndDelete(productId);
 
       if (!result) {
         throw new Error('Product not found');
       }
 
-      logger.info('Product deleted successfully', {
-        productId,
-        name: result.name,
-        deletedBy,
-      });
-
+      logger.info('Product deleted successfully', { productId });
       return true;
     } catch (error: any) {
-      logger.error('Failed to delete product', {
-        error: error.message,
+      logger.error('Product deletion failed', {
         productId,
-        deletedBy,
+        error: error.message,
       });
-      throw new Error(`Product deletion failed: ${error.message}`);
+      throw error;
     }
   }
 
   /**
-   * Get products with filtering and pagination
+   * Get products with enhanced pagination response
    */
   async getProducts(
     filters: ProductFilters = {},
-    pagination: PaginationOptions = {}
-  ): Promise<{ products: IProduct[]; totalCount: number; totalPages: number }> {
+    options: PaginationOptions = {}
+  ): Promise<{
+    products: IProduct[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalProducts: number;
+      hasMore: boolean;
+      limit: number;
+    };
+    filters: {
+      categories: string[];
+      brands: string[];
+      priceRange: { min: number; max: number };
+    };
+  }> {
     try {
-      // Build query
-      const query = this.buildQuery(filters);
+      const {
+        page = 1,
+        limit = 20,
+        sortBy = 'createdAt',
+        sortOrder = 'desc',
+        search,
+      } = options;
 
-      // Pagination
-      const page = pagination.page || 1;
-      const limit = Math.min(pagination.limit || 20, 100); // Max 100 per page
+      // Build MongoDB query
+      const query: any = {};
+
+      // Text search across multiple fields
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } },
+          { brand: { $regex: search, $options: 'i' } },
+          { category: { $regex: search, $options: 'i' } },
+          { tags: { $in: [new RegExp(search, 'i')] } },
+        ];
+      }
+
+      // Apply filters
+      if (filters.category) {
+        query.category = filters.category;
+      }
+
+      if (filters.brand) {
+        query.brand = filters.brand;
+      }
+
+      if (
+        filters.partnerId &&
+        mongoose.Types.ObjectId.isValid(filters.partnerId)
+      ) {
+        query.partnerId = new mongoose.Types.ObjectId(filters.partnerId);
+      }
+
+      if (filters.priceRange) {
+        query.price = {
+          $gte: filters.priceRange.min,
+          $lte: filters.priceRange.max,
+        };
+      }
+
+      if (filters.inStock !== undefined) {
+        query.inStock = filters.inStock;
+      }
+
+      if (filters.isActive !== undefined) {
+        query.isActive = filters.isActive;
+      }
+
+      if (filters.tier) {
+        query.tier = filters.tier;
+      }
+
+      if (filters.availabilityStatus) {
+        query.availabilityStatus = filters.availabilityStatus;
+      }
+
+      if (filters.vehicleBrand) {
+        query['suitableFor.vehicleBrands'] = filters.vehicleBrand;
+      }
+
+      if (filters.paintType) {
+        query['suitableFor.paintTypes'] = filters.paintType;
+      }
+
+      if (filters.problems && filters.problems.length > 0) {
+        query['solves.problems'] = { $in: filters.problems };
+      }
+
+      if (filters.experienceLevel) {
+        query['suitableFor.experienceLevel'] = filters.experienceLevel;
+      }
+
+      // Sort options
+      const sortOptions: any = {};
+      sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+      // Execute queries
       const skip = (page - 1) * limit;
 
-      // Sorting
-      const sortField = pagination.sortBy || 'createdAt';
-      const sortOrder = pagination.sortOrder === 'asc' ? 1 : -1;
-      const sortObject: any = {};
-      sortObject[sortField] = sortOrder;
+      const [products, totalCount, categoryStats, brandStats, priceStats] =
+        await Promise.all([
+          Product.find(query)
+            .populate('partnerId', 'companyName email')
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(limit)
+            .exec(),
 
-      // Execute queries in parallel
-      const [products, totalCount] = await Promise.all([
-        Product.find(query)
-          .populate('partnerId', 'company_name email first_name last_name')
-          .sort(sortObject)
-          .skip(skip)
-          .limit(limit)
-          .lean(),
-        Product.countDocuments(query),
-      ]);
+          Product.countDocuments(query),
+
+          // Get unique categories for filtering
+          Product.distinct('category', query),
+
+          // Get unique brands for filtering
+          Product.distinct('brand', query),
+
+          // Get price range for filtering
+          Product.aggregate([
+            { $match: query },
+            {
+              $group: {
+                _id: null,
+                minPrice: { $min: '$price' },
+                maxPrice: { $max: '$price' },
+              },
+            },
+          ]),
+        ]);
 
       const totalPages = Math.ceil(totalCount / limit);
+      const hasMore = page < totalPages;
+
+      const result = {
+        products,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalProducts: totalCount,
+          hasMore,
+          limit,
+        },
+        filters: {
+          categories: categoryStats,
+          brands: brandStats,
+          priceRange: {
+            min: priceStats[0]?.minPrice || 0,
+            max: priceStats[0]?.maxPrice || 1000,
+          },
+        },
+      };
 
       logger.info('Products retrieved successfully', {
-        totalCount,
-        page,
-        limit,
-        filters: Object.keys(filters),
-      });
-
-      return {
-        products: products as IProduct[],
-        totalCount,
-        totalPages,
-      };
-    } catch (error: any) {
-      logger.error('Failed to get products', {
-        error: error.message,
-        filters,
-        pagination,
-      });
-      throw new Error(`Failed to retrieve products: ${error.message}`);
-    }
-  }
-
-  /**
-   * Search products with text search and filters
-   */
-  async searchProducts(
-    searchTerm: string,
-    filters: ProductFilters = {},
-    pagination: PaginationOptions = {}
-  ): Promise<{ products: IProduct[]; totalCount: number; totalPages: number }> {
-    try {
-      if (!searchTerm || searchTerm.trim() === '') {
-        return this.getProducts(filters, pagination);
-      }
-
-      const query = {
-        $text: { $search: searchTerm },
-        ...this.buildQuery(filters),
-      };
-
-      const page = pagination.page || 1;
-      const limit = Math.min(pagination.limit || 20, 100);
-      const skip = (page - 1) * limit;
-
-      const [products, totalCount] = await Promise.all([
-        Product.find(query, { score: { $meta: 'textScore' } })
-          .populate('partnerId', 'company_name email first_name last_name')
-          .sort({ score: { $meta: 'textScore' } })
-          .skip(skip)
-          .limit(limit)
-          .lean(),
-        Product.countDocuments(query),
-      ]);
-
-      const totalPages = Math.ceil(totalCount / limit);
-
-      logger.info('Product search completed', {
-        searchTerm,
+        query: Object.keys(query),
         totalCount,
         page,
         limit,
       });
 
-      return {
-        products: products as IProduct[],
-        totalCount,
-        totalPages,
-      };
+      return result;
     } catch (error: any) {
-      logger.error('Product search failed', {
-        error: error.message,
-        searchTerm,
+      logger.error('Get products failed', {
         filters,
+        options,
+        error: error.message,
       });
-      throw new Error(`Product search failed: ${error.message}`);
+      throw error;
     }
   }
 
   /**
-   * Get products for recommendation engine
+   * Bulk update products
    */
-  async getProductsForRecommendation(criteria: {
-    vehicleBrand?: string;
-    paintType?: string;
-    problems?: string[];
-    careAreas?: string[];
-    maxPrice?: number;
-    experienceLevel?: string;
-    excludeProductIds?: string[];
-  }): Promise<IProduct[]> {
+  async bulkUpdateProducts(
+    productIds: string[],
+    updateData: Partial<ProductUpdateData>,
+    partnerId: string
+  ): Promise<{ modifiedCount: number; matchedCount: number }> {
     try {
-      const query: any = {
-        isActive: true,
-        inStock: true,
-      };
+      const validProductIds = productIds
+        .filter((id) => mongoose.Types.ObjectId.isValid(id))
+        .map((id) => new mongoose.Types.ObjectId(id));
 
-      // Vehicle compatibility
-      if (criteria.vehicleBrand) {
-        query['suitableFor.vehicleBrands'] = {
-          $in: [criteria.vehicleBrand, 'ALL'],
-        };
+      if (validProductIds.length === 0) {
+        throw new Error('No valid product IDs provided');
       }
 
-      if (criteria.paintType) {
-        query['suitableFor.paintTypes'] = { $in: [criteria.paintType, 'ALL'] };
+      // Handle both ObjectId and string partner IDs
+      let partnerQuery: any;
+      let lastModifiedByValue: any;
+
+      if (mongoose.Types.ObjectId.isValid(partnerId)) {
+        partnerQuery = { partnerId: new mongoose.Types.ObjectId(partnerId) };
+        lastModifiedByValue = new mongoose.Types.ObjectId(partnerId);
+      } else {
+        partnerQuery = { partnerId: partnerId };
+        lastModifiedByValue = partnerId;
       }
 
-      // Problem solving
-      if (criteria.problems && criteria.problems.length > 0) {
-        query['solves.problems'] = { $in: criteria.problems };
-      }
-
-      // Care areas
-      if (criteria.careAreas && criteria.careAreas.length > 0) {
-        query['solves.careAreas'] = { $in: criteria.careAreas };
-      }
-
-      // Price filtering
-      if (criteria.maxPrice) {
-        query.price = { $lte: criteria.maxPrice };
-      }
-
-      // Experience level
-      if (criteria.experienceLevel) {
-        query['usage.experienceLevel'] = { $in: [criteria.experienceLevel] };
-      }
-
-      // Exclude specific products
-      if (criteria.excludeProductIds && criteria.excludeProductIds.length > 0) {
-        query._id = {
-          $nin: criteria.excludeProductIds.map(
-            (id) => new mongoose.Types.ObjectId(id)
-          ),
-        };
-      }
-
-      const products = await Product.find(query)
-        .sort({ rating: -1, reviewCount: -1 })
-        .limit(50) // Reasonable limit for recommendation engine
-        .lean();
-
-      logger.info('Products retrieved for recommendation', {
-        count: products.length,
-        criteria: Object.keys(criteria),
-      });
-
-      return products as IProduct[];
-    } catch (error: any) {
-      logger.error('Failed to get products for recommendation', {
-        error: error.message,
-        criteria,
-      });
-      throw new Error(
-        `Failed to retrieve products for recommendation: ${error.message}`
+      const result = await Product.updateMany(
+        {
+          _id: { $in: validProductIds },
+          ...partnerQuery,
+        },
+        {
+          ...updateData,
+          lastModifiedBy: lastModifiedByValue,
+          updatedAt: new Date(),
+        }
       );
-    }
-  }
 
-  /**
-   * Increment product click count
-   */
-  async incrementProductClick(productId: string): Promise<void> {
-    try {
-      const product = await Product.findById(productId);
-      if (product) {
-        product.clickCount += 1;
-        product.conversionRate =
-          product.viewCount > 0
-            ? Math.round((product.clickCount / product.viewCount) * 100)
-            : 0;
-        await product.save();
-      }
-    } catch (error: any) {
-      logger.error('Failed to increment product click', {
-        error: error.message,
-        productId,
+      logger.info('Bulk product update completed', {
+        partnerId,
+        requestedCount: productIds.length,
+        matchedCount: result.matchedCount,
+        modifiedCount: result.modifiedCount,
       });
-      // Don't throw error as this is non-critical
-    }
-  }
 
-  /**
-   * Get product categories with counts
-   */
-  async getCategories(): Promise<Array<{ category: string; count: number }>> {
-    try {
-      const categories = await Product.aggregate([
-        { $match: { isActive: true } },
-        { $group: { _id: '$category', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $project: { category: '$_id', count: 1, _id: 0 } },
-      ]);
-
-      return categories;
+      return {
+        modifiedCount: result.modifiedCount || 0,
+        matchedCount: result.matchedCount || 0,
+      };
     } catch (error: any) {
-      logger.error('Failed to get categories', { error: error.message });
-      throw new Error(`Failed to retrieve categories: ${error.message}`);
+      logger.error('Bulk product update failed', {
+        productIds: productIds.slice(0, 5), // Log first 5 IDs only
+        partnerId,
+        error: error.message,
+      });
+      throw error;
     }
   }
 
   /**
-   * Get product brands with counts
-   */
-  async getBrands(): Promise<Array<{ brand: string; count: number }>> {
-    try {
-      const brands = await Product.aggregate([
-        { $match: { isActive: true } },
-        { $group: { _id: '$brand', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $project: { brand: '$_id', count: 1, _id: 0 } },
-      ]);
-
-      return brands;
-    } catch (error: any) {
-      logger.error('Failed to get brands', { error: error.message });
-      throw new Error(`Failed to retrieve brands: ${error.message}`);
-    }
-  }
-
-  /**
-   * Bulk import products from array
-   */
-  async bulkImportProducts(
-    products: ProductCreateData[],
-    createdBy: string
-  ): Promise<BulkImportResult> {
-    const result: BulkImportResult = {
-      successful: 0,
-      failed: 0,
-      errors: [],
-      createdProducts: [],
-    };
-
-    for (let i = 0; i < products.length; i++) {
-      try {
-        const product = await this.createProduct(products[i], createdBy);
-        result.successful++;
-        result.createdProducts.push(product._id.toString());
-      } catch (error: any) {
-        result.failed++;
-        result.errors.push({
-          row: i + 1,
-          error: error.message,
-          data: products[i],
-        });
-      }
-    }
-
-    logger.info('Bulk import completed', {
-      total: products.length,
-      successful: result.successful,
-      failed: result.failed,
-      createdBy,
-    });
-
-    return result;
-  }
-
-  /**
-   * Get products by partner ID
+   * Get products by partner
    */
   async getProductsByPartner(
     partnerId: string,
-    pagination: PaginationOptions = {}
-  ): Promise<{ products: IProduct[]; totalCount: number }> {
+    options: PaginationOptions = {}
+  ): Promise<{
+    products: IProduct[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalProducts: number;
+      hasMore: boolean;
+      limit: number;
+    };
+  }> {
     try {
       if (!mongoose.Types.ObjectId.isValid(partnerId)) {
         throw new Error('Invalid partner ID');
       }
 
-      const filters: ProductFilters = {
-        partnerId,
-        isActive: true,
-      };
+      const filters: ProductFilters = { partnerId };
+      const result = await this.getProducts(filters, options);
 
-      const result = await this.getProducts(filters, pagination);
       return {
         products: result.products,
-        totalCount: result.totalCount,
+        pagination: result.pagination,
       };
     } catch (error: any) {
-      logger.error('Failed to get products by partner', {
-        error: error.message,
+      logger.error('Get products by partner failed', {
         partnerId,
+        error: error.message,
       });
-      throw new Error(`Failed to retrieve partner products: ${error.message}`);
+      throw error;
     }
   }
 
   /**
-   * Get product analytics
+   * Search products with advanced filtering
    */
-  async getProductAnalytics(productId: string): Promise<{
-    views: number;
-    clicks: number;
-    conversionRate: number;
-    averageRating: number;
-    reviewCount: number;
-    monthlyViews: number;
+  async searchProducts(
+    searchTerm: string,
+    filters: ProductFilters = {},
+    options: PaginationOptions = {}
+  ): Promise<{
+    products: IProduct[];
+    pagination: any;
+    searchMeta: {
+      searchTerm: string;
+      totalResults: number;
+      searchTime: number;
+    };
   }> {
+    const startTime = Date.now();
+
     try {
-      const product = await this.getProductById(productId);
+      const searchFilters = {
+        ...filters,
+        search: searchTerm,
+      };
 
-      if (!product) {
-        throw new Error('Product not found');
-      }
-
-      const monthsSinceCreation = Math.ceil(
-        (Date.now() - product.createdAt.getTime()) / (1000 * 60 * 60 * 24 * 30)
-      );
-      const monthlyViews =
-        monthsSinceCreation > 0
-          ? Math.round(product.viewCount / monthsSinceCreation)
-          : 0;
+      const result = await this.getProducts(searchFilters, options);
+      const searchTime = Date.now() - startTime;
 
       return {
-        views: product.viewCount,
-        clicks: product.clickCount,
-        conversionRate: product.conversionRate,
-        averageRating: product.rating,
-        reviewCount: product.reviewCount,
-        monthlyViews: monthlyViews,
+        products: result.products,
+        pagination: result.pagination,
+        searchMeta: {
+          searchTerm,
+          totalResults: result.pagination.totalProducts,
+          searchTime,
+        },
       };
     } catch (error: any) {
-      logger.error('Failed to get product analytics', {
+      logger.error('Product search failed', {
+        searchTerm,
+        filters,
         error: error.message,
-        productId,
       });
-      throw new Error(`Failed to retrieve product analytics: ${error.message}`);
+      throw error;
     }
   }
 
   /**
-   * Private helper: Build MongoDB query from filters
+   * Get product analytics for partner dashboard
    */
-  private buildQuery(filters: ProductFilters): any {
-    const query: any = {};
+  async getProductAnalytics(partnerId: string): Promise<{
+    totalProducts: number;
+    activeProducts: number;
+    inactiveProducts: number;
+    categories: Array<{ name: string; count: number }>;
+    brands: Array<{ name: string; count: number }>;
+    averagePrice: number;
+    totalValue: number;
+  }> {
+    try {
+      // Handle both ObjectId and string partner IDs for flexibility
+      let partnerQuery: any;
 
-    // Basic filters
-    if (filters.category) query.category = filters.category;
-    if (filters.brand) query.brand = filters.brand;
-    if (filters.tier) query.tier = filters.tier;
-    if (filters.availabilityStatus)
-      query.availabilityStatus = filters.availabilityStatus;
+      if (mongoose.Types.ObjectId.isValid(partnerId)) {
+        partnerQuery = { partnerId: new mongoose.Types.ObjectId(partnerId) };
+      } else {
+        // For demo purposes, allow string partner IDs
+        partnerQuery = { partnerId: partnerId };
+      }
 
-    // Boolean filters
-    if (typeof filters.inStock === 'boolean') query.inStock = filters.inStock;
-    if (typeof filters.isActive === 'boolean')
-      query.isActive = filters.isActive;
-    else query.isActive = true; // Default to active products only
+      const [
+        totalProducts,
+        activeProducts,
+        categoryStats,
+        brandStats,
+        priceStats,
+      ] = await Promise.all([
+        Product.countDocuments(partnerQuery),
+        Product.countDocuments({ ...partnerQuery, isActive: true }),
+        Product.aggregate([
+          { $match: partnerQuery },
+          { $group: { _id: '$category', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+        ]),
+        Product.aggregate([
+          { $match: partnerQuery },
+          { $group: { _id: '$brand', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+        ]),
+        Product.aggregate([
+          { $match: partnerQuery },
+          {
+            $group: {
+              _id: null,
+              averagePrice: { $avg: '$price' },
+              totalValue: { $sum: '$price' },
+            },
+          },
+        ]),
+      ]);
 
-    // Partner filter
-    if (
-      filters.partnerId &&
-      mongoose.Types.ObjectId.isValid(filters.partnerId)
-    ) {
-      query.partnerId = new mongoose.Types.ObjectId(filters.partnerId);
-    }
-
-    // Price range
-    if (filters.priceRange) {
-      query.price = {};
-      if (filters.priceRange.min !== undefined)
-        query.price.$gte = filters.priceRange.min;
-      if (filters.priceRange.max !== undefined)
-        query.price.$lte = filters.priceRange.max;
-    }
-
-    // Vehicle compatibility
-    if (filters.vehicleBrand) {
-      query['suitableFor.vehicleBrands'] = {
-        $in: [filters.vehicleBrand, 'ALL'],
+      const result = {
+        totalProducts,
+        activeProducts,
+        inactiveProducts: totalProducts - activeProducts,
+        categories: categoryStats.map((cat) => ({
+          name: cat._id,
+          count: cat.count,
+        })),
+        brands: brandStats.map((brand) => ({
+          name: brand._id,
+          count: brand.count,
+        })),
+        averagePrice: priceStats[0]?.averagePrice || 0,
+        totalValue: priceStats[0]?.totalValue || 0,
       };
-    }
 
-    if (filters.paintType) {
-      query['suitableFor.paintTypes'] = { $in: [filters.paintType, 'ALL'] };
-    }
+      logger.info('Product analytics retrieved successfully', {
+        partnerId,
+        analytics: result,
+      });
 
-    // Problem solving
-    if (filters.problems && filters.problems.length > 0) {
-      query['solves.problems'] = { $in: filters.problems };
+      return result;
+    } catch (error: any) {
+      logger.error('Get product analytics failed', {
+        partnerId,
+        error: error.message,
+      });
+      throw error;
     }
-
-    // Experience level
-    if (filters.experienceLevel) {
-      query['usage.experienceLevel'] = { $in: [filters.experienceLevel] };
-    }
-
-    return query;
   }
 }
 

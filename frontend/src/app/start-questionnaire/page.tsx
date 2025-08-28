@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { QuestionnaireTransformService } from '@/services/questionnaireTransform';
 import {
   CheckIcon,
   ChevronLeftIcon,
@@ -321,11 +322,126 @@ export default function DirectQuestionnairePage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sessionId, setSessionId] = useState<string>('');
 
   const currentQuestion = allQuestions[currentQuestionIndex];
   const totalQuestions = allQuestions.length;
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
   const answeredCount = Object.keys(answers).length;
+
+  // Initialize session and load progress
+  useEffect(() => {
+    let storedSessionId = localStorage.getItem('questionnaire_session_id');
+    if (!storedSessionId) {
+      storedSessionId = `session_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
+      localStorage.setItem('questionnaire_session_id', storedSessionId);
+    }
+    setSessionId(storedSessionId);
+
+    // Load previous progress
+    loadProgress(storedSessionId);
+  }, []);
+
+  // Auto-save progress when answers change
+  useEffect(() => {
+    if (sessionId && Object.keys(answers).length > 0) {
+      saveProgress();
+    }
+  }, [answers, sessionId]);
+
+  // Save progress to backend
+  const saveProgress = async () => {
+    if (!sessionId) return;
+
+    try {
+      await fetch(
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000'
+        }/api/questionnaire/save-progress`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('authToken') || ''}`,
+          },
+          body: JSON.stringify({
+            sessionId,
+            answers,
+            currentQuestionIndex,
+          }),
+        }
+      );
+
+      // Also save locally as backup
+      localStorage.setItem('questionnaire_answers', JSON.stringify(answers));
+      localStorage.setItem(
+        'questionnaire_current_index',
+        currentQuestionIndex.toString()
+      );
+    } catch (error) {
+      console.error('Error saving progress:', error);
+      // Fall back to local storage only
+      localStorage.setItem('questionnaire_answers', JSON.stringify(answers));
+      localStorage.setItem(
+        'questionnaire_current_index',
+        currentQuestionIndex.toString()
+      );
+    }
+  };
+
+  // Load progress from backend or local storage
+  const loadProgress = async (sessionId: string) => {
+    try {
+      const response = await fetch(
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000'
+        }/api/questionnaire/load-progress`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('authToken') || ''}`,
+          },
+          body: JSON.stringify({ sessionId }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.answers) {
+          setAnswers(data.answers);
+          if (data.currentQuestionIndex !== undefined) {
+            setCurrentQuestionIndex(data.currentQuestionIndex);
+          }
+        }
+      } else {
+        // Fallback to local storage
+        const storedAnswers = localStorage.getItem('questionnaire_answers');
+        const storedIndex = localStorage.getItem('questionnaire_current_index');
+
+        if (storedAnswers) {
+          setAnswers(JSON.parse(storedAnswers));
+        }
+        if (storedIndex) {
+          setCurrentQuestionIndex(parseInt(storedIndex, 10));
+        }
+      }
+    } catch (error) {
+      console.error('Error loading progress:', error);
+      // Fallback to local storage
+      const storedAnswers = localStorage.getItem('questionnaire_answers');
+      const storedIndex = localStorage.getItem('questionnaire_current_index');
+
+      if (storedAnswers) {
+        setAnswers(JSON.parse(storedAnswers));
+      }
+      if (storedIndex) {
+        setCurrentQuestionIndex(parseInt(storedIndex, 10));
+      }
+    }
+  };
 
   // Handle Enter key press for navigation
   useEffect(() => {
@@ -377,13 +493,17 @@ export default function DirectQuestionnairePage() {
   // Navigation
   const goToNext = () => {
     if (currentQuestionIndex < totalQuestions - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1);
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
+      localStorage.setItem('questionnaire_current_index', nextIndex.toString());
     }
   };
 
   const goToPrevious = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((prev) => prev - 1);
+      const prevIndex = currentQuestionIndex - 1;
+      setCurrentQuestionIndex(prevIndex);
+      localStorage.setItem('questionnaire_current_index', prevIndex.toString());
     }
   };
 
@@ -391,25 +511,178 @@ export default function DirectQuestionnairePage() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/recommendations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          questionnaire: answers,
-          timestamp: new Date().toISOString(),
-        }),
-      });
+      // Session ID erstellen/abrufen
+      const sessionId =
+        localStorage.getItem('questionnaire_session_id') ||
+        `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      // Transform questionnaire answers to CustomerAnswers format
+      const questionnaireAnswers = {
+        carMake: answers.carMake,
+        carModel: answers.carModel,
+        carYear: answers.carYear,
+        carType: answers.carType,
+        currentMileage: answers.currentMileage,
+        paintType: answers.paintType,
+        paintColor: answers.paintColor,
+        paintCondition: answers.paintCondition,
+        specificProblems: answers.specificProblems || [],
+        parkingPrimary: answers.parkingPrimary,
+        environmentalExposure: answers.environmentalExposure || [],
+        annualMileage: answers.annualMileage,
+        primaryGoal: answers.primaryGoal,
+        timeInvestment: answers.timeInvestment,
+        experienceLevel: answers.experienceLevel,
+        availableEquipment: answers.availableEquipment || [],
+        totalBudget: answers.totalBudget,
+      };
+
+      // Validate answers before transformation
+      const validation =
+        QuestionnaireTransformService.validateAnswers(questionnaireAnswers);
+      if (!validation.isValid) {
+        console.error('Validation errors:', validation.errors);
+        // Continue anyway for better user experience, but log errors
+      }
+
+      // Transform to CustomerAnswers format
+      const customerAnswers =
+        QuestionnaireTransformService.transformToCustomerAnswers(
+          questionnaireAnswers
+        );
+
+      // Log transformation for debugging
+      console.log(
+        'Transformation Summary:',
+        QuestionnaireTransformService.createSummary(questionnaireAnswers)
+      );
+
+      // Try new questionnaire-based recommendations endpoint first
+      const response = await fetch(
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5001'
+        }/api/recommendations/generate`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('authToken') || ''}`,
+          },
+          body: JSON.stringify({
+            sessionId,
+            answers: customerAnswers,
+            timestamp: new Date().toISOString(),
+          }),
+        }
+      );
 
       if (response.ok) {
-        const recommendations = await response.json();
+        const result = await response.json();
+        localStorage.setItem('questionnaire_completed', 'true');
         localStorage.setItem(
-          'cleantastic_recommendations',
-          JSON.stringify(recommendations)
+          'questionnaire_results',
+          JSON.stringify(result.data)
         );
+        localStorage.setItem(
+          'GLANZtastic_recommendations',
+          JSON.stringify(result.data)
+        );
+
+        console.log('Recommendations generated successfully:', {
+          totalRecommendations: result.data.totalProducts,
+          sessionId: result.data.sessionId,
+          processingTime: result.data.meta?.processingTime,
+        });
+
+        // Redirect to recommendations page
         router.push('/recommendations');
+      } else {
+        console.error('New API failed:', response.status);
+        throw new Error('Recommendations API failed');
       }
     } catch (error) {
-      console.error('Error submitting questionnaire:', error);
+      console.error('Error with new recommendations API:', error);
+
+      // Fallback to legacy questionnaire submission for compatibility
+      try {
+        const sessionId =
+          localStorage.getItem('questionnaire_session_id') ||
+          `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+        const response = await fetch(
+          `${
+            process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5001'
+          }/api/questionnaire/submit`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${
+                localStorage.getItem('authToken') || ''
+              }`,
+            },
+            body: JSON.stringify({
+              sessionId,
+              answers,
+              timestamp: new Date().toISOString(),
+            }),
+          }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          localStorage.setItem('questionnaire_completed', 'true');
+          localStorage.setItem('questionnaire_results', JSON.stringify(result));
+
+          // Generate mock recommendations for now
+          const mockRecommendations = {
+            personalizedMessage:
+              'Basierend auf Ihren Antworten haben wir passende Produkte ausgewählt.',
+            totalProducts: 4,
+            categories: [
+              'Shampoo',
+              'Wachs',
+              'Felgenreiniger',
+              'Mikrofasertücher',
+            ],
+            estimatedTotalCost: 89.99,
+            recommendations: [
+              {
+                id: '1',
+                name: 'Premium Auto-Shampoo',
+                brand: 'CleanMax',
+                category: 'Shampoo',
+                price: 19.99,
+                rating: 4.8,
+                reviewCount: 342,
+                image: '/api/placeholder/300/300',
+                description: 'Hochwertiges pH-neutrales Autoshampoo',
+                features: ['pH-neutral', 'Schaumarm', 'Konzentriert'],
+                partnerShopName: 'AutoPflege24',
+                partnerShopUrl: '#',
+                availabilityStatus: 'in_stock',
+                reasonForRecommendation:
+                  'Perfekt für Ihr Fahrzeug und Erfahrungslevel',
+                matchScore: 95,
+              },
+            ],
+          };
+
+          localStorage.setItem(
+            'GLANZtastic_recommendations',
+            JSON.stringify(mockRecommendations)
+          );
+          router.push('/recommendations');
+        } else {
+          throw new Error('Questionnaire submission failed');
+        }
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError);
+        // Show error message to user
+        alert(
+          'Es gab ein Problem bei der Verarbeitung. Bitte versuchen Sie es erneut.'
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }

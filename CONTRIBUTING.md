@@ -5,7 +5,7 @@
 # Clone repository
 
 git clone https://github.com/COLORtastic/autocare-advisor.git
-cd autocare-advisork you for contributing to AutoCare Advisor! This document provides guidelines for team CLEANtastic and external contributors.
+cd autocare-advisork you for contributing to AutoCare Advisor! This document provides guidelines for team GLANZtastic and external contributors.
 
 ## 📋 Table of Contents
 
@@ -50,7 +50,7 @@ VS Code (recommended)
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/CLEANtastic/autocare-advisor.git
+git clone https://github.com/GLANZtastic/autocare-advisor.git
 cd autocare-advisor
 
 # 2. Install dependencies

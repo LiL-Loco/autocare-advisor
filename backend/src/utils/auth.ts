@@ -10,8 +10,10 @@ const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
 
 export interface JWTPayload {
   userId: string;
+  id?: string; // Alias for userId (optional for backward compatibility)
   email: string;
   role: string;
+  tier?: string;
   tenantId?: string;
   userType?: 'admin' | 'partner';
 }
@@ -79,8 +81,10 @@ export const verifyToken = (token: string): JWTPayload => {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
     return {
       userId: decoded.userId,
+      id: decoded.userId, // Provide id as alias for userId
       email: decoded.email,
       role: decoded.role,
+      tier: decoded.tier,
       tenantId: decoded.tenantId,
       userType: decoded.userType,
     };

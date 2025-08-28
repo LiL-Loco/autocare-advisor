@@ -171,7 +171,7 @@ export default function PartnerWerdenPage() {
             Steigern Sie Ihre Conversion-Rate um bis zu 47%
           </h1>
           <p className="text-xl text-slate-300">
-            Integrieren Sie CLEANtastic's professionelle Produktberatung in
+            Integrieren Sie GLANZtastic's professionelle Produktberatung in
             Ihren Automotive E-Commerce und reduzieren Sie Retourenquoten
             drastisch
           </p>
@@ -247,7 +247,7 @@ export default function PartnerWerdenPage() {
               Die Lösung: Professionelle Produktberatung
             </h3>
             <p className="text-lg text-slate-600 mb-6">
-              CLEANtastic's White-Label Integration löst genau diese Probleme
+              GLANZtastic's White-Label Integration löst genau diese Probleme
               für Automotive E-Commerce Shops wie Ihren.
             </p>
             <div className="grid grid-cols-3 gap-8 text-center">
@@ -763,7 +763,7 @@ export default function PartnerWerdenPage() {
                     +{Math.round(additionalSales)}/Monat
                   </div>
                   <div className="text-xs text-slate-500">
-                    durch CLEANtastic
+                    durch GLANZtastic
                   </div>
                 </CardContent>
               </Card>
@@ -971,7 +971,7 @@ export default function PartnerWerdenPage() {
                     value={formData.message}
                     onChange={handleInputChange}
                     className="border-slate-200 resize-none"
-                    placeholder="Beschreiben Sie kurz Ihr Unternehmen und warum Sie Partner von CLEANtastic werden möchten..."
+                    placeholder="Beschreiben Sie kurz Ihr Unternehmen und warum Sie Partner von GLANZtastic werden möchten..."
                   />
                 </div>
 

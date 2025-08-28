@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import path from 'path';
 
 // Import routes
 import adminRouter from './routes/admin';
@@ -14,14 +15,24 @@ import adminReportsRouter from './routes/adminReports';
 import adminSettingsRouter from './routes/adminSettings';
 import authRouter from './routes/auth';
 import { initializeBillingRoutes } from './routes/billing';
+import categoriesRouter from './routes/categories';
+import csvImportRouter from './routes/csvImport';
+import emailRouter from './routes/email';
+import emailsRouter from './routes/emails'; // New Brevo email service
 import healthRouter from './routes/health';
+import imageRouter from './routes/images';
 import invitationsRouter from './routes/invitations';
+import partnerProductsRouter from './routes/partner/products';
 import partnerAnalyticsRouter from './routes/partnerAnalytics';
 import partnersRouter from './routes/partners';
 import productManagementRouter from './routes/productManagement';
 import productsRouter from './routes/products';
+import questionnaireRouter from './routes/questionnaire';
+import questionnaireRecommendationsRouter from './routes/questionnaire-recommendations';
 import recommendationsRouter from './routes/recommendations';
 import simpleAdminAuthRouter from './routes/simpleAdminAuth';
+import trackingRouter from './routes/tracking';
+import trackingDemoRouter from './routes/tracking-demo';
 
 // Import middleware
 import errorHandler from './middleware/errorHandler';
@@ -31,6 +42,7 @@ import logger from './utils/logger';
 import { initializeDatabase } from './database/mongodb';
 import billingPool from './database/postgres';
 import { seedTestProducts } from './scripts/seedTestProducts';
+import { trackingService } from './services/trackingService';
 
 // Load environment variables
 dotenv.config();
@@ -65,6 +77,9 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Static file serving for uploaded images
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
 // API Routes
 app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
@@ -76,12 +91,22 @@ app.use('/api/admin/analytics', adminAnalyticsRouter);
 app.use('/api/admin/partners', adminPartnersRouter);
 app.use('/api/admin/reports', adminReportsRouter);
 app.use('/api/admin/settings', adminSettingsRouter);
+app.use('/api/email', emailRouter);
+app.use('/api/emails', emailsRouter); // New Brevo email service routes
 app.use('/api/invitations', invitationsRouter);
 app.use('/api/product-management', productManagementRouter);
 app.use('/api/products', productsRouter);
+app.use('/api/categories', categoriesRouter);
+app.use('/api/questionnaire', questionnaireRouter);
+app.use('/api/csv-import', csvImportRouter);
+app.use('/api/images', imageRouter);
 app.use('/api/recommendations', recommendationsRouter);
+app.use('/api/recommendations', questionnaireRecommendationsRouter); // Questionnaire-specific recommendations
 app.use('/api/partners', partnersRouter);
 app.use('/api/partners/analytics', partnerAnalyticsRouter);
+app.use('/api/partner/products', partnerProductsRouter);
+app.use('/api/tracking', trackingRouter); // Usage tracking for Pay-per-Click
+app.use('/api/tracking-demo', trackingDemoRouter); // Demo tracking endpoints (no auth)
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -126,6 +151,11 @@ async function startServer() {
     logger.info('🗄️ Initializing MongoDB connection...');
     await initializeDatabase();
     logger.info('✅ MongoDB connected successfully');
+
+    // Initialize tracking system tables
+    logger.info('📊 Initializing tracking system...');
+    await trackingService.initializeTables();
+    logger.info('✅ Tracking system initialized successfully');
 
     // Reset database and seed test data in development
     if (process.env.NODE_ENV !== 'production') {

@@ -14,7 +14,7 @@ What documentation needs to be created, updated, or improved?
 
 Who is the intended audience for this documentation?
 
-- [ ] Developers (Team CLEANtastic)
+- [ ] Developers (Team GLANZtastic)
 - [ ] External contributors
 - [ ] B2B Partners
 - [ ] End users
@@ -72,7 +72,7 @@ Add any other context about the documentation request here.
 
 ---
 
-**Team CLEANtastic Internal Notes:**
+**Team GLANZtastic Internal Notes:**
 
 - Affects onboarding process: [ ] Yes / [ ] No
 - Part of compliance requirements: [ ] Yes / [ ] No

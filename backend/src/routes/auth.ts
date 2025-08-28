@@ -74,6 +74,7 @@ router.post(
       // Generate tokens
       const payload: JWTPayload = {
         userId: user.id,
+        id: user.id, // Alias for userId
         email: user.email,
         role: user.role,
         tenantId: user.tenant_id,
@@ -154,6 +155,7 @@ router.post(
       // Generate tokens
       const payload: JWTPayload = {
         userId: user.id,
+        id: user.id, // Alias for userId
         email: user.email,
         role: user.role,
         tenantId: user.tenant_id,
@@ -246,6 +248,7 @@ router.post(
       // Generate tokens with userType claim
       const payload: JWTPayload = {
         userId: user.id,
+        id: user.id, // Alias for userId
         email: user.email,
         role: user.role,
         tenantId: user.tenant_id,
@@ -344,6 +347,7 @@ router.post(
       // Generate tokens with userType claim
       const payload: JWTPayload = {
         userId: user.id,
+        id: user.id, // Alias for userId
         email: user.email,
         role: user.role,
         tenantId: user.tenant_id,
@@ -430,6 +434,7 @@ router.post(
       // Generate new tokens
       const payload: JWTPayload = {
         userId: user.id,
+        id: user.id, // Alias for userId
         email: user.email,
         role: user.role,
         tenantId: user.tenant_id,

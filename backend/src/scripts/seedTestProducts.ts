@@ -412,14 +412,9 @@ export async function seedTestProducts(): Promise<void> {
   try {
     logger.info('🌱 Starting test product seeding...');
 
-    // Check if products already exist
-    const existingProducts = await Product.countDocuments();
-    if (existingProducts > 0) {
-      logger.info(
-        `✅ Found ${existingProducts} existing products, skipping seed`
-      );
-      return;
-    }
+    // Clear existing products first to avoid duplicates
+    await Product.deleteMany({});
+    logger.info('🧹 Cleared existing products');
 
     // Insert test products
     const results = await Product.insertMany(testProducts);

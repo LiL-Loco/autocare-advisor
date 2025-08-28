@@ -39,7 +39,7 @@ export default function HomePage() {
             </Badge>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 leading-tight">
-              <span className="text-[#f8de00]">CLEANtastic</span> findet die
+              <span className="text-[#f8de00]">GLANZtastic</span> findet die
               richtige Autopflege für{' '}
               <span className="text-[#f8de00]">DEIN</span> Auto
             </h1>

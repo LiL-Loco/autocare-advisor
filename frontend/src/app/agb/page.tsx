@@ -46,7 +46,7 @@ export default function AGBPage() {
             Allgemeine Geschäftsbedingungen
           </h1>
           <p className="text-xl text-slate-300">
-            Nutzungsbedingungen für CLEANtastic Services
+            Nutzungsbedingungen für GLANZtastic Services
           </p>
         </div>
       </section>
@@ -67,7 +67,7 @@ export default function AGBPage() {
                 <div className="space-y-4">
                   <p className="text-slate-600 leading-relaxed">
                     (1) Diese Allgemeinen Geschäftsbedingungen (nachfolgend
-                    "AGB") der CLEANtastic GmbH (nachfolgend "Anbieter") gelten
+                    "AGB") der GLANZtastic GmbH (nachfolgend "Anbieter") gelten
                     für alle Verträge zwischen dem Anbieter und seinen Kunden
                     (nachfolgend "Nutzer") über die Nutzung der Website und der
                     damit verbundenen Services.

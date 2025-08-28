@@ -21,11 +21,11 @@
     "url": "git+https://github.com/LiL-Loco/autocare-advisor.git"
   },
   "license": "MIT",
-  "author": "CLEANtastic Team",
+  "author": "GLANZtastic Team",
   "contributors": [
     {
-      "name": "CLEANtastic Development Team",
-      "url": "https://linear.app/cleantastic"
+      "name": "GLANZtastic Development Team",
+      "url": "https://linear.app/GLANZtastic"
     }
   ],
   "main": "index.js",
@@ -105,8 +105,8 @@
   "config": {
     "autocare": {
       "projectId": "6fa9d986-c3cf-4e35-97ba-97b29e999c53",
-      "team": "CLEANtastic",
-      "linearWorkspace": "https://linear.app/cleantastic"
+      "team": "GLANZtastic",
+      "linearWorkspace": "https://linear.app/GLANZtastic"
     }
   },
   "dependencies": {

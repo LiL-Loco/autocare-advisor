@@ -1,6 +1,7 @@
 'use client';
 
 import Footer from '@/components/Footer';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,6 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { getCurrentSessionId } from '@/services/trackingService';
 import {
   ArrowLeftIcon,
   ArrowTopRightOnSquareIcon,
@@ -59,13 +61,51 @@ export default function RecommendationsPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Tracking state
+  const [sessionId] = useState(() => getCurrentSessionId());
+  const [showTrackingDebug, setShowTrackingDebug] = useState(false);
+  const [trackingStats, setTrackingStats] = useState({
+    impressions: 0,
+    clicks: 0,
+    ctr: 0,
+  });
+
   useEffect(() => {
-    // Simuliere das Laden von Empfehlungen
+    // Lade Empfehlungen aus verschiedenen Quellen
     const loadRecommendations = async () => {
       try {
         setIsLoading(true);
 
-        // Demo-Daten für Produktempfehlungen
+        // 1. Versuche neue questionnaire-basierte Recommendations zu laden
+        const storedRecommendations = localStorage.getItem(
+          'GLANZtastic_recommendations'
+        );
+        if (storedRecommendations) {
+          const recommendationData = JSON.parse(storedRecommendations);
+
+          // Check if this is the new format from questionnaire-recommendations API
+          if (
+            recommendationData.recommendations &&
+            Array.isArray(recommendationData.recommendations)
+          ) {
+            console.log('Loading recommendations from new API:', {
+              total: recommendationData.totalProducts,
+              sessionId: recommendationData.sessionId,
+              source: recommendationData.meta?.source,
+            });
+
+            setRecommendations(recommendationData);
+
+            // Wähle das erste Produkt als Standard aus
+            if (recommendationData.recommendations.length > 0) {
+              setSelectedProduct(recommendationData.recommendations[0]);
+            }
+            return;
+          }
+        }
+
+        // 2. Fallback zu Demo-Daten wenn keine echten Empfehlungen vorhanden
+        console.log('Using demo recommendation data');
         const demoData: RecommendationData = {
           personalizedMessage:
             'Basierend auf deinen Angaben haben wir die perfekten Pflegeprodukte für dein Fahrzeug ausgewählt.',
@@ -181,6 +221,7 @@ export default function RecommendationsPage() {
         };
 
         setRecommendations(demoData);
+
         // Wähle das erste Produkt als Standard aus
         if (demoData.recommendations.length > 0) {
           setSelectedProduct(demoData.recommendations[0]);

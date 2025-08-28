@@ -103,7 +103,7 @@ export default function KontaktPage() {
                     <CardContent>
                       <div className="text-slate-600">
                         <p className="font-semibold text-neutral-950">
-                          CLEANtastic GmbH
+                          GLANZtastic GmbH
                         </p>
                         <p>Musterstraße 123</p>
                         <p>12345 Berlin</p>
@@ -163,10 +163,10 @@ export default function KontaktPage() {
                             Allgemein:
                           </span>
                           <a
-                            href="mailto:info@cleantastic.de"
+                            href="mailto:info@GLANZtastic.de"
                             className="text-neutral-950 hover:text-slate-600"
                           >
-                            info@cleantastic.de
+                            info@GLANZtastic.de
                           </a>
                         </div>
                         <div className="flex items-center">
@@ -174,10 +174,10 @@ export default function KontaktPage() {
                             Support:
                           </span>
                           <a
-                            href="mailto:support@cleantastic.de"
+                            href="mailto:support@GLANZtastic.de"
                             className="text-neutral-950 hover:text-slate-600"
                           >
-                            support@cleantastic.de
+                            support@GLANZtastic.de
                           </a>
                         </div>
                         <div className="flex items-center">
@@ -185,10 +185,10 @@ export default function KontaktPage() {
                             Vertrieb:
                           </span>
                           <a
-                            href="mailto:sales@cleantastic.de"
+                            href="mailto:sales@GLANZtastic.de"
                             className="text-neutral-950 hover:text-slate-600"
                           >
-                            sales@cleantastic.de
+                            sales@GLANZtastic.de
                           </a>
                         </div>
                       </div>

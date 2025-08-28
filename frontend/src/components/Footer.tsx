@@ -93,7 +93,7 @@ export default function Footer() {
         <div className="block md:hidden space-y-1">
           <div className="mb-8 space-y-4">
             <div className="flex items-center">
-              <h4 className="text-xl font-bold">CLEANtastic</h4>
+              <h4 className="text-xl font-bold">GLANZtastic</h4>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed">
               Deutschlands führende Plattform für personalisierte
@@ -149,7 +149,7 @@ export default function Footer() {
         <div className="hidden md:flex gap-8 mb-12 items-start">
           <div className="w-1/4 space-y-4">
             <div className="flex items-center">
-              <h4 className="text-xl font-bold">CLEANtastic</h4>
+              <h4 className="text-xl font-bold">GLANZtastic</h4>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed">
               Deutschlands führende Plattform für personalisierte
@@ -185,7 +185,7 @@ export default function Footer() {
         <div className="border-t border-neutral-900 pt-8 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-slate-400 text-sm">
-              &copy; 2025 CLEANtastic. Alle Rechte vorbehalten.
+              &copy; 2025 GLANZtastic. Alle Rechte vorbehalten.
             </p>
             <div className="flex flex-wrap justify-center md:justify-end gap-4 sm:gap-6 text-slate-400 text-sm">
               <button

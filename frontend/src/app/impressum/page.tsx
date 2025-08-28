@@ -66,7 +66,7 @@ export default function ImpressumPage() {
               <CardContent className="space-y-4">
                 <div>
                   <h3 className="font-semibold text-neutral-950 mb-2">
-                    CLEANtastic GmbH
+                    GLANZtastic GmbH
                   </h3>
                   <div className="text-slate-600 space-y-1">
                     <div className="flex items-center">
@@ -101,7 +101,7 @@ export default function ImpressumPage() {
                     <EnvelopeIcon className="w-4 h-4 mr-3" />
                     <div>
                       <div className="font-medium">E-Mail:</div>
-                      <div>info@cleantastic.de</div>
+                      <div>info@GLANZtastic.de</div>
                     </div>
                   </div>
                 </div>

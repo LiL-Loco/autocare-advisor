@@ -32,6 +32,7 @@ import {
 } from '../../../../components/partner/analytics/AdvancedCharts';
 import PartnerLayout from '../../../../components/partner/layout/PartnerLayout';
 import { useAuth } from '../../../../context/AuthContext';
+import usePartnerAnalytics from '../../../../hooks/usePartnerAnalytics';
 
 interface AnalyticsData {
   revenue: {
@@ -82,63 +83,51 @@ export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState('30d');
   const [refreshing, setRefreshing] = useState(false);
 
-  // Mock data für Demo - später durch echte API ersetzen
-  const mockData: AnalyticsData = {
-    revenue: {
-      current: 45678,
-      previous: 38234,
-      trend: 'up',
-      change: 19.5,
-    },
-    traffic: {
-      views: 127543,
-      clicks: 8943,
-      conversionRate: 7.2,
-      trend: 'up',
-      change: 12.3,
-    },
-    products: {
-      total: 234,
-      active: 198,
-      topPerforming: [
-        {
-          name: 'Premium Motoröl 5W-30',
-          revenue: 12450,
-          views: 8932,
-          conversionRate: 8.4,
-        },
-        {
-          name: 'Bremsflüssigkeit DOT4',
-          revenue: 8934,
-          views: 6723,
-          conversionRate: 6.7,
-        },
-        {
-          name: 'Kühlmittel G12+',
-          revenue: 7823,
-          views: 5234,
-          conversionRate: 9.2,
-        },
-      ],
-    },
-    customers: {
-      total: 1523,
-      newThisMonth: 234,
-      retentionRate: 87.3,
-      lifetimeValue: 2340,
-    },
-  };
+  // Import usePartnerAnalytics Hook for real data
+  const partnerId = user?.id || 'default-partner-id';
+  const {
+    analytics,
+    revenueData,
+    loading: analyticsLoading,
+    error: analyticsError,
+    refreshData,
+  } = usePartnerAnalytics(partnerId);
 
-  const revenueChartData: ChartData[] = [
-    { name: 'Jan', value: 32000, trend: 'up' },
-    { name: 'Feb', value: 28000, trend: 'down' },
-    { name: 'Mär', value: 35000, trend: 'up' },
-    { name: 'Apr', value: 31000, trend: 'down' },
-    { name: 'Mai', value: 42000, trend: 'up' },
-    { name: 'Jun', value: 45678, trend: 'up' },
-  ];
+  // Generate chart data from real analytics data
+  const revenueChartData: ChartData[] =
+    analytics?.performance.recentActivity.map((activity, index) => ({
+      name: new Date(activity.date).toLocaleDateString('de-DE', {
+        month: 'short',
+      }),
+      value: activity.revenue,
+      trend:
+        index > 0 &&
+        activity.revenue >
+          (analytics.performance.recentActivity[index - 1]?.revenue || 0)
+          ? 'up'
+          : ('down' as const),
+    })) || [
+      { name: 'Jan', value: 32000, trend: 'up' as const },
+      { name: 'Feb', value: 28000, trend: 'down' as const },
+      { name: 'Mär', value: 35000, trend: 'up' as const },
+      { name: 'Apr', value: 31000, trend: 'down' as const },
+      { name: 'Mai', value: 42000, trend: 'up' as const },
+      { name: 'Jun', value: 45678, trend: 'up' as const },
+    ];
 
-  const revenueComparisonData = [
+  const revenueComparisonData = analytics?.performance.recentActivity.map(
+    (activity, index) => {
+      const previous =
+        index > 0 ? analytics.performance.recentActivity[index - 1] : null;
+      return {
+        name: new Date(activity.date).toLocaleDateString('de-DE', {
+          month: 'short',
+        }),
+        current: activity.revenue,
+        previous: previous ? previous.revenue * 0.9 : activity.revenue * 0.85, // Mock previous data
+      };
+    }
+  ) || [
     { name: 'Jan', current: 32000, previous: 28000 },
     { name: 'Feb', current: 28000, previous: 25000 },
     { name: 'Mär', current: 35000, previous: 30000 },
@@ -147,17 +136,30 @@ export default function AnalyticsPage() {
     { name: 'Jun', current: 45678, previous: 40000 },
   ];
 
-  const trafficChartData: ChartData[] = [
-    { name: 'Mon', value: 18000 },
-    { name: 'Die', value: 22000 },
-    { name: 'Mit', value: 19500 },
-    { name: 'Don', value: 25000 },
-    { name: 'Fre', value: 28000 },
-    { name: 'Sam', value: 21000 },
-    { name: 'Son', value: 16500 },
-  ];
+  const trafficChartData: ChartData[] =
+    analytics?.performance.recentActivity.map((activity) => ({
+      name: new Date(activity.date).toLocaleDateString('de-DE', {
+        weekday: 'short',
+      }),
+      value: activity.views,
+    })) || [
+      { name: 'Mon', value: 18000 },
+      { name: 'Die', value: 22000 },
+      { name: 'Mit', value: 19500 },
+      { name: 'Don', value: 25000 },
+      { name: 'Fre', value: 28000 },
+      { name: 'Sam', value: 21000 },
+      { name: 'Son', value: 16500 },
+    ];
 
-  const trafficTrendData = [
+  const trafficTrendData = analytics?.performance.recentActivity.map(
+    (activity) => ({
+      date: new Date(activity.date).toLocaleDateString('de-DE'),
+      revenue: activity.revenue,
+      clicks: activity.clicks,
+      views: activity.views,
+    })
+  ) || [
     { date: '2024-01-15', revenue: 32000, clicks: 18000, views: 45000 },
     { date: '2024-01-16', revenue: 28000, clicks: 22000, views: 48000 },
     { date: '2024-01-17', revenue: 35000, clicks: 19500, views: 51000 },
@@ -167,7 +169,12 @@ export default function AnalyticsPage() {
     { date: '2024-01-21', revenue: 38000, clicks: 16500, views: 44000 },
   ];
 
-  const productCategoryData: ChartData[] = [
+  const productCategoryData: ChartData[] = revenueData?.revenueByCategory.map(
+    (category) => ({
+      name: category.category,
+      value: category.productCount,
+    })
+  ) || [
     { name: 'Motoröle', value: 35 },
     { name: 'Bremsflüssigkeiten', value: 25 },
     { name: 'Kühlmittel', value: 20 },
@@ -175,27 +182,53 @@ export default function AnalyticsPage() {
     { name: 'Sonstige', value: 5 },
   ];
 
+  // Transform real analytics data to match component interface
+  const transformedData: AnalyticsData | null = analytics
+    ? {
+        revenue: {
+          current: analytics.overview.monthlyRevenue,
+          previous: analytics.overview.monthlyRevenue * 0.85, // Mock previous
+          trend: 'up' as const,
+          change: 19.5,
+        },
+        traffic: {
+          views: analytics.overview.totalViews,
+          clicks: analytics.overview.totalClicks,
+          conversionRate: analytics.overview.averageConversionRate,
+          trend: 'up' as const,
+          change: 12.3,
+        },
+        products: {
+          total: analytics.overview.totalProducts,
+          active: analytics.overview.activeProducts,
+          topPerforming: analytics.performance.topPerformingProducts.map(
+            (p) => ({
+              name: p.name,
+              revenue: p.revenue,
+              views: p.views,
+              conversionRate: p.conversionRate,
+            })
+          ),
+        },
+        customers: {
+          total: 1523, // Would need customer data from API
+          newThisMonth: 234,
+          retentionRate: 87.3,
+          lifetimeValue: 2340,
+        },
+      }
+    : null;
+
   useEffect(() => {
     if (!user) {
       router.push('/partner/login');
       return;
     }
+  }, [user, router]);
 
-    // Simuliere API-Aufruf
-    const fetchData = async () => {
-      setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setAnalyticsData(mockData);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [user, router, timeRange]);
-
-  const refreshData = async () => {
+  const handleRefreshData = async () => {
     setRefreshing(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setAnalyticsData(mockData);
+    await refreshData();
     setRefreshing(false);
   };
 
@@ -218,7 +251,7 @@ export default function AnalyticsPage() {
     }).format(value / 100);
   };
 
-  if (loading) {
+  if (analyticsLoading || loading) {
     return (
       <PartnerLayout>
         <div className="flex items-center justify-center h-96">
@@ -261,7 +294,7 @@ export default function AnalyticsPage() {
 
             <Button
               variant="outline"
-              onClick={refreshData}
+              onClick={handleRefreshData}
               disabled={refreshing}
             >
               <RefreshCw
@@ -277,17 +310,44 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
+        {/* Error State */}
+        {analyticsError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex">
+              <div className="text-red-400">
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">
+                  Analytics Fehler
+                </h3>
+                <p className="text-sm text-red-700 mt-1">{analyticsError}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* KPI Cards */}
-        {analyticsData && (
+        {transformedData && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <EnhancedMetricCard
               title="Gesamtumsatz"
-              value={formatCurrency(analyticsData.revenue.current)}
+              value={formatCurrency(transformedData.revenue.current)}
               change={{
-                value: analyticsData.revenue.change,
+                value: transformedData.revenue.change,
                 period: 'vs. Vormonat',
                 type:
-                  analyticsData.revenue.trend === 'up'
+                  transformedData.revenue.trend === 'up'
                     ? 'increase'
                     : 'decrease',
               }}
@@ -298,12 +358,12 @@ export default function AnalyticsPage() {
 
             <EnhancedMetricCard
               title="Produktaufrufe"
-              value={formatNumber(analyticsData.traffic.views)}
+              value={formatNumber(transformedData.traffic.views)}
               change={{
-                value: analyticsData.traffic.change,
+                value: transformedData.traffic.change,
                 period: 'vs. Vormonat',
                 type:
-                  analyticsData.traffic.trend === 'up'
+                  transformedData.traffic.trend === 'up'
                     ? 'increase'
                     : 'decrease',
               }}
@@ -314,7 +374,7 @@ export default function AnalyticsPage() {
 
             <EnhancedMetricCard
               title="Konversionsrate"
-              value={formatPercentage(analyticsData.traffic.conversionRate)}
+              value={formatPercentage(transformedData.traffic.conversionRate)}
               change={{
                 value: 2.1,
                 period: 'vs. Vormonat',
@@ -326,7 +386,7 @@ export default function AnalyticsPage() {
 
             <EnhancedMetricCard
               title="Aktive Produkte"
-              value={formatNumber(analyticsData.products.active)}
+              value={formatNumber(transformedData.products.active)}
               change={{
                 value: 5.8,
                 period: 'vs. Vormonat',
@@ -405,7 +465,7 @@ export default function AnalyticsPage() {
 
           {/* Revenue Tab */}
           <TabsContent value="revenue" className="space-y-6">
-            {analyticsData && (
+            {transformedData && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Card>
@@ -416,22 +476,22 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {formatCurrency(analyticsData.revenue.current)}
+                        {formatCurrency(transformedData.revenue.current)}
                       </div>
                       <div className="flex items-center mt-2">
-                        {analyticsData.revenue.trend === 'up' ? (
+                        {transformedData.revenue.trend === 'up' ? (
                           <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
                         ) : (
                           <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
                         )}
                         <span
                           className={`text-sm ${
-                            analyticsData.revenue.trend === 'up'
+                            transformedData.revenue.trend === 'up'
                               ? 'text-green-600'
                               : 'text-red-600'
                           }`}
                         >
-                          {analyticsData.revenue.change.toFixed(1)}% vs.
+                          {transformedData.revenue.change.toFixed(1)}% vs.
                           Vormonat
                         </span>
                       </div>
@@ -463,7 +523,7 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {formatCurrency(analyticsData.revenue.current * 0.05)}
+                        {formatCurrency(transformedData.revenue.current * 0.05)}
                       </div>
                       <div className="text-sm text-gray-500 mt-2">
                         5% Provisionssatz
@@ -486,13 +546,70 @@ export default function AnalyticsPage() {
                     />
                   </CardContent>
                 </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      Umsatz-Vergleich (Aktuell vs. Vorperiode)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {revenueComparisonData.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-4 border rounded-lg"
+                        >
+                          <div className="font-medium">{item.name}</div>
+                          <div className="flex space-x-6">
+                            <div className="text-right">
+                              <div className="text-sm text-gray-500">
+                                Aktuell
+                              </div>
+                              <div className="font-semibold text-green-600">
+                                {formatCurrency(item.current)}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm text-gray-500">
+                                Vorperiode
+                              </div>
+                              <div className="font-semibold">
+                                {formatCurrency(item.previous)}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm text-gray-500">
+                                Änderung
+                              </div>
+                              <div
+                                className={`font-semibold ${
+                                  item.current > item.previous
+                                    ? 'text-green-600'
+                                    : 'text-red-600'
+                                }`}
+                              >
+                                {(
+                                  ((item.current - item.previous) /
+                                    item.previous) *
+                                  100
+                                ).toFixed(1)}
+                                %
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </>
             )}
           </TabsContent>
 
           {/* Products Tab */}
           <TabsContent value="products" className="space-y-6">
-            {analyticsData && (
+            {transformedData && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Card>
@@ -503,10 +620,10 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {formatNumber(analyticsData.products.total)}
+                        {formatNumber(transformedData.products.total)}
                       </div>
                       <div className="text-sm text-gray-500 mt-2">
-                        {formatNumber(analyticsData.products.active)} aktiv
+                        {formatNumber(transformedData.products.active)} aktiv
                       </div>
                     </CardContent>
                   </Card>
@@ -519,11 +636,12 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-lg font-semibold">
-                        {analyticsData.products.topPerforming[0]?.name}
+                        {transformedData.products.topPerforming[0]?.name}
                       </div>
                       <div className="text-sm text-gray-500 mt-1">
                         {formatCurrency(
-                          analyticsData.products.topPerforming[0]?.revenue || 0
+                          transformedData.products.topPerforming[0]?.revenue ||
+                            0
                         )}{' '}
                         Umsatz
                       </div>
@@ -550,35 +668,58 @@ export default function AnalyticsPage() {
 
                 <Card>
                   <CardHeader>
+                    <CardTitle>Produkt-Kategorien Performance</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <AdvancedChart
+                      data={productCategoryData}
+                      title="Verteilung nach Kategorien"
+                      type="pie"
+                      height={300}
+                      colorScheme="primary"
+                    />
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
                     <CardTitle>Top-Performance Produkte</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      {analyticsData.products.topPerforming.map(
-                        (product, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between p-4 border rounded-lg"
-                          >
-                            <div>
-                              <h4 className="font-semibold">{product.name}</h4>
-                              <div className="text-sm text-gray-500 mt-1">
-                                {formatNumber(product.views)} Aufrufe •{' '}
-                                {formatPercentage(product.conversionRate)}{' '}
-                                Konversionsrate
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="font-semibold text-green-600">
-                                {formatCurrency(product.revenue)}
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                Umsatz
-                              </div>
-                            </div>
-                          </div>
-                        )
-                      )}
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-2">Produkt</th>
+                            <th className="text-right py-2">Views</th>
+                            <th className="text-right py-2">CTR</th>
+                            <th className="text-right py-2">Revenue</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {transformedData.products.topPerforming.map(
+                            (product, index) => (
+                              <tr
+                                key={index}
+                                className="border-b hover:bg-gray-50"
+                              >
+                                <td className="py-3 font-medium">
+                                  {product.name}
+                                </td>
+                                <td className="text-right py-3">
+                                  {formatNumber(product.views)}
+                                </td>
+                                <td className="text-right py-3">
+                                  {formatPercentage(product.conversionRate)}
+                                </td>
+                                <td className="text-right py-3 font-medium text-green-600">
+                                  {formatCurrency(product.revenue)}
+                                </td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   </CardContent>
                 </Card>
@@ -588,7 +729,7 @@ export default function AnalyticsPage() {
 
           {/* Customers Tab */}
           <TabsContent value="customers" className="space-y-6">
-            {analyticsData && (
+            {transformedData && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   <Card>
@@ -599,7 +740,7 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {formatNumber(analyticsData.customers.total)}
+                        {formatNumber(transformedData.customers.total)}
                       </div>
                     </CardContent>
                   </Card>
@@ -612,7 +753,7 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {formatNumber(analyticsData.customers.newThisMonth)}
+                        {formatNumber(transformedData.customers.newThisMonth)}
                       </div>
                       <div className="flex items-center mt-2">
                         <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
@@ -632,7 +773,7 @@ export default function AnalyticsPage() {
                     <CardContent>
                       <div className="text-2xl font-bold">
                         {formatPercentage(
-                          analyticsData.customers.retentionRate
+                          transformedData.customers.retentionRate
                         )}
                       </div>
                       <div className="text-sm text-gray-500 mt-2">
@@ -649,7 +790,9 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {formatCurrency(analyticsData.customers.lifetimeValue)}
+                        {formatCurrency(
+                          transformedData.customers.lifetimeValue
+                        )}
                       </div>
                       <div className="text-sm text-gray-500 mt-2">
                         Customer Lifetime Value
@@ -665,9 +808,9 @@ export default function AnalyticsPage() {
                   <CardContent>
                     <RealTimeMetrics
                       data={{
-                        activeUsers: analyticsData.customers.newThisMonth,
+                        activeUsers: transformedData.customers.newThisMonth,
                         recentClicks: Math.floor(
-                          analyticsData.customers.total * 0.65
+                          transformedData.customers.total * 0.65
                         ),
                         currentRevenue: 12.7,
                         conversionRate: 167.89,
@@ -681,7 +824,7 @@ export default function AnalyticsPage() {
 
           {/* Traffic Tab */}
           <TabsContent value="traffic" className="space-y-6">
-            {analyticsData && (
+            {transformedData && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Card>
@@ -692,12 +835,12 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {formatNumber(analyticsData.traffic.views)}
+                        {formatNumber(transformedData.traffic.views)}
                       </div>
                       <div className="flex items-center mt-2">
                         <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
                         <span className="text-sm text-green-600">
-                          +{analyticsData.traffic.change.toFixed(1)}% vs.
+                          +{transformedData.traffic.change.toFixed(1)}% vs.
                           Vormonat
                         </span>
                       </div>
@@ -712,7 +855,7 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {formatNumber(analyticsData.traffic.clicks)}
+                        {formatNumber(transformedData.traffic.clicks)}
                       </div>
                       <div className="text-sm text-gray-500 mt-2">
                         Produktdetail-Aufrufe
@@ -729,8 +872,8 @@ export default function AnalyticsPage() {
                     <CardContent>
                       <div className="text-2xl font-bold">
                         {(
-                          (analyticsData.traffic.clicks /
-                            analyticsData.traffic.views) *
+                          (transformedData.traffic.clicks /
+                            transformedData.traffic.views) *
                           100
                         ).toFixed(1)}
                         %
@@ -754,6 +897,48 @@ export default function AnalyticsPage() {
                       height={300}
                       colorScheme="primary"
                     />
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Traffic Trend-Analyse</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {trafficTrendData.slice(0, 5).map((trend, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 border rounded-lg"
+                        >
+                          <div className="font-medium">{trend.date}</div>
+                          <div className="flex space-x-4">
+                            <div className="text-center">
+                              <div className="text-sm text-gray-500">Views</div>
+                              <div className="font-semibold">
+                                {formatNumber(trend.views)}
+                              </div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-sm text-gray-500">
+                                Clicks
+                              </div>
+                              <div className="font-semibold">
+                                {formatNumber(trend.clicks)}
+                              </div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-sm text-gray-500">
+                                Revenue
+                              </div>
+                              <div className="font-semibold text-green-600">
+                                {formatCurrency(trend.revenue)}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
               </>

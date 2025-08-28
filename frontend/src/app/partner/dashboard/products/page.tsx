@@ -151,7 +151,7 @@ export default function ProductManagementPage() {
         <div className="mb-8">
           <div className="flex flex-wrap gap-3">
             <Button asChild>
-              <Link href="/partner/dashboard/products/import">
+              <Link href="/partner/dashboard/products/upload">
                 <Upload className="h-4 w-4 mr-2" />
                 CSV Import
               </Link>
@@ -163,9 +163,9 @@ export default function ProductManagementPage() {
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/partner/dashboard/products/list">
+              <Link href="/partner/dashboard/products/advanced">
                 <Package className="h-4 w-4 mr-2" />
-                Alle Produkte
+                Erweiterte Verwaltung
               </Link>
             </Button>
             <Button variant="outline" asChild>

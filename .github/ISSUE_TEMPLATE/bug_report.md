@@ -80,7 +80,7 @@ If you have ideas for fixing the bug, describe them here.
 
 ---
 
-**Team CLEANtastic Internal Notes:**
+**Team GLANZtastic Internal Notes:**
 
 - This bug affects the recommendation engine: [ ] Yes / [ ] No
 - Performance impact: [ ] Yes / [ ] No

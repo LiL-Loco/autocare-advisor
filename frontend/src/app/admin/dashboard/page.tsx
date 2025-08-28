@@ -1,3 +1,5 @@
+'use client';
+
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';

@@ -17,7 +17,7 @@ If you discover a security vulnerability, please follow responsible disclosure:
 **Preferred Methods:**
 
 - 📧 Email: security@autocare-advisor.com
-- 🔐 GitHub Security Advisories: [Private vulnerability reporting](https://github.com/CLEANtastic/autocare-advisor/security/advisories/new)
+- 🔐 GitHub Security Advisories: [Private vulnerability reporting](https://github.com/GLANZtastic/autocare-advisor/security/advisories/new)
 - 📋 Linear: Create a private issue in our Linear workspace (mark as confidential)
 
 ### What to Include
@@ -171,7 +171,7 @@ We appreciate responsible security researchers and may provide:
 ## 📞 Contact Information
 
 **Security Team**: security@autocare-advisor.com  
-**Linear Workspace**: [CLEANtastic Security Issues](https://linear.app/cleantastic)  
+**Linear Workspace**: [GLANZtastic Security Issues](https://linear.app/GLANZtastic)  
 **Emergency Contact**: Available 24/7 for critical security issues
 
 ---

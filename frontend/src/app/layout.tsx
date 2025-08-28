@@ -1,9 +1,5 @@
-'use client';
-
 import { Inter } from 'next/font/google';
-import ServiceWorkerRegistration from '../components/ServiceWorkerRegistration';
-import { AuthProvider } from '../context/AuthContext';
-import { BillingProvider } from '../contexts/BillingContext';
+import ClientProviders from '../components/ClientProviders';
 import '../styles/automotive.css';
 import '../styles/pwa.css';
 import './globals.css';
@@ -55,12 +51,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/icon-192x192.png" />
       </head>
       <body className={`${inter.className} antialiased`}>
-        <ServiceWorkerRegistration />
-        <AuthProvider>
-          <BillingProvider>
-            <div className="min-h-screen bg-gray-50">{children}</div>
-          </BillingProvider>
-        </AuthProvider>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );
