@@ -1,6 +1,5 @@
+import { initializeDatabase } from '../database/mongodb';
 import { seedEmailTemplates } from '../services/emailTemplates';
-import mongoConnection, { initializeDatabase } from '../database/mongodb';
-import billingPool from '../database/postgres';
 
 /**
  * Script to seed email templates in the database
@@ -19,7 +18,7 @@ async function main() {
     // Seed email templates
     console.log('📧 Seeding email templates...');
     const result = await seedEmailTemplates();
-    
+
     console.log('\n📊 Seeding Results:');
     console.log(`   ✅ Templates created: ${result.created}`);
     console.log(`   ⏭️  Templates skipped: ${result.skipped}`);
@@ -37,9 +36,10 @@ async function main() {
 
     console.log('\n🚀 Next Steps:');
     console.log('   1. Test templates with: npm run scripts:test-templates');
-    console.log('   2. Send test emails via API: POST /api/emails/send-template');
+    console.log(
+      '   2. Send test emails via API: POST /api/emails/send-template'
+    );
     console.log('   3. View templates in admin dashboard');
-
   } catch (error) {
     console.error('\n❌ Error during seeding process:');
     console.error(error);

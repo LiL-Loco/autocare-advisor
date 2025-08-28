@@ -9,15 +9,12 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const response = await fetch(
-      `${BACKEND_URL}/api/products/slug/${slug}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const response = await fetch(`${BACKEND_URL}/api/products/slug/${slug}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     const data = await response.json();
 

@@ -1,14 +1,14 @@
 /**
  * Brevo Email Service - AutoCare Advisor
- * 
+ *
  * Comprehensive Brevo integration for:
  * - Transactional emails
- * - Marketing campaigns 
+ * - Marketing campaigns
  * - Template management
  * - Contact synchronization
  * - Webhook event handling
  * - Analytics tracking
- * 
+ *
  * Features:
  * - Template rendering with variables
  * - Batch sending capabilities
@@ -18,8 +18,8 @@
  * - Campaign automation
  */
 
-import axios, { AxiosInstance, AxiosError } from 'axios';
-import { EmailLog, EmailTemplate, EmailUnsubscribe, EmailPreferences } from '../models/Email';
+import axios, { AxiosError, AxiosInstance } from 'axios';
+import { EmailLog, EmailTemplate, EmailUnsubscribe } from '../models/Email';
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -111,7 +111,14 @@ export interface BrevoCampaign {
 }
 
 export interface BrevoWebhookEvent {
-  event: 'delivered' | 'opened' | 'clicked' | 'bounced' | 'blocked' | 'unsubscribed' | 'complaint';
+  event:
+    | 'delivered'
+    | 'opened'
+    | 'clicked'
+    | 'bounced'
+    | 'blocked'
+    | 'unsubscribed'
+    | 'complaint';
   email: string;
   messageId: string;
   date: string;
@@ -160,28 +167,28 @@ export class BrevoEmailService {
       apiUrl: 'https://api.brevo.com/v3',
       timeout: 30000,
       retryAttempts: 3,
-      ...config
+      ...config,
     };
 
     this.client = axios.create({
       baseURL: this.config.apiUrl,
       timeout: this.config.timeout,
       headers: {
-        'accept': 'application/json',
+        accept: 'application/json',
         'content-type': 'application/json',
-        'api-key': this.config.apiKey
-      }
+        'api-key': this.config.apiKey,
+      },
     });
 
     // Request interceptor for logging
-    this.client.interceptors.request.use(
-      (config) => {
-        console.log(`[Brevo] ${config.method?.toUpperCase()} ${config.url}`, {
-          data: config.data ? JSON.stringify(config.data).substring(0, 200) : undefined
-        });
-        return config;
-      }
-    );
+    this.client.interceptors.request.use((config) => {
+      console.log(`[Brevo] ${config.method?.toUpperCase()} ${config.url}`, {
+        data: config.data
+          ? JSON.stringify(config.data).substring(0, 200)
+          : undefined,
+      });
+      return config;
+    });
 
     // Response interceptor for error handling
     this.client.interceptors.response.use(
@@ -204,7 +211,7 @@ export class BrevoEmailService {
   // ============================================================================
 
   private async sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private async retryRequest<T>(
@@ -216,7 +223,11 @@ export class BrevoEmailService {
         return await requestFn();
       } catch (error) {
         if (i === attempts - 1) throw error;
-        if (error instanceof AxiosError && error.response?.status && error.response.status >= 500) {
+        if (
+          error instanceof AxiosError &&
+          error.response?.status &&
+          error.response.status >= 500
+        ) {
           await this.sleep(Math.pow(2, i) * 1000); // Exponential backoff
         } else {
           throw error; // Don't retry client errors
@@ -233,14 +244,16 @@ export class BrevoEmailService {
   /**
    * Send a single transactional email
    */
-  async sendTransactionalEmail(request: BrevoEmailRequest): Promise<EmailSendResult> {
+  async sendTransactionalEmail(
+    request: BrevoEmailRequest
+  ): Promise<EmailSendResult> {
     try {
-      const response = await this.retryRequest(() => 
+      const response = await this.retryRequest(() =>
         this.client.post('/smtp/email', request)
       );
 
       const messageId = response.data?.messageId || `brevo_${Date.now()}`;
-      
+
       // Log to database
       await this.logEmailSent({
         recipientEmail: request.to[0].email,
@@ -250,18 +263,18 @@ export class BrevoEmailService {
         templateVariables: request.params,
         status: 'sent',
         externalId: messageId,
-        sentAt: new Date()
+        sentAt: new Date(),
       });
 
       return {
         success: true,
         messageId,
         recipientEmail: request.to[0].email,
-        externalId: messageId
+        externalId: messageId,
       };
     } catch (error) {
       const errorMessage = this.parseError(error);
-      
+
       // Log failed email
       await this.logEmailSent({
         recipientEmail: request.to[0].email,
@@ -271,13 +284,13 @@ export class BrevoEmailService {
         templateVariables: request.params,
         status: 'failed',
         errorMessage,
-        sentAt: new Date()
+        sentAt: new Date(),
       });
 
       return {
         success: false,
         error: errorMessage,
-        recipientEmail: request.to[0].email
+        recipientEmail: request.to[0].email,
       };
     }
   }
@@ -285,20 +298,22 @@ export class BrevoEmailService {
   /**
    * Send batch transactional emails
    */
-  async sendBatchEmails(requests: BrevoEmailRequest[]): Promise<EmailSendResult[]> {
+  async sendBatchEmails(
+    requests: BrevoEmailRequest[]
+  ): Promise<EmailSendResult[]> {
     const results: EmailSendResult[] = [];
-    
+
     // Process in chunks of 50 (Brevo limit)
     const chunkSize = 50;
     for (let i = 0; i < requests.length; i += chunkSize) {
       const chunk = requests.slice(i, i + chunkSize);
-      
+
       try {
         const batchRequest = {
-          emails: chunk
+          emails: chunk,
         };
 
-        const response = await this.retryRequest(() => 
+        const response = await this.retryRequest(() =>
           this.client.post('/smtp/email/batch', batchRequest)
         );
 
@@ -307,7 +322,7 @@ export class BrevoEmailService {
           for (let j = 0; j < chunk.length; j++) {
             const email = chunk[j];
             const result = response.data.results[j];
-            
+
             if (result.success) {
               await this.logEmailSent({
                 recipientEmail: email.to[0].email,
@@ -317,14 +332,14 @@ export class BrevoEmailService {
                 templateVariables: email.params,
                 status: 'sent',
                 externalId: result.messageId,
-                sentAt: new Date()
+                sentAt: new Date(),
               });
 
               results.push({
                 success: true,
                 messageId: result.messageId,
                 recipientEmail: email.to[0].email,
-                externalId: result.messageId
+                externalId: result.messageId,
               });
             } else {
               await this.logEmailSent({
@@ -335,20 +350,20 @@ export class BrevoEmailService {
                 templateVariables: email.params,
                 status: 'failed',
                 errorMessage: result.error,
-                sentAt: new Date()
+                sentAt: new Date(),
               });
 
               results.push({
                 success: false,
                 error: result.error,
-                recipientEmail: email.to[0].email
+                recipientEmail: email.to[0].email,
               });
             }
           }
         }
       } catch (error) {
         const errorMessage = this.parseError(error);
-        
+
         // Mark all emails in chunk as failed
         for (const email of chunk) {
           await this.logEmailSent({
@@ -359,13 +374,13 @@ export class BrevoEmailService {
             templateVariables: email.params,
             status: 'failed',
             errorMessage,
-            sentAt: new Date()
+            sentAt: new Date(),
           });
 
           results.push({
             success: false,
             error: errorMessage,
-            recipientEmail: email.to[0].email
+            recipientEmail: email.to[0].email,
           });
         }
       }
@@ -394,31 +409,37 @@ export class BrevoEmailService {
       return {
         success: false,
         error: 'Template not found',
-        recipientEmail
+        recipientEmail,
       };
     }
 
     // Check if recipient is unsubscribed
-    const isUnsubscribed = await this.isUnsubscribed(recipientEmail, template.templateType);
+    const isUnsubscribed = await this.isUnsubscribed(
+      recipientEmail,
+      template.templateType
+    );
     if (isUnsubscribed) {
       return {
         success: false,
         error: 'Recipient is unsubscribed',
-        recipientEmail
+        recipientEmail,
       };
     }
 
     // Render template
     const renderedTemplate = await template.renderTemplate(variables);
-    
+
     const request: BrevoEmailRequest = {
       to: [{ email: recipientEmail, name: recipientName }],
       subject: renderedTemplate.subject,
       htmlContent: renderedTemplate.html,
       textContent: renderedTemplate.text,
       params: variables,
-      tags: [template.templateType, template.templateCategory || 'general'].filter(Boolean),
-      ...options
+      tags: [
+        template.templateType,
+        template.templateCategory || 'general',
+      ].filter(Boolean),
+      ...options,
     };
 
     return this.sendTransactionalEmail(request);
@@ -431,7 +452,9 @@ export class BrevoEmailService {
   /**
    * Create Brevo template from local template
    */
-  async createBrevoTemplate(localTemplateId: string): Promise<{ success: boolean; brevoTemplateId?: number; error?: string }> {
+  async createBrevoTemplate(
+    localTemplateId: string
+  ): Promise<{ success: boolean; brevoTemplateId?: number; error?: string }> {
     try {
       const template = await EmailTemplate.findById(localTemplateId);
       if (!template) {
@@ -446,21 +469,21 @@ export class BrevoEmailService {
         isActive: template.isActive,
         sender: {
           email: process.env.FROM_EMAIL || 'noreply@autocare-advisor.com',
-          name: process.env.FROM_NAME || 'AutoCare Advisor'
+          name: process.env.FROM_NAME || 'AutoCare Advisor',
         },
-        toField: '{{contact.EMAIL}}'
+        toField: '{{contact.EMAIL}}',
       };
 
       const response = await this.client.post('/smtp/templates', brevoTemplate);
-      
+
       return {
         success: true,
-        brevoTemplateId: response.data.id
+        brevoTemplateId: response.data.id,
       };
     } catch (error) {
       return {
         success: false,
-        error: this.parseError(error)
+        error: this.parseError(error),
       };
     }
   }
@@ -481,7 +504,10 @@ export class BrevoEmailService {
   /**
    * Update Brevo template
    */
-  async updateBrevoTemplate(templateId: number, updates: Partial<BrevoTemplate>): Promise<boolean> {
+  async updateBrevoTemplate(
+    templateId: number,
+    updates: Partial<BrevoTemplate>
+  ): Promise<boolean> {
     try {
       await this.client.put(`/smtp/templates/${templateId}`, updates);
       return true;
@@ -498,21 +524,23 @@ export class BrevoEmailService {
   /**
    * Create or update contact
    */
-  async upsertContact(contact: BrevoContact): Promise<{ success: boolean; error?: string }> {
+  async upsertContact(
+    contact: BrevoContact
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       const contactData = {
         email: contact.email,
         attributes: {
           FIRSTNAME: contact.firstName,
           LASTNAME: contact.lastName,
-          ...contact.attributes
+          ...contact.attributes,
         },
         listIds: contact.listIds,
-        updateEnabled: contact.updateEnabled !== false
+        updateEnabled: contact.updateEnabled !== false,
       };
 
       await this.client.post('/contacts', contactData);
-      
+
       return { success: true };
     } catch (error) {
       // If contact already exists, try to update
@@ -522,18 +550,21 @@ export class BrevoEmailService {
             attributes: {
               FIRSTNAME: contact.firstName,
               LASTNAME: contact.lastName,
-              ...contact.attributes
+              ...contact.attributes,
             },
-            listIds: contact.listIds
+            listIds: contact.listIds,
           };
-          
-          await this.client.put(`/contacts/${encodeURIComponent(contact.email)}`, updateData);
+
+          await this.client.put(
+            `/contacts/${encodeURIComponent(contact.email)}`,
+            updateData
+          );
           return { success: true };
         } catch (updateError) {
           return { success: false, error: this.parseError(updateError) };
         }
       }
-      
+
       return { success: false, error: this.parseError(error) };
     }
   }
@@ -544,7 +575,7 @@ export class BrevoEmailService {
   async addContactToList(email: string, listId: number): Promise<boolean> {
     try {
       await this.client.post(`/contacts/lists/${listId}/contacts/add`, {
-        emails: [email]
+        emails: [email],
       });
       return true;
     } catch (error) {
@@ -559,7 +590,7 @@ export class BrevoEmailService {
   async removeContactFromList(email: string, listId: number): Promise<boolean> {
     try {
       await this.client.post(`/contacts/lists/${listId}/contacts/remove`, {
-        emails: [email]
+        emails: [email],
       });
       return true;
     } catch (error) {
@@ -596,26 +627,26 @@ export class BrevoEmailService {
         textContent: campaign.textContent,
         sender: campaign.sender || {
           email: process.env.FROM_EMAIL || 'noreply@autocare-advisor.com',
-          name: process.env.FROM_NAME || 'AutoCare Advisor'
+          name: process.env.FROM_NAME || 'AutoCare Advisor',
         },
         replyTo: campaign.replyTo,
         recipients: {
           listIds: campaign.listIds,
-          exclusionListIds: campaign.exclusionListIds
+          exclusionListIds: campaign.exclusionListIds,
         },
-        scheduledAt: campaign.scheduledAt?.toISOString()
+        scheduledAt: campaign.scheduledAt?.toISOString(),
       };
 
       const response = await this.client.post('/emailCampaigns', campaignData);
-      
+
       return {
         success: true,
-        campaignId: response.data.id
+        campaignId: response.data.id,
       };
     } catch (error) {
       return {
         success: false,
-        error: this.parseError(error)
+        error: this.parseError(error),
       };
     }
   }
@@ -627,11 +658,11 @@ export class BrevoEmailService {
     try {
       const response = await this.client.get(`/emailCampaigns/${campaignId}`);
       const stats = response.data.statistics?.globalStats;
-      
+
       if (!stats) return null;
 
       const sent = stats.sent || 0;
-      
+
       return {
         sent,
         delivered: stats.delivered || 0,
@@ -640,10 +671,11 @@ export class BrevoEmailService {
         bounced: stats.bounced || 0,
         unsubscribed: stats.unsubscribed || 0,
         complaints: stats.complaints || 0,
-        deliveryRate: sent > 0 ? ((stats.delivered || 0) / sent * 100) : 0,
-        openRate: sent > 0 ? ((stats.opened || 0) / sent * 100) : 0,
-        clickRate: sent > 0 ? ((stats.clicked || 0) / sent * 100) : 0,
-        unsubscribeRate: sent > 0 ? ((stats.unsubscribed || 0) / sent * 100) : 0
+        deliveryRate: sent > 0 ? ((stats.delivered || 0) / sent) * 100 : 0,
+        openRate: sent > 0 ? ((stats.opened || 0) / sent) * 100 : 0,
+        clickRate: sent > 0 ? ((stats.clicked || 0) / sent) * 100 : 0,
+        unsubscribeRate:
+          sent > 0 ? ((stats.unsubscribed || 0) / sent) * 100 : 0,
       };
     } catch (error) {
       console.error('[Brevo] Failed to get campaign stats:', error);
@@ -665,8 +697,11 @@ export class BrevoEmailService {
         $or: [
           { externalId: event.messageId },
           { externalId: event['message-id'] },
-          { recipientEmail: event.email, sentAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }
-        ]
+          {
+            recipientEmail: event.email,
+            sentAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+          },
+        ],
       }).sort({ sentAt: -1 });
 
       if (!emailLog) {
@@ -696,7 +731,7 @@ export class BrevoEmailService {
           }
           updates.lastClickedAt = eventDate;
           updates.$inc = { clickCount: 1 };
-          
+
           if (event.link && !emailLog.clickedLinks.includes(event.link)) {
             updates.$addToSet = { clickedLinks: event.link };
             updates.$inc = { ...updates.$inc, uniqueClickCount: 1 };
@@ -716,20 +751,20 @@ export class BrevoEmailService {
 
         case 'unsubscribed':
           updates.unsubscribedAt = eventDate;
-          
+
           // Add to unsubscribe list
           await EmailUnsubscribe.create({
             email: event.email,
             unsubscribeType: 'marketing',
             campaignTypes: ['marketing'],
             source: 'brevo_webhook',
-            unsubscribedAt: eventDate
+            unsubscribedAt: eventDate,
           });
           break;
 
         case 'complaint':
           updates.complainedAt = eventDate;
-          
+
           // Mark as unsubscribed due to complaint
           await EmailUnsubscribe.create({
             email: event.email,
@@ -737,7 +772,7 @@ export class BrevoEmailService {
             campaignTypes: ['all'],
             source: 'spam_complaint',
             reason: 'Spam complaint',
-            unsubscribedAt: eventDate
+            unsubscribedAt: eventDate,
           });
           break;
       }
@@ -746,7 +781,6 @@ export class BrevoEmailService {
       if (Object.keys(updates).length > 0) {
         await EmailLog.updateOne({ _id: emailLog._id }, updates);
       }
-
     } catch (error) {
       console.error('[Brevo] Failed to process webhook event:', error);
     }
@@ -775,23 +809,26 @@ export class BrevoEmailService {
         ...logData,
         clickCount: 0,
         uniqueClickCount: 0,
-        clickedLinks: []
+        clickedLinks: [],
       });
-      
+
       await emailLog.save();
     } catch (error) {
       console.error('[Brevo] Failed to log email:', error);
     }
   }
 
-  private async isUnsubscribed(email: string, emailType: string): Promise<boolean> {
+  private async isUnsubscribed(
+    email: string,
+    emailType: string
+  ): Promise<boolean> {
     const unsubscribe = await EmailUnsubscribe.findOne({
       email: email.toLowerCase(),
       $or: [
         { unsubscribeType: 'all' },
         { unsubscribeType: emailType },
-        { campaignTypes: emailType }
-      ]
+        { campaignTypes: emailType },
+      ],
     });
 
     return !!unsubscribe;
@@ -807,11 +844,11 @@ export class BrevoEmailService {
       }
       return error.message;
     }
-    
+
     if (error instanceof Error) {
       return error.message;
     }
-    
+
     return String(error);
   }
 
@@ -825,7 +862,7 @@ export class BrevoEmailService {
     } catch (error) {
       return {
         success: false,
-        error: this.parseError(error)
+        error: this.parseError(error),
       };
     }
   }
@@ -859,16 +896,18 @@ export function createBrevoService(config?: BrevoConfig): BrevoEmailService {
 
     brevoService = new BrevoEmailService({
       apiKey,
-      ...config
+      ...config,
     });
   }
-  
+
   return brevoService;
 }
 
 export function getBrevoService(): BrevoEmailService {
   if (!brevoService) {
-    throw new Error('Brevo service not initialized. Call createBrevoService() first.');
+    throw new Error(
+      'Brevo service not initialized. Call createBrevoService() first.'
+    );
   }
   return brevoService;
 }

@@ -1,5 +1,4 @@
 import { EmailTemplate } from '../models/Email';
-import { templateEngine } from './templateEngine';
 
 // ============================================================================
 // PARTNER ONBOARDING EMAIL TEMPLATES
@@ -150,8 +149,13 @@ Telefon: +49 (0) 800 123 456 (kostenlos)
 
 AutoCare Advisor Team
 `,
-    variables: ['user.firstName', 'user.email', 'partner.companyName', 'messageId'],
-    isActive: true
+    variables: [
+      'user.firstName',
+      'user.email',
+      'partner.companyName',
+      'messageId',
+    ],
+    isActive: true,
   },
 
   {
@@ -262,8 +266,8 @@ Profi-Tipp: Authentische Bilder wirken Wunder! Zeigen Sie Ihr Team und Ihre Werk
 AutoCare Advisor Team
 `,
     variables: ['user.firstName', 'user.email', 'messageId'],
-    isActive: true
-  }
+    isActive: true,
+  },
 ];
 
 // ============================================================================
@@ -273,7 +277,8 @@ AutoCare Advisor Team
 export const BUSINESS_DEVELOPMENT_TEMPLATES = [
   {
     name: 'Cold Outreach - Autopflege Partner',
-    subject: '🚗 {{partner.companyName}}: Neue Kunden für Ihre Autopflege-Produkte?',
+    subject:
+      '🚗 {{partner.companyName}}: Neue Kunden für Ihre Autopflege-Produkte?',
     templateType: 'marketing',
     templateCategory: 'cold_outreach',
     htmlContent: `
@@ -396,8 +401,8 @@ Business Development Manager
 AutoCare Advisor
 `,
     variables: ['user.firstName', 'partner.companyName', 'messageId'],
-    isActive: true
-  }
+    isActive: true,
+  },
 ];
 
 // ============================================================================
@@ -487,8 +492,8 @@ Support: support@autocare-advisor.com
 AutoCare Advisor Team
 `,
     variables: ['user.firstName', 'resetUrl'],
-    isActive: true
-  }
+    isActive: true,
+  },
 ];
 
 // ============================================================================
@@ -502,7 +507,7 @@ export async function seedEmailTemplates() {
     const allTemplates = [
       ...PARTNER_ONBOARDING_TEMPLATES,
       ...BUSINESS_DEVELOPMENT_TEMPLATES,
-      ...TRANSACTIONAL_TEMPLATES
+      ...TRANSACTIONAL_TEMPLATES,
     ];
 
     let created = 0;
@@ -510,25 +515,31 @@ export async function seedEmailTemplates() {
 
     for (const templateData of allTemplates) {
       const existing = await EmailTemplate.findOne({ name: templateData.name });
-      
+
       if (!existing) {
         const template = new EmailTemplate(templateData);
         await template.save();
         created++;
-        console.log(`[Template Seeder] ✅ Created template: ${templateData.name}`);
+        console.log(
+          `[Template Seeder] ✅ Created template: ${templateData.name}`
+        );
       } else {
         skipped++;
-        console.log(`[Template Seeder] ⏭️ Skipped existing template: ${templateData.name}`);
+        console.log(
+          `[Template Seeder] ⏭️ Skipped existing template: ${templateData.name}`
+        );
       }
     }
 
-    console.log(`[Template Seeder] ✅ Seeding completed: ${created} created, ${skipped} skipped`);
-    
+    console.log(
+      `[Template Seeder] ✅ Seeding completed: ${created} created, ${skipped} skipped`
+    );
+
     return {
       success: true,
       created,
       skipped,
-      total: allTemplates.length
+      total: allTemplates.length,
     };
   } catch (error) {
     console.error('[Template Seeder] ❌ Error seeding templates:', error);
@@ -540,5 +551,5 @@ export default {
   PARTNER_ONBOARDING_TEMPLATES,
   BUSINESS_DEVELOPMENT_TEMPLATES,
   TRANSACTIONAL_TEMPLATES,
-  seedEmailTemplates
+  seedEmailTemplates,
 };

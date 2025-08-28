@@ -1,6 +1,6 @@
 /**
  * Email Template Model - AutoCare Advisor
- * 
+ *
  * Manages reusable email templates with dynamic variable support
  * Supports HTML/Text content, categorization, and variable validation
  */
@@ -17,7 +17,12 @@ export interface IEmailTemplate extends Document {
   subject: string;
   htmlContent: string;
   textContent?: string;
-  templateType: 'onboarding' | 'marketing' | 'transactional' | 'nurturing' | 'notification';
+  templateType:
+    | 'onboarding'
+    | 'marketing'
+    | 'transactional'
+    | 'nurturing'
+    | 'notification';
   templateCategory?: string;
   variables: string[];
   previewText?: string;
@@ -27,8 +32,13 @@ export interface IEmailTemplate extends Document {
   updatedAt: Date;
 
   // Instance methods
-  renderTemplate(variables: Record<string, any>): Promise<{ subject: string; html: string; text?: string }>;
-  validateVariables(variables: Record<string, any>): { isValid: boolean; missingVars: string[] };
+  renderTemplate(
+    variables: Record<string, any>
+  ): Promise<{ subject: string; html: string; text?: string }>;
+  validateVariables(variables: Record<string, any>): {
+    isValid: boolean;
+    missingVars: string[];
+  };
   clone(newName: string): Promise<IEmailTemplate>;
 }
 
@@ -37,32 +47,32 @@ export interface IEmailCampaign extends Document {
   name: string;
   description?: string;
   templateId: string;
-  
+
   // Targeting
   targetSegments: Record<string, any>;
-  
+
   // Scheduling
   scheduleType: 'immediate' | 'scheduled' | 'triggered' | 'recurring';
   scheduledAt?: Date;
   triggerEvent?: string;
   triggerDelayHours: number;
-  
+
   // Recurring
   recurringType?: 'daily' | 'weekly' | 'monthly' | 'quarterly';
   recurringDay?: number;
-  
+
   // Status
   status: 'draft' | 'active' | 'paused' | 'completed' | 'archived';
-  
+
   // A/B Testing
   abTestEnabled: boolean;
   abTestSubjectB?: string;
   abTestSplitPercentage: number;
-  
+
   // Limits
   maxSendsPerDay?: number;
   maxSendsTotal?: number;
-  
+
   // Metadata
   createdBy?: string;
   createdAt: Date;
@@ -99,29 +109,29 @@ export interface IEmailSequenceStep extends Document {
 
 export interface IEmailLog extends Document {
   _id: string;
-  
+
   // Campaign Info
   campaignId?: string;
   sequenceId?: string;
   sequenceStepId?: string;
   templateId?: string;
-  
+
   // Recipient
   recipientEmail: string;
   recipientId?: string;
   recipientName?: string;
-  
+
   // Content
   subject?: string;
   templateVariables?: Record<string, any>;
-  
+
   // A/B Testing
   abTestVariant?: 'A' | 'B';
-  
+
   // Status
   status: 'queued' | 'sent' | 'delivered' | 'bounced' | 'failed';
   externalId?: string;
-  
+
   // Engagement
   sentAt: Date;
   deliveredAt?: Date;
@@ -131,16 +141,16 @@ export interface IEmailLog extends Document {
   bouncedAt?: Date;
   complainedAt?: Date;
   unsubscribedAt?: Date;
-  
+
   // Click Tracking
   clickCount: number;
   uniqueClickCount: number;
   clickedLinks: string[];
-  
+
   // Errors
   bounceReason?: string;
   errorMessage?: string;
-  
+
   // Metadata
   sentFromIp?: string;
   userAgent?: string;
@@ -165,23 +175,23 @@ export interface IEmailPreferences extends Document {
   _id: string;
   userId: string;
   email: string;
-  
+
   // Preferences
   marketingEnabled: boolean;
   transactionalEnabled: boolean;
   notificationsEnabled: boolean;
   weeklyReportsEnabled: boolean;
   monthlyReportsEnabled: boolean;
-  
+
   // Frequency
   maxMarketingPerWeek: number;
   preferredSendTime: string;
   preferredTimezone: string;
-  
+
   // Communication
   preferredLanguage: string;
   htmlEnabled: boolean;
-  
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -190,436 +200,469 @@ export interface IEmailPreferences extends Document {
 // SCHEMAS
 // ============================================================================
 
-const EmailTemplateSchema = new Schema<IEmailTemplate>({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    maxlength: 100
+const EmailTemplateSchema = new Schema<IEmailTemplate>(
+  {
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      maxlength: 100,
+    },
+    subject: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 200,
+    },
+    htmlContent: {
+      type: String,
+      required: true,
+    },
+    textContent: {
+      type: String,
+      trim: true,
+    },
+    templateType: {
+      type: String,
+      enum: [
+        'onboarding',
+        'marketing',
+        'transactional',
+        'nurturing',
+        'notification',
+      ],
+      default: 'marketing',
+      required: true,
+    },
+    templateCategory: {
+      type: String,
+      trim: true,
+      maxlength: 50,
+    },
+    variables: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    previewText: {
+      type: String,
+      trim: true,
+      maxlength: 150,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    createdBy: {
+      type: String,
+      ref: 'User',
+    },
   },
-  subject: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 200
-  },
-  htmlContent: {
-    type: String,
-    required: true
-  },
-  textContent: {
-    type: String,
-    trim: true
-  },
-  templateType: {
-    type: String,
-    enum: ['onboarding', 'marketing', 'transactional', 'nurturing', 'notification'],
-    default: 'marketing',
-    required: true
-  },
-  templateCategory: {
-    type: String,
-    trim: true,
-    maxlength: 50
-  },
-  variables: [{
-    type: String,
-    trim: true
-  }],
-  previewText: {
-    type: String,
-    trim: true,
-    maxlength: 150
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  createdBy: {
-    type: String,
-    ref: 'User'
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
-}, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
+);
 
-const EmailCampaignSchema = new Schema<IEmailCampaign>({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 100
+const EmailCampaignSchema = new Schema<IEmailCampaign>(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
+    description: {
+      type: String,
+      trim: true,
+    },
+    templateId: {
+      type: String,
+      ref: 'EmailTemplate',
+      required: true,
+    },
+    targetSegments: {
+      type: Schema.Types.Mixed,
+      default: {},
+    },
+    scheduleType: {
+      type: String,
+      enum: ['immediate', 'scheduled', 'triggered', 'recurring'],
+      default: 'immediate',
+      required: true,
+    },
+    scheduledAt: {
+      type: Date,
+    },
+    triggerEvent: {
+      type: String,
+      trim: true,
+    },
+    triggerDelayHours: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    recurringType: {
+      type: String,
+      enum: ['daily', 'weekly', 'monthly', 'quarterly'],
+    },
+    recurringDay: {
+      type: Number,
+      min: 1,
+      max: 31,
+    },
+    status: {
+      type: String,
+      enum: ['draft', 'active', 'paused', 'completed', 'archived'],
+      default: 'draft',
+    },
+    abTestEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    abTestSubjectB: {
+      type: String,
+      trim: true,
+      maxlength: 200,
+    },
+    abTestSplitPercentage: {
+      type: Number,
+      default: 50,
+      min: 10,
+      max: 90,
+    },
+    maxSendsPerDay: {
+      type: Number,
+      min: 1,
+    },
+    maxSendsTotal: {
+      type: Number,
+      min: 1,
+    },
+    createdBy: {
+      type: String,
+      ref: 'User',
+    },
+    startedAt: {
+      type: Date,
+    },
+    completedAt: {
+      type: Date,
+    },
   },
-  description: {
-    type: String,
-    trim: true
-  },
-  templateId: {
-    type: String,
-    ref: 'EmailTemplate',
-    required: true
-  },
-  targetSegments: {
-    type: Schema.Types.Mixed,
-    default: {}
-  },
-  scheduleType: {
-    type: String,
-    enum: ['immediate', 'scheduled', 'triggered', 'recurring'],
-    default: 'immediate',
-    required: true
-  },
-  scheduledAt: {
-    type: Date
-  },
-  triggerEvent: {
-    type: String,
-    trim: true
-  },
-  triggerDelayHours: {
-    type: Number,
-    default: 0,
-    min: 0
-  },
-  recurringType: {
-    type: String,
-    enum: ['daily', 'weekly', 'monthly', 'quarterly']
-  },
-  recurringDay: {
-    type: Number,
-    min: 1,
-    max: 31
-  },
-  status: {
-    type: String,
-    enum: ['draft', 'active', 'paused', 'completed', 'archived'],
-    default: 'draft'
-  },
-  abTestEnabled: {
-    type: Boolean,
-    default: false
-  },
-  abTestSubjectB: {
-    type: String,
-    trim: true,
-    maxlength: 200
-  },
-  abTestSplitPercentage: {
-    type: Number,
-    default: 50,
-    min: 10,
-    max: 90
-  },
-  maxSendsPerDay: {
-    type: Number,
-    min: 1
-  },
-  maxSendsTotal: {
-    type: Number,
-    min: 1
-  },
-  createdBy: {
-    type: String,
-    ref: 'User'
-  },
-  startedAt: {
-    type: Date
-  },
-  completedAt: {
-    type: Date
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
-}, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
+);
 
-const EmailSequenceSchema = new Schema<IEmailSequence>({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 100
+const EmailSequenceSchema = new Schema<IEmailSequence>(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
+    description: {
+      type: String,
+      trim: true,
+    },
+    triggerEvent: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
-  description: {
-    type: String,
-    trim: true
-  },
-  triggerEvent: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  isActive: {
-    type: Boolean,
-    default: true
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
-}, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
+);
 
-const EmailSequenceStepSchema = new Schema<IEmailSequenceStep>({
-  sequenceId: {
-    type: String,
-    ref: 'EmailSequence',
-    required: true
+const EmailSequenceStepSchema = new Schema<IEmailSequenceStep>(
+  {
+    sequenceId: {
+      type: String,
+      ref: 'EmailSequence',
+      required: true,
+    },
+    stepOrder: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+    templateId: {
+      type: String,
+      ref: 'EmailTemplate',
+      required: true,
+    },
+    delayHours: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    conditions: {
+      type: Schema.Types.Mixed,
+      default: {},
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
-  stepOrder: {
-    type: Number,
-    required: true,
-    min: 1
-  },
-  templateId: {
-    type: String,
-    ref: 'EmailTemplate',
-    required: true
-  },
-  delayHours: {
-    type: Number,
-    default: 0,
-    min: 0
-  },
-  conditions: {
-    type: Schema.Types.Mixed,
-    default: {}
-  },
-  isActive: {
-    type: Boolean,
-    default: true
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
-}, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
+);
 
-const EmailLogSchema = new Schema<IEmailLog>({
-  campaignId: {
-    type: String,
-    ref: 'EmailCampaign'
+const EmailLogSchema = new Schema<IEmailLog>(
+  {
+    campaignId: {
+      type: String,
+      ref: 'EmailCampaign',
+    },
+    sequenceId: {
+      type: String,
+      ref: 'EmailSequence',
+    },
+    sequenceStepId: {
+      type: String,
+      ref: 'EmailSequenceStep',
+    },
+    templateId: {
+      type: String,
+      ref: 'EmailTemplate',
+    },
+    recipientEmail: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true,
+    },
+    recipientId: {
+      type: String,
+      ref: 'User',
+    },
+    recipientName: {
+      type: String,
+      trim: true,
+    },
+    subject: {
+      type: String,
+      trim: true,
+    },
+    templateVariables: {
+      type: Schema.Types.Mixed,
+    },
+    abTestVariant: {
+      type: String,
+      enum: ['A', 'B'],
+    },
+    status: {
+      type: String,
+      enum: ['queued', 'sent', 'delivered', 'bounced', 'failed'],
+      default: 'queued',
+    },
+    externalId: {
+      type: String,
+      trim: true,
+    },
+    sentAt: {
+      type: Date,
+      default: Date.now,
+    },
+    deliveredAt: {
+      type: Date,
+    },
+    openedAt: {
+      type: Date,
+    },
+    firstClickedAt: {
+      type: Date,
+    },
+    lastClickedAt: {
+      type: Date,
+    },
+    bouncedAt: {
+      type: Date,
+    },
+    complainedAt: {
+      type: Date,
+    },
+    unsubscribedAt: {
+      type: Date,
+    },
+    clickCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    uniqueClickCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    clickedLinks: [
+      {
+        type: String,
+      },
+    ],
+    bounceReason: {
+      type: String,
+      trim: true,
+    },
+    errorMessage: {
+      type: String,
+      trim: true,
+    },
+    sentFromIp: {
+      type: String,
+      trim: true,
+    },
+    userAgent: {
+      type: String,
+      trim: true,
+    },
   },
-  sequenceId: {
-    type: String,
-    ref: 'EmailSequence'
-  },
-  sequenceStepId: {
-    type: String,
-    ref: 'EmailSequenceStep'
-  },
-  templateId: {
-    type: String,
-    ref: 'EmailTemplate'
-  },
-  recipientEmail: {
-    type: String,
-    required: true,
-    lowercase: true,
-    trim: true
-  },
-  recipientId: {
-    type: String,
-    ref: 'User'
-  },
-  recipientName: {
-    type: String,
-    trim: true
-  },
-  subject: {
-    type: String,
-    trim: true
-  },
-  templateVariables: {
-    type: Schema.Types.Mixed
-  },
-  abTestVariant: {
-    type: String,
-    enum: ['A', 'B']
-  },
-  status: {
-    type: String,
-    enum: ['queued', 'sent', 'delivered', 'bounced', 'failed'],
-    default: 'queued'
-  },
-  externalId: {
-    type: String,
-    trim: true
-  },
-  sentAt: {
-    type: Date,
-    default: Date.now
-  },
-  deliveredAt: {
-    type: Date
-  },
-  openedAt: {
-    type: Date
-  },
-  firstClickedAt: {
-    type: Date
-  },
-  lastClickedAt: {
-    type: Date
-  },
-  bouncedAt: {
-    type: Date
-  },
-  complainedAt: {
-    type: Date
-  },
-  unsubscribedAt: {
-    type: Date
-  },
-  clickCount: {
-    type: Number,
-    default: 0,
-    min: 0
-  },
-  uniqueClickCount: {
-    type: Number,
-    default: 0,
-    min: 0
-  },
-  clickedLinks: [{
-    type: String
-  }],
-  bounceReason: {
-    type: String,
-    trim: true
-  },
-  errorMessage: {
-    type: String,
-    trim: true
-  },
-  sentFromIp: {
-    type: String,
-    trim: true
-  },
-  userAgent: {
-    type: String,
-    trim: true
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
-}, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
+);
 
-const EmailUnsubscribeSchema = new Schema<IEmailUnsubscribe>({
-  email: {
-    type: String,
-    required: true,
-    lowercase: true,
-    trim: true
+const EmailUnsubscribeSchema = new Schema<IEmailUnsubscribe>(
+  {
+    email: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true,
+    },
+    userId: {
+      type: String,
+      ref: 'User',
+    },
+    unsubscribeType: {
+      type: String,
+      enum: ['all', 'marketing', 'transactional', 'notifications'],
+      default: 'all',
+    },
+    campaignTypes: [
+      {
+        type: String,
+        default: ['marketing'],
+      },
+    ],
+    source: {
+      type: String,
+      trim: true,
+    },
+    campaignId: {
+      type: String,
+      ref: 'EmailCampaign',
+    },
+    unsubscribedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    reason: {
+      type: String,
+      trim: true,
+    },
+    ipAddress: {
+      type: String,
+      trim: true,
+    },
+    userAgent: {
+      type: String,
+      trim: true,
+    },
   },
-  userId: {
-    type: String,
-    ref: 'User'
-  },
-  unsubscribeType: {
-    type: String,
-    enum: ['all', 'marketing', 'transactional', 'notifications'],
-    default: 'all'
-  },
-  campaignTypes: [{
-    type: String,
-    default: ['marketing']
-  }],
-  source: {
-    type: String,
-    trim: true
-  },
-  campaignId: {
-    type: String,
-    ref: 'EmailCampaign'
-  },
-  unsubscribedAt: {
-    type: Date,
-    default: Date.now
-  },
-  reason: {
-    type: String,
-    trim: true
-  },
-  ipAddress: {
-    type: String,
-    trim: true
-  },
-  userAgent: {
-    type: String,
-    trim: true
+  {
+    timestamps: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
-}, {
-  timestamps: false,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
+);
 
-const EmailPreferencesSchema = new Schema<IEmailPreferences>({
-  userId: {
-    type: String,
-    ref: 'User',
-    required: true,
-    unique: true
+const EmailPreferencesSchema = new Schema<IEmailPreferences>(
+  {
+    userId: {
+      type: String,
+      ref: 'User',
+      required: true,
+      unique: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true,
+    },
+    marketingEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    transactionalEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    notificationsEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    weeklyReportsEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    monthlyReportsEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    maxMarketingPerWeek: {
+      type: Number,
+      default: 3,
+      min: 0,
+      max: 10,
+    },
+    preferredSendTime: {
+      type: String,
+      default: '10:00',
+    },
+    preferredTimezone: {
+      type: String,
+      default: 'Europe/Berlin',
+    },
+    preferredLanguage: {
+      type: String,
+      default: 'de',
+      maxlength: 5,
+    },
+    htmlEnabled: {
+      type: Boolean,
+      default: true,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    lowercase: true,
-    trim: true
-  },
-  marketingEnabled: {
-    type: Boolean,
-    default: true
-  },
-  transactionalEnabled: {
-    type: Boolean,
-    default: true
-  },
-  notificationsEnabled: {
-    type: Boolean,
-    default: true
-  },
-  weeklyReportsEnabled: {
-    type: Boolean,
-    default: true
-  },
-  monthlyReportsEnabled: {
-    type: Boolean,
-    default: true
-  },
-  maxMarketingPerWeek: {
-    type: Number,
-    default: 3,
-    min: 0,
-    max: 10
-  },
-  preferredSendTime: {
-    type: String,
-    default: '10:00'
-  },
-  preferredTimezone: {
-    type: String,
-    default: 'Europe/Berlin'
-  },
-  preferredLanguage: {
-    type: String,
-    default: 'de',
-    maxlength: 5
-  },
-  htmlEnabled: {
-    type: Boolean,
-    default: true
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
-}, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
+);
 
 // ============================================================================
 // INDEXES
@@ -644,18 +687,21 @@ EmailLogSchema.index({ sentAt: -1 });
 EmailLogSchema.index({ openedAt: -1 });
 
 // Email Unsubscribes
-EmailUnsubscribeSchema.index({ email: 1, unsubscribeType: 1 }, { unique: true });
+EmailUnsubscribeSchema.index(
+  { email: 1, unsubscribeType: 1 },
+  { unique: true }
+);
 
 // ============================================================================
 // INSTANCE METHODS
 // ============================================================================
 
 // Email Template Methods
-EmailTemplateSchema.methods.renderTemplate = async function(
+EmailTemplateSchema.methods.renderTemplate = async function (
   variables: Record<string, any>
 ): Promise<{ subject: string; html: string; text?: string }> {
   const template = this as IEmailTemplate;
-  
+
   // Simple template rendering - replace {{variable}} with value
   const renderString = (str: string): string => {
     return str.replace(/\{\{(\w+)\}\}/g, (match, key) => {
@@ -666,26 +712,30 @@ EmailTemplateSchema.methods.renderTemplate = async function(
   return {
     subject: renderString(template.subject),
     html: renderString(template.htmlContent),
-    text: template.textContent ? renderString(template.textContent) : undefined
+    text: template.textContent ? renderString(template.textContent) : undefined,
   };
 };
 
-EmailTemplateSchema.methods.validateVariables = function(
+EmailTemplateSchema.methods.validateVariables = function (
   variables: Record<string, any>
 ): { isValid: boolean; missingVars: string[] } {
   const template = this as IEmailTemplate;
-  const missingVars = template.variables.filter(varName => !(varName in variables));
-  
+  const missingVars = template.variables.filter(
+    (varName) => !(varName in variables)
+  );
+
   return {
     isValid: missingVars.length === 0,
-    missingVars
+    missingVars,
   };
 };
 
-EmailTemplateSchema.methods.clone = async function(newName: string): Promise<IEmailTemplate> {
+EmailTemplateSchema.methods.clone = async function (
+  newName: string
+): Promise<IEmailTemplate> {
   const template = this as IEmailTemplate;
   const EmailTemplate = mongoose.model<IEmailTemplate>('EmailTemplate');
-  
+
   const cloned = new EmailTemplate({
     name: newName,
     subject: template.subject,
@@ -695,9 +745,9 @@ EmailTemplateSchema.methods.clone = async function(newName: string): Promise<IEm
     templateCategory: template.templateCategory,
     variables: [...template.variables],
     previewText: template.previewText,
-    isActive: false // Cloned templates start as inactive
+    isActive: false, // Cloned templates start as inactive
   });
-  
+
   return await cloned.save();
 };
 
@@ -705,15 +755,15 @@ EmailTemplateSchema.methods.clone = async function(newName: string): Promise<IEm
 // STATIC METHODS
 // ============================================================================
 
-EmailTemplateSchema.statics.getByCategory = function(category: string) {
+EmailTemplateSchema.statics.getByCategory = function (category: string) {
   return this.find({ templateCategory: category, isActive: true });
 };
 
-EmailCampaignSchema.statics.getActiveCampaigns = function() {
+EmailCampaignSchema.statics.getActiveCampaigns = function () {
   return this.find({ status: 'active' });
 };
 
-EmailLogSchema.statics.getCampaignStats = async function(campaignId: string) {
+EmailLogSchema.statics.getCampaignStats = async function (campaignId: string) {
   const stats = await this.aggregate([
     { $match: { campaignId } },
     {
@@ -722,16 +772,20 @@ EmailLogSchema.statics.getCampaignStats = async function(campaignId: string) {
         totalSent: { $sum: 1 },
         delivered: { $sum: { $cond: [{ $ne: ['$deliveredAt', null] }, 1, 0] } },
         opened: { $sum: { $cond: [{ $ne: ['$openedAt', null] }, 1, 0] } },
-        clicked: { $sum: { $cond: [{ $ne: ['$firstClickedAt', null] }, 1, 0] } },
+        clicked: {
+          $sum: { $cond: [{ $ne: ['$firstClickedAt', null] }, 1, 0] },
+        },
         bounced: { $sum: { $cond: [{ $ne: ['$bouncedAt', null] }, 1, 0] } },
-        unsubscribed: { $sum: { $cond: [{ $ne: ['$unsubscribedAt', null] }, 1, 0] } }
-      }
-    }
+        unsubscribed: {
+          $sum: { $cond: [{ $ne: ['$unsubscribedAt', null] }, 1, 0] },
+        },
+      },
+    },
   ]);
-  
+
   const result = stats[0] || {};
   const totalSent = result.totalSent || 0;
-  
+
   return {
     totalSent,
     delivered: result.delivered || 0,
@@ -739,10 +793,20 @@ EmailLogSchema.statics.getCampaignStats = async function(campaignId: string) {
     clicked: result.clicked || 0,
     bounced: result.bounced || 0,
     unsubscribed: result.unsubscribed || 0,
-    deliveryRate: totalSent > 0 ? ((result.delivered || 0) / totalSent * 100).toFixed(2) : 0,
-    openRate: totalSent > 0 ? ((result.opened || 0) / totalSent * 100).toFixed(2) : 0,
-    clickRate: totalSent > 0 ? ((result.clicked || 0) / totalSent * 100).toFixed(2) : 0,
-    unsubscribeRate: totalSent > 0 ? ((result.unsubscribed || 0) / totalSent * 100).toFixed(2) : 0
+    deliveryRate:
+      totalSent > 0
+        ? (((result.delivered || 0) / totalSent) * 100).toFixed(2)
+        : 0,
+    openRate:
+      totalSent > 0 ? (((result.opened || 0) / totalSent) * 100).toFixed(2) : 0,
+    clickRate:
+      totalSent > 0
+        ? (((result.clicked || 0) / totalSent) * 100).toFixed(2)
+        : 0,
+    unsubscribeRate:
+      totalSent > 0
+        ? (((result.unsubscribed || 0) / totalSent) * 100).toFixed(2)
+        : 0,
   };
 };
 
@@ -753,20 +817,38 @@ EmailLogSchema.statics.getCampaignStats = async function(campaignId: string) {
 EmailSequenceSchema.virtual('steps', {
   ref: 'EmailSequenceStep',
   localField: '_id',
-  foreignField: 'sequenceId'
+  foreignField: 'sequenceId',
 });
 
 // ============================================================================
 // EXPORT MODELS
 // ============================================================================
 
-export const EmailTemplate = mongoose.model<IEmailTemplate>('EmailTemplate', EmailTemplateSchema);
-export const EmailCampaign = mongoose.model<IEmailCampaign>('EmailCampaign', EmailCampaignSchema);
-export const EmailSequence = mongoose.model<IEmailSequence>('EmailSequence', EmailSequenceSchema);
-export const EmailSequenceStep = mongoose.model<IEmailSequenceStep>('EmailSequenceStep', EmailSequenceStepSchema);
+export const EmailTemplate = mongoose.model<IEmailTemplate>(
+  'EmailTemplate',
+  EmailTemplateSchema
+);
+export const EmailCampaign = mongoose.model<IEmailCampaign>(
+  'EmailCampaign',
+  EmailCampaignSchema
+);
+export const EmailSequence = mongoose.model<IEmailSequence>(
+  'EmailSequence',
+  EmailSequenceSchema
+);
+export const EmailSequenceStep = mongoose.model<IEmailSequenceStep>(
+  'EmailSequenceStep',
+  EmailSequenceStepSchema
+);
 export const EmailLog = mongoose.model<IEmailLog>('EmailLog', EmailLogSchema);
-export const EmailUnsubscribe = mongoose.model<IEmailUnsubscribe>('EmailUnsubscribe', EmailUnsubscribeSchema);
-export const EmailPreferences = mongoose.model<IEmailPreferences>('EmailPreferences', EmailPreferencesSchema);
+export const EmailUnsubscribe = mongoose.model<IEmailUnsubscribe>(
+  'EmailUnsubscribe',
+  EmailUnsubscribeSchema
+);
+export const EmailPreferences = mongoose.model<IEmailPreferences>(
+  'EmailPreferences',
+  EmailPreferencesSchema
+);
 
 export default {
   EmailTemplate,
@@ -775,5 +857,5 @@ export default {
   EmailSequenceStep,
   EmailLog,
   EmailUnsubscribe,
-  EmailPreferences
+  EmailPreferences,
 };

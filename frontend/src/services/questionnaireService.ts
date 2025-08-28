@@ -5,13 +5,12 @@
  */
 
 import {
+  ProgressLoadRequest,
+  ProgressSaveRequest,
   Question,
   QuestionnaireAnswers,
-  ProgressSaveRequest,
-  ProgressLoadRequest,
-  QuestionnaireSubmitRequest,
   QuestionnaireApiResponse,
-  BackendQuestion,
+  QuestionnaireSubmitRequest,
 } from '@/types/questionnaire';
 
 class QuestionnaireService {
@@ -19,7 +18,8 @@ class QuestionnaireService {
   private defaultHeaders: HeadersInit;
 
   constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
+    this.baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
     this.defaultHeaders = {
       'Content-Type': 'application/json',
     };
@@ -29,7 +29,7 @@ class QuestionnaireService {
     const token = localStorage.getItem('authToken');
     return {
       ...this.defaultHeaders,
-      ...(token && { 'Authorization': `Bearer ${token}` }),
+      ...(token && { Authorization: `Bearer ${token}` }),
     };
   }
 
@@ -46,12 +46,17 @@ class QuestionnaireService {
    */
   async getQuestions(): Promise<Question[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/questionnaire/questions`, {
-        method: 'GET',
-        headers: this.getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${this.baseUrl}/api/questionnaire/questions`,
+        {
+          method: 'GET',
+          headers: this.getAuthHeaders(),
+        }
+      );
 
-      const result = await this.handleResponse<QuestionnaireApiResponse>(response);
+      const result = await this.handleResponse<QuestionnaireApiResponse>(
+        response
+      );
       return result.data?.questions || [];
     } catch (error) {
       console.error('Error fetching questions:', error);
@@ -64,19 +69,24 @@ class QuestionnaireService {
    */
   async saveProgress(request: ProgressSaveRequest): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/questionnaire/save-progress`, {
-        method: 'POST',
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify(request),
-      });
+      const response = await fetch(
+        `${this.baseUrl}/api/questionnaire/save-progress`,
+        {
+          method: 'POST',
+          headers: this.getAuthHeaders(),
+          body: JSON.stringify(request),
+        }
+      );
 
       await this.handleResponse<QuestionnaireApiResponse>(response);
-      
+
       // Also save locally as backup
       this.saveProgressLocally(request);
-      
     } catch (error) {
-      console.error('Error saving progress to backend, falling back to local storage:', error);
+      console.error(
+        'Error saving progress to backend, falling back to local storage:',
+        error
+      );
       this.saveProgressLocally(request);
     }
   }
@@ -84,25 +94,34 @@ class QuestionnaireService {
   /**
    * Load questionnaire progress
    */
-  async loadProgress(request: ProgressLoadRequest): Promise<QuestionnaireAnswers | null> {
+  async loadProgress(
+    request: ProgressLoadRequest
+  ): Promise<QuestionnaireAnswers | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/questionnaire/load-progress`, {
-        method: 'POST',
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify(request),
-      });
+      const response = await fetch(
+        `${this.baseUrl}/api/questionnaire/load-progress`,
+        {
+          method: 'POST',
+          headers: this.getAuthHeaders(),
+          body: JSON.stringify(request),
+        }
+      );
 
-      const result = await this.handleResponse<QuestionnaireApiResponse>(response);
-      
+      const result = await this.handleResponse<QuestionnaireApiResponse>(
+        response
+      );
+
       if (result.data?.answers) {
         return result.data.answers;
       }
-      
+
       // Fallback to local storage
       return this.loadProgressLocally(request.sessionId);
-      
     } catch (error) {
-      console.error('Error loading progress from backend, falling back to local storage:', error);
+      console.error(
+        'Error loading progress from backend, falling back to local storage:',
+        error
+      );
       return this.loadProgressLocally(request.sessionId);
     }
   }
@@ -118,13 +137,14 @@ class QuestionnaireService {
         body: JSON.stringify(request),
       });
 
-      const result = await this.handleResponse<QuestionnaireApiResponse>(response);
-      
+      const result = await this.handleResponse<QuestionnaireApiResponse>(
+        response
+      );
+
       // Clear local progress on successful submission
       this.clearLocalProgress(request.sessionId);
-      
+
       return result.data;
-      
     } catch (error) {
       console.error('Error submitting questionnaire:', error);
       throw error;
@@ -141,9 +161,10 @@ class QuestionnaireService {
         headers: this.getAuthHeaders(),
       });
 
-      const result = await this.handleResponse<QuestionnaireApiResponse>(response);
+      const result = await this.handleResponse<QuestionnaireApiResponse>(
+        response
+      );
       return result.data;
-      
     } catch (error) {
       console.error('Error fetching questionnaire stats:', error);
       throw error;
@@ -155,16 +176,18 @@ class QuestionnaireService {
    */
   async deleteSession(sessionId: string): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/questionnaire/session/${sessionId}`, {
-        method: 'DELETE',
-        headers: this.getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${this.baseUrl}/api/questionnaire/session/${sessionId}`,
+        {
+          method: 'DELETE',
+          headers: this.getAuthHeaders(),
+        }
+      );
 
       await this.handleResponse<QuestionnaireApiResponse>(response);
-      
+
       // Also clear local storage
       this.clearLocalProgress(sessionId);
-      
     } catch (error) {
       console.error('Error deleting session:', error);
       // Still clear local storage
@@ -175,12 +198,21 @@ class QuestionnaireService {
   // Local storage methods as backup
   private saveProgressLocally(request: ProgressSaveRequest): void {
     try {
-      localStorage.setItem('questionnaire_answers', JSON.stringify(request.answers));
+      localStorage.setItem(
+        'questionnaire_answers',
+        JSON.stringify(request.answers)
+      );
       localStorage.setItem('questionnaire_session_id', request.sessionId);
       if (request.currentQuestionIndex !== undefined) {
-        localStorage.setItem('questionnaire_current_index', request.currentQuestionIndex.toString());
+        localStorage.setItem(
+          'questionnaire_current_index',
+          request.currentQuestionIndex.toString()
+        );
       }
-      localStorage.setItem('questionnaire_last_saved', new Date().toISOString());
+      localStorage.setItem(
+        'questionnaire_last_saved',
+        new Date().toISOString()
+      );
     } catch (error) {
       console.error('Error saving to local storage:', error);
     }
@@ -262,14 +294,14 @@ class QuestionnaireService {
   deleteAllUserData(): void {
     const keys = [
       'questionnaire_answers',
-      'questionnaire_current_index', 
+      'questionnaire_current_index',
       'questionnaire_session_id',
       'questionnaire_last_saved',
       'questionnaire_completed',
-      'questionnaire_results'
+      'questionnaire_results',
     ];
-    
-    keys.forEach(key => localStorage.removeItem(key));
+
+    keys.forEach((key) => localStorage.removeItem(key));
   }
 }
 
