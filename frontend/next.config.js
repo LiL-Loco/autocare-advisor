@@ -1,12 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Disable React Strict Mode to avoid double renders
   reactStrictMode: false,
-  output: 'standalone',
+
+  // Environment variables
   env: {
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api',
   },
+
+  // Image configuration for client-side only
   images: {
+    unoptimized: true, // Required for static export
     remotePatterns: [
       {
         protocol: 'http',
@@ -18,40 +23,14 @@ const nextConfig = {
       },
     ],
   },
-  // PWA Configuration
+
+  // Webpack configuration
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
     };
     return config;
-  },
-  // Headers for PWA support
-  async headers() {
-    return [
-      {
-        source: '/sw.js',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=0, must-revalidate',
-          },
-          {
-            key: 'Service-Worker-Allowed',
-            value: '/',
-          },
-        ],
-      },
-      {
-        source: '/manifest.json',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-    ];
   },
 };
 

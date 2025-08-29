@@ -30,8 +30,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { MobileHeader } from '../mobile/MobileOptimized';
-import PWAInstallPrompt from '../pwa/PWAInstallPrompt';
-import PWAManager from '../pwa/PWAManager';
 
 interface PartnerLayoutProps {
   children: React.ReactNode;
@@ -532,10 +530,6 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
           <div className="p-6">{children}</div>
         </main>
       </div>
-
-      {/* PWA Components */}
-      <PWAManager />
-      <PWAInstallPrompt />
     </div>
   );
 }

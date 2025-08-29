@@ -40,8 +40,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Check for stored auth token on mount
+  // Check for stored auth token on mount - Client-side only
   useEffect(() => {
+    // Only run in browser environment
+    if (typeof window === 'undefined') return;
+
     console.log('AuthContext useEffect - checking stored auth');
     const storedToken = localStorage.getItem('authToken');
     const storedUser = localStorage.getItem('user');
