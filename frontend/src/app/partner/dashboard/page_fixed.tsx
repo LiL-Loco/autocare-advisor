@@ -2,34 +2,18 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import {
-  Activity,
   AlertTriangle,
-  BarChart3,
-  Package,
-  Plus,
-  TrendingUp,
   Eye,
   MousePointer,
   Package2,
+  Plus,
   TrendingUp as TrendingUpIcon,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import {
-  InsightsCard,
-  ProductPerformanceCard,
-  RecommendationTiersCard,
-  RevenueCard,
-} from '../../../components/partner/AnalyticsCards';
 import PartnerLayout from '../../../components/partner/layout/PartnerLayout';
 import MobileAnalytics from '../../../components/partner/mobile/MobileAnalytics';
 import { useAuth } from '../../../context/AuthContext';

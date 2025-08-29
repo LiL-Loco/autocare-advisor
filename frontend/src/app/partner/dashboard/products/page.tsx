@@ -13,7 +13,7 @@ import {
   Upload,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PartnerLayout from '../../../../components/partner/layout/PartnerLayout';
 
 interface Product {

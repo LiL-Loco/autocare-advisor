@@ -1,20 +1,16 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
   BarChart3,
   Bell,
   CreditCard,
-  DollarSign,
   Download,
   FileBarChart,
   FileText,
   HelpCircle,
   Key,
-  MessageSquare,
   Package,
-  PenTool,
   Plug2,
   Search,
   Settings,
@@ -22,7 +18,6 @@ import {
   TrendingUp,
   Upload,
   Users,
-  Webhook,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
