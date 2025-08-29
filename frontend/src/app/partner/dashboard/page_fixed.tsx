@@ -5,15 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import {
-  Activity,
   AlertTriangle,
-  BarChart3,
   Eye,
   MousePointer,
-  Package,
   Package2,
   Plus,
-  TrendingUp,
   TrendingUp as TrendingUpIcon,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -263,33 +259,6 @@ export default function PartnerDashboard() {
     );
   }
 
-  const quickActions = [
-    {
-      title: 'Produkte hochladen',
-      description: 'Neue Produkte via CSV hinzufügen',
-      icon: Package,
-      onClick: () => router.push('/partner/dashboard/products/upload'),
-    },
-    {
-      title: 'Analytics anzeigen',
-      description: 'Detaillierte Leistungsdaten',
-      icon: BarChart3,
-      onClick: () => router.push('/partner/dashboard/analytics'),
-    },
-    {
-      title: 'Berichte exportieren',
-      description: 'Geschäftsberichte herunterladen',
-      icon: Activity,
-      onClick: () => router.push('/partner/dashboard/analytics/exports'),
-    },
-    {
-      title: 'Plan upgraden',
-      description: 'Weitere Features freischalten',
-      icon: TrendingUp,
-      onClick: () => router.push('/partner/billing'),
-    },
-  ];
-
   return (
     <PartnerLayout>
       <div className="p-6 space-y-6 max-w-7xl">
@@ -488,7 +457,7 @@ export default function PartnerDashboard() {
                         day.views > 0 ? (day.clicks / day.views) * 100 : 0;
                       return (
                         <tr
-                          key={index}
+                          key={`activity-${day.date}-${index}`}
                           className="border-b border-border/50 hover:bg-muted/30 transition-colors"
                         >
                           <td className="p-3 font-medium">

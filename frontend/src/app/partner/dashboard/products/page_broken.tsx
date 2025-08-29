@@ -7,14 +7,24 @@ import {
   ChevronDown,
   Download,
   Edit,
+  Filter,
   MoreHorizontal,
   Plus,
   Search,
   Upload,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import PartnerLayout from '../../../../components/partner/layout/PartnerLayout';
+import { useState, useEffect, useRef } from 'react';
+import Partn                  {filteredProducts.length > 0 ? (
+                    filteredProducts.map((product, index) => (
+                      <tr
+                        key={product.id}
+                        className={`transition-colors ${
+                          index === selectedRowIndex 
+                            ? 'bg-blue-50 border-l-4 border-l-blue-500' 
+                            : 'hover:bg-gray-50'
+                        }`}
+                      >ut from '../../../../components/partner/layout/PartnerLayout';
 
 interface Product {
   id: string;
@@ -120,35 +130,34 @@ export default function ProductsPageShopify() {
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(product => 
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter((product) => product.status === statusFilter);
+      filtered = filtered.filter(product => product.status === statusFilter);
     }
 
     // Tab filter
     if (activeTab !== 'Alle') {
       const tabStatusMap: { [key: string]: string } = {
-        Aktiv: 'active',
-        Entwurf: 'draft',
-        Archiviert: 'archived',
+        'Aktiv': 'active',
+        'Entwurf': 'draft', 
+        'Archiviert': 'archived'
       };
       const tabStatus = tabStatusMap[activeTab];
       if (tabStatus) {
-        filtered = filtered.filter((product) => product.status === tabStatus);
+        filtered = filtered.filter(product => product.status === tabStatus);
       }
     }
 
     // Sort products
     filtered.sort((a, b) => {
       let aValue: any, bValue: any;
-
+      
       switch (sortBy) {
         case 'name':
           aValue = a.name;
@@ -171,7 +180,7 @@ export default function ProductsPageShopify() {
         const comparison = aValue.localeCompare(bValue);
         return sortOrder === 'asc' ? comparison : -comparison;
       }
-
+      
       if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
       if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
       return 0;
@@ -194,29 +203,28 @@ export default function ProductsPageShopify() {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Ctrl+K for search focus
+      if (event.ctrlKey && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+        return;
+      }
+
       // Don't handle navigation if user is typing in an input
-      if (
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement
-      ) {
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
         return;
       }
 
-      // Don't handle navigation if any modifier keys are pressed (Ctrl, Alt, Shift, Meta)
-      if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
-        return;
-      }
-
-      // Table navigation with J/K (only without modifiers)
+      // Table navigation with J/K
       if (event.key.toLowerCase() === 'j') {
         event.preventDefault();
-        setSelectedRowIndex((prev) => {
+        setSelectedRowIndex(prev => {
           const newIndex = Math.min(prev + 1, filteredProducts.length - 1);
           return newIndex;
         });
       } else if (event.key.toLowerCase() === 'k') {
         event.preventDefault();
-        setSelectedRowIndex((prev) => {
+        setSelectedRowIndex(prev => {
           const newIndex = Math.max(prev - 1, 0);
           return newIndex;
         });
@@ -330,7 +338,7 @@ export default function ProductsPageShopify() {
                 <input
                   ref={searchInputRef}
                   type="text"
-                  placeholder="Suchen"
+                  placeholder="Suchen (Strg+K)"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 pr-4 py-1.5 border border-gray-300 rounded-md text-sm focus:ring-1 focus:ring-gray-400 focus:border-gray-400 w-48"
@@ -369,48 +377,27 @@ export default function ProductsPageShopify() {
                         className="rounded border-gray-300 text-gray-900 focus:ring-gray-500"
                       />
                     </th>
-                    <th
-                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('name')}
-                    >
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSort('name')}>
                       <div className="flex items-center space-x-1">
                         <span>Produkt</span>
                         {sortBy === 'name' && (
-                          <ArrowUpDown
-                            className={`w-3 h-3 ${
-                              sortOrder === 'asc' ? 'rotate-180' : ''
-                            }`}
-                          />
+                          <ArrowUpDown className={`w-3 h-3 ${sortOrder === 'asc' ? 'rotate-180' : ''}`} />
                         )}
                       </div>
                     </th>
-                    <th
-                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('status')}
-                    >
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSort('status')}>
                       <div className="flex items-center space-x-1">
                         <span>Status</span>
                         {sortBy === 'status' && (
-                          <ArrowUpDown
-                            className={`w-3 h-3 ${
-                              sortOrder === 'asc' ? 'rotate-180' : ''
-                            }`}
-                          />
+                          <ArrowUpDown className={`w-3 h-3 ${sortOrder === 'asc' ? 'rotate-180' : ''}`} />
                         )}
                       </div>
                     </th>
-                    <th
-                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('category')}
-                    >
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSort('category')}>
                       <div className="flex items-center space-x-1">
                         <span>Kategorie</span>
                         {sortBy === 'category' && (
-                          <ArrowUpDown
-                            className={`w-3 h-3 ${
-                              sortOrder === 'asc' ? 'rotate-180' : ''
-                            }`}
-                          />
+                          <ArrowUpDown className={`w-3 h-3 ${sortOrder === 'asc' ? 'rotate-180' : ''}`} />
                         )}
                       </div>
                     </th>
@@ -421,92 +408,77 @@ export default function ProductsPageShopify() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredProducts.length > 0 ? (
-                    filteredProducts.map((product, index) => (
+                    filteredProducts.map((product) => (
                       <tr
                         key={product.id}
-                        className={`transition-colors ${
-                          index === selectedRowIndex
-                            ? 'bg-blue-50 border-l-4 border-l-blue-500'
-                            : 'hover:bg-gray-50'
-                        }`}
+                        className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-3 py-2 whitespace-nowrap">
-                          <input
-                            type="checkbox"
-                            checked={selectedProducts.includes(product.id)}
-                            onChange={(e) =>
-                              handleSelectProduct(product.id, e.target.checked)
-                            }
-                            className="rounded border-gray-300 text-gray-900 focus:ring-gray-500"
-                          />
-                        </td>
-                        <td className="px-3 py-2 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-8 w-8">
-                              <div className="h-8 w-8 bg-gray-100 rounded flex items-center justify-center border border-gray-200">
-                                <div className="w-5 h-5 bg-gradient-to-br from-gray-400 to-gray-500 rounded"></div>
-                              </div>
-                            </div>
-                            <div className="ml-3">
-                              <div className="text-sm font-medium text-gray-900">
-                                {product.name}
-                              </div>
+                      <td className="px-3 py-2 whitespace-nowrap">
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.includes(product.id)}
+                          onChange={(e) =>
+                            handleSelectProduct(product.id, e.target.checked)
+                          }
+                          className="rounded border-gray-300 text-gray-900 focus:ring-gray-500"
+                        />
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-8 w-8">
+                            <div className="h-8 w-8 bg-gray-100 rounded flex items-center justify-center border border-gray-200">
+                              <div className="w-5 h-5 bg-gradient-to-br from-gray-400 to-gray-500 rounded"></div>
                             </div>
                           </div>
-                        </td>
-                        <td className="px-3 py-2 whitespace-nowrap">
-                          <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200 text-xs font-medium px-1.5 py-0.5">
-                            Aktiv
-                          </Badge>
-                        </td>
-                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
-                          {product.category}
-                        </td>
-                        <td className="px-3 py-2 whitespace-nowrap text-center">
-                          <div className="flex items-center justify-center space-x-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="w-7 h-7 p-0 hover:bg-gray-100"
-                              onClick={() =>
-                                router.push(
-                                  `/partner/dashboard/products/${product.id}/edit`
-                                )
-                              }
-                              title="Produkt bearbeiten"
-                            >
-                              <Edit className="w-4 h-4 text-gray-600" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="w-7 h-7 p-0 hover:bg-gray-100"
-                              onClick={() => {
-                                // Weitere Aktionen Dropdown oder Modal öffnen
-                                console.log(
-                                  'Weitere Aktionen für Produkt:',
-                                  product.id
-                                );
-                              }}
-                              title="Weitere Aktionen"
-                            >
-                              <MoreHorizontal className="w-4 h-4 text-gray-600" />
-                            </Button>
+                          <div className="ml-3">
+                            <div className="text-sm font-medium text-gray-900">
+                              {product.name}
+                            </div>
                           </div>
-                        </td>
-                      </tr>
-                    ))
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap">
+                        <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200 text-xs font-medium px-1.5 py-0.5">
+                          Aktiv
+                        </Badge>
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                        {product.category}
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-7 h-7 p-0 hover:bg-gray-100"
+                            onClick={() => router.push(`/partner/dashboard/products/${product.id}/edit`)}
+                            title="Produkt bearbeiten"
+                          >
+                            <Edit className="w-4 h-4 text-gray-600" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-7 h-7 p-0 hover:bg-gray-100"
+                            onClick={() => {
+                              // Weitere Aktionen Dropdown oder Modal öffnen
+                              console.log('Weitere Aktionen für Produkt:', product.id);
+                            }}
+                            title="Weitere Aktionen"
+                          >
+                            <MoreHorizontal className="w-4 h-4 text-gray-600" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
                   ) : (
                     <tr>
                       <td colSpan={5} className="px-3 py-8 text-center">
                         <div className="flex flex-col items-center">
                           <Search className="w-12 h-12 text-gray-400 mb-4" />
-                          <h3 className="text-lg font-medium text-gray-900 mb-2">
-                            Keine Produkte gefunden
-                          </h3>
-                          <p className="text-gray-500 mb-4">
-                            Versuchen Sie andere Suchbegriffe oder Filter.
-                          </p>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Produkte gefunden</h3>
+                          <p className="text-gray-500 mb-4">Versuchen Sie andere Suchbegriffe oder Filter.</p>
                           <Button
                             onClick={() => {
                               setSearchTerm('');
@@ -523,29 +495,6 @@ export default function ProductsPageShopify() {
                   )}
                 </tbody>
               </table>
-            </div>
-          </div>
-
-          {/* Keyboard Navigation Help */}
-          <div className="mt-4 text-xs text-gray-500 flex items-center space-x-4">
-            <span>Tastatur-Navigation:</span>
-            <div className="flex items-center space-x-2">
-              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">
-                Strg+K
-              </kbd>
-              <span>Suchen</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">
-                J
-              </kbd>
-              <span>Nächste Zeile</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">
-                K
-              </kbd>
-              <span>Vorherige Zeile</span>
             </div>
           </div>
         </div>

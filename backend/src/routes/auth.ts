@@ -327,13 +327,20 @@ router.post(
         });
       }
 
-      // Enhanced Partner Validation
-      if (user.role !== 'partner') {
-        logger.warn(`Non-partner login attempt via partner endpoint: ${email}`);
+      // Enhanced Role Validation - Allow both partners and admins
+      if (user.role !== 'partner' && user.role !== 'admin') {
+        logger.warn(
+          `Invalid role login attempt via partner endpoint: ${email} (role: ${user.role})`
+        );
         return res.status(403).json({
           error: 'Access denied',
-          message: 'Partner access required',
+          message: 'Partner or admin access required',
         });
+      }
+
+      // Log admin access via partner endpoint for security monitoring
+      if (user.role === 'admin') {
+        logger.info(`Admin user logged in via partner endpoint: ${email}`);
       }
 
       // Check if user is active
@@ -344,25 +351,25 @@ router.post(
         });
       }
 
-      // Generate tokens with userType claim
+      // Generate tokens with correct userType based on actual role
       const payload: JWTPayload = {
         userId: user.id,
         id: user.id, // Alias for userId
         email: user.email,
         role: user.role,
         tenantId: user.tenant_id,
-        userType: 'partner', // Enhanced JWT claim for partner login
+        userType: user.role, // Use actual role (admin/partner) instead of hardcoded 'partner'
       };
       const tokens = generateTokenPair(payload);
 
-      // Create session for refresh token
+      // Create session for refresh token with dynamic loginType
       await createUserSession(
         user.id,
         tokens.refreshToken,
         {
           userAgent: req.headers['user-agent'],
           rememberMe,
-          loginType: 'partner',
+          loginType: user.role === 'admin' ? 'admin-via-partner' : 'partner',
         },
         req.ip
       );
@@ -370,7 +377,7 @@ router.post(
       // Update last login
       await updateLastLogin(user.id);
 
-      logger.info(`Partner logged in: ${email}`);
+      logger.info(`${user.role} logged in via partner endpoint: ${email}`);
 
       res.json({
         user: {
@@ -381,7 +388,7 @@ router.post(
           lastName: user.last_name,
           isEmailVerified: user.is_email_verified,
           lastLogin: new Date(),
-          userType: 'partner',
+          userType: user.role, // Return actual role instead of hardcoded 'partner'
         },
         tokens,
       });

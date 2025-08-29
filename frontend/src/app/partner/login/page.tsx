@@ -66,10 +66,17 @@ export default function PartnerLoginPage() {
       let userType = '';
 
       if (response.ok) {
-        // Partner-Login erfolgreich
+        // Partner-Login erfolgreich (kann auch Admin sein)
         data = await response.json();
-        userType = 'partner';
-        setLoginAttempt('✅ Partner detected! Login successful...');
+        userType = data.user.role; // Use actual role from backend response
+
+        if (userType === 'admin') {
+          setLoginAttempt(
+            '✅ Admin detected via partner login! Login successful...'
+          );
+        } else {
+          setLoginAttempt('✅ Partner detected! Login successful...');
+        }
       } else {
         // Partner-Login fehlgeschlagen, versuche Admin-Login
         setLoginAttempt('🔍 Partner login failed, trying admin login...');
@@ -85,8 +92,10 @@ export default function PartnerLoginPage() {
 
         if (response.ok) {
           data = await response.json();
-          userType = 'admin';
-          setLoginAttempt('✅ Admin detected! Login successful...');
+          userType = data.user.role; // Use actual role from backend response
+          setLoginAttempt(
+            '✅ Admin detected via dedicated admin login! Login successful...'
+          );
         } else {
           // Beide Login-Versuche fehlgeschlagen
           const adminError = await response

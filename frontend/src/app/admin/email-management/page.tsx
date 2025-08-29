@@ -4,9 +4,9 @@ import EmailAnalyticsDashboard from '@/components/admin/EmailAnalyticsDashboard'
 import EmailCampaignManager from '@/components/admin/EmailCampaignManager';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, Mail, Send } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-const AdminEmailManagementPage: React.FC = () => {
+export default function AdminEmailManagementPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
 
   return (
@@ -57,6 +57,4 @@ const AdminEmailManagementPage: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default AdminEmailManagementPage;
+}
