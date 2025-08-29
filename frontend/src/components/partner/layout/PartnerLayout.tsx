@@ -9,6 +9,7 @@ import {
   Download,
   FileBarChart,
   FileText,
+  HelpCircle,
   Key,
   LogOut,
   Menu,
@@ -26,7 +27,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { MobileHeader } from '../mobile/MobileOptimized';
 import CommandPalette from './CommandPalette';
