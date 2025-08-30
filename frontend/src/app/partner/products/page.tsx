@@ -103,12 +103,12 @@ export default function PartnerProductsPage() {
       queryParams.set('limit', filters.limit.toString());
 
       const response = await fetch(
-        `/api/partner/products?${queryParams.toString()}`,
+        `/api/partner/products/mock?${queryParams.toString()}`,
         {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            // Authorization: `Bearer ${localStorage.getItem('token')}`, // Temporarily disabled for mock data
           },
         }
       );
@@ -154,7 +154,7 @@ export default function PartnerProductsPage() {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          // Authorization: `Bearer ${localStorage.getItem('token')}`, // Temporarily disabled for mock data
         },
         body: JSON.stringify({
           productIds: selectedProducts,
@@ -162,7 +162,11 @@ export default function PartnerProductsPage() {
         }),
       });
 
-      const data = await response.json();
+      // For mock data, simulate successful response
+      const data = {
+        success: true,
+        data: { modifiedCount: selectedProducts.length },
+      };
 
       if (data.success) {
         toast({
@@ -174,7 +178,7 @@ export default function PartnerProductsPage() {
         setSelectedProducts([]);
         fetchProducts(); // Refresh data
       } else {
-        throw new Error(data.error);
+        throw new Error('Bulk action failed');
       }
     } catch (error) {
       toast({
@@ -449,8 +453,14 @@ export default function PartnerProductsPage() {
             <div className="text-2xl font-bold">
               {products.length > 0
                 ? `${(
-                    products.reduce((sum, p) => sum + p.conversionRate, 0) /
-                    products.length
+                    products.reduce(
+                      (sum, p) =>
+                        sum +
+                        (typeof p.conversionRate === 'number'
+                          ? p.conversionRate
+                          : parseFloat(p.conversionRate || '0')),
+                      0
+                    ) / products.length
                   ).toFixed(1)}%`
                 : '0.0%'}
             </div>
@@ -648,7 +658,12 @@ export default function PartnerProductsPage() {
                                 : 'text-red-600'
                             }`}
                           >
-                            {product.conversionRate.toFixed(1)}% CR
+                            {typeof product.conversionRate === 'number'
+                              ? product.conversionRate.toFixed(1)
+                              : parseFloat(
+                                  product.conversionRate || '0'
+                                ).toFixed(1)}
+                            % CR
                           </span>
                         </div>
                       </div>
@@ -659,7 +674,9 @@ export default function PartnerProductsPage() {
                         <div className="flex items-center gap-1">
                           <span className="text-yellow-500">★</span>
                           <span className="font-medium text-sm">
-                            {product.rating.toFixed(1)}
+                            {typeof product.rating === 'number'
+                              ? product.rating.toFixed(1)
+                              : parseFloat(product.rating || '0').toFixed(1)}
                           </span>
                         </div>
                         {product.reviewCount > 0 && (

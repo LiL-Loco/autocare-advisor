@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import PartnerLayout from '../../../components/partner/layout/PartnerLayout';
 import MobileAnalytics from '../../../components/partner/mobile/MobileAnalytics';
 import { useAuth } from '../../../context/AuthContext';
 import usePartnerAnalytics from '../../../hooks/usePartnerAnalytics';
@@ -246,8 +245,7 @@ export default function PartnerDashboard() {
 
   if (loading || dashboardLoading) {
     return (
-      <PartnerLayout>
-        <div className="flex items-center justify-center h-96">
+    <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
             <p className="mt-4 text-muted-foreground">
@@ -255,13 +253,11 @@ export default function PartnerDashboard() {
             </p>
           </div>
         </div>
-      </PartnerLayout>
-    );
+  );
   }
 
   return (
-    <PartnerLayout>
-      <div className="p-6 space-y-6 max-w-7xl">
+    <div className="p-6 space-y-6 max-w-7xl">
         {/* Shopify-Style Header Section */}
         <div className="flex items-center justify-between">
           <div>
@@ -501,6 +497,7 @@ export default function PartnerDashboard() {
           <MobileAnalytics data={mobileAnalyticsData} />
         </div>
       </div>
-    </PartnerLayout>
   );
 }
+
+

@@ -21,8 +21,6 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import PartnerLayout from '../../../../../components/partner/layout/PartnerLayout';
-
 interface ProductAnalytics {
   id: string;
   name: string;
@@ -169,8 +167,7 @@ export default function ProductAnalyticsPage() {
     totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
 
   return (
-    <PartnerLayout>
-      <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6">
         {/* Shopify-Style Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -569,6 +566,7 @@ export default function ProductAnalyticsPage() {
           </Card>
         </div>
       </div>
-    </PartnerLayout>
   );
 }
+
+

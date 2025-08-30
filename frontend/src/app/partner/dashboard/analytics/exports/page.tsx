@@ -25,8 +25,6 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import PartnerLayout from '../../../../../components/partner/layout/PartnerLayout';
-
 interface ExportJob {
   id: string;
   name: string;
@@ -320,8 +318,7 @@ export default function ExportsPage() {
   };
 
   return (
-    <PartnerLayout>
-      <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -734,6 +731,7 @@ export default function ExportsPage() {
           </CardContent>
         </Card>
       </div>
-    </PartnerLayout>
   );
 }
+
+

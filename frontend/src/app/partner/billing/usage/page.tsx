@@ -44,7 +44,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import PartnerLayout from '../../../../components/partner/layout/PartnerLayout';
 import { useAuth } from '../../../../context/AuthContext';
 
 interface UsageMetric {
@@ -424,8 +423,7 @@ export default function BillingUsagePage() {
 
   if (loading) {
     return (
-      <PartnerLayout>
-        <div className="flex items-center justify-center h-96">
+    <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">
@@ -433,13 +431,11 @@ export default function BillingUsagePage() {
             </p>
           </div>
         </div>
-      </PartnerLayout>
-    );
+  );
   }
 
   return (
-    <PartnerLayout>
-      <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -839,6 +835,7 @@ export default function BillingUsagePage() {
           </div>
         </div>
       </div>
-    </PartnerLayout>
   );
 }
+
+

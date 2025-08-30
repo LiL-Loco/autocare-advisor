@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -154,15 +152,15 @@ export default function ProductAnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Analytics werden geladen...</p>
+    <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Analytics werden geladen...</p>
+            </div>
           </div>
         </div>
-      </div>
-    );
+  );
   }
 
   if (error || !product || !analytics) {
@@ -183,7 +181,7 @@ export default function ProductAnalyticsPage() {
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </PartnerPageLayout>
     );
   }
 
@@ -544,6 +542,6 @@ export default function ProductAnalyticsPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PartnerPageLayout>
   );
 }

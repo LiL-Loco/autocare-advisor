@@ -26,8 +26,6 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import PartnerLayout from '../../../../../components/partner/layout/PartnerLayout';
-
 interface ProductRule {
   id: string;
   name: string;
@@ -107,8 +105,7 @@ export default function AdvancedProductsPage() {
   };
 
   return (
-    <PartnerLayout>
-      <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6">
         {/* Shopify-Style Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -481,6 +478,7 @@ export default function AdvancedProductsPage() {
           </Card>
         </div>
       </div>
-    </PartnerLayout>
   );
 }
+
+

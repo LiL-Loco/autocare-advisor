@@ -14,8 +14,6 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import PartnerLayout from '../../../../components/partner/layout/PartnerLayout';
-
 interface Product {
   id: string;
   name: string;
@@ -249,8 +247,7 @@ export default function ProductsPageShopify() {
   };
 
   return (
-    <PartnerLayout>
-      <div className="bg-white min-h-screen">
+    <div className="bg-white min-h-screen">
         {/* Compact Header */}
         <div className="border-b border-gray-200 bg-white px-4 py-3">
           <div className="flex items-center justify-between">
@@ -550,6 +547,5 @@ export default function ProductsPageShopify() {
           </div>
         </div>
       </div>
-    </PartnerLayout>
   );
 }

@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google';
 import ClientProviders from '../components/ClientProviders';
 import '../styles/automotive.css';
+import '../styles/theme.css';
 import './globals.css';
 
 const inter = Inter({

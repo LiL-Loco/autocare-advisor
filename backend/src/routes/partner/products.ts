@@ -11,7 +11,87 @@ import Product from '../../models/Product';
 
 const router = Router();
 
-// Apply authentication middleware to all routes
+// Test route without authentication for debugging
+router.get('/test', async (req: Request, res: Response) => {
+  res.json({
+    success: true,
+    message: 'Partner products API is working',
+    timestamp: new Date().toISOString(),
+    mockProducts: [
+      {
+        id: '1',
+        name: 'Test Product 1',
+        category: 'Lackreinigung',
+        price: 29.99,
+        status: 'active',
+      },
+      {
+        id: '2',
+        name: 'Test Product 2',
+        category: 'Innenraumreinigung',
+        price: 19.99,
+        status: 'active',
+      },
+    ],
+  });
+});
+
+// Mock products endpoint for development (without auth)
+router.get('/mock', async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 20;
+
+  const mockProducts = Array.from({ length: 50 }, (_, i) => ({
+    _id: `mock-${i + 1}`,
+    name: `Autopflege Produkt ${i + 1}`,
+    description: `Premium Autopflege-Produkt für beste Ergebnisse. Produkt ${
+      i + 1
+    } bietet herausragende Qualität.`,
+    brand: `Brand ${Math.floor(i / 10) + 1}`,
+    category: [
+      'Lackreinigung',
+      'Innenraumreinigung',
+      'Felgenpflege',
+      'Schutzprodukte',
+    ][i % 4],
+    price: 19.99 + i * 2.5,
+    images: [`/images/product-${i + 1}.jpg`],
+    isActive: i % 7 !== 0, // Some inactive products
+    viewCount: Math.floor(Math.random() * 1000),
+    clickCount: Math.floor(Math.random() * 100),
+    conversionRate: parseFloat((Math.random() * 5).toFixed(2)),
+    rating: parseFloat((4 + Math.random()).toFixed(1)),
+    reviewCount: Math.floor(Math.random() * 50),
+    partnerId: 'mock-partner-123',
+    partnerShopName: 'AutoPflege Premium Shop',
+    partnerShopUrl: 'https://shop.autopflege.de',
+    createdAt: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(),
+  }));
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedProducts = mockProducts.slice(startIndex, endIndex);
+
+  const totalPages = Math.ceil(mockProducts.length / limit);
+
+  res.json({
+    success: true,
+    data: {
+      products: paginatedProducts,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount: mockProducts.length,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+        limit,
+      },
+    },
+  });
+});
+
+// Apply authentication middleware to all other routes
 router.use(authenticateToken);
 router.use(requirePartner);
 
@@ -530,11 +610,9 @@ router.patch(
           break;
         case 'change-category':
           if (!category) {
-            return res
-              .status(400)
-              .json({
-                error: 'Category is required for change-category action',
-              });
+            return res.status(400).json({
+              error: 'Category is required for change-category action',
+            });
           }
           updateData.category = category;
           break;

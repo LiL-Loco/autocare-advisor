@@ -8,8 +8,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import PartnerLayout from '../../../../../components/partner/layout/PartnerLayout';
-
 interface ProductFormData {
   name: string;
   description: string;
@@ -169,8 +167,7 @@ export default function AddProductPage() {
   };
 
   return (
-    <PartnerLayout>
-      <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <Button variant="outline" size="sm" onClick={() => router.back()}>
@@ -515,6 +512,7 @@ export default function AddProductPage() {
           </div>
         </form>
       </div>
-    </PartnerLayout>
   );
 }
+
+

@@ -1,0 +1,223 @@
+#!/usr/bin/env pwsh
+# Shopify Design Restoration Script
+Write-Host "🎨 Restoring Shopify Design for AutoCare Partner System..." -ForegroundColor Green
+
+$frontendPath = "e:\00000001_TRIXI\CLEAN\frontend\src"
+
+# Apply Shopify-style colors and design system
+$shopifyDesignCSS = @'
+/* Shopify Design System Variables */
+:root {
+  /* Shopify Green Palette */
+  --shopify-primary: #008060;
+  --shopify-primary-hover: #007A5D;
+  --shopify-primary-light: #E8F5F2;
+  --shopify-primary-dark: #004C3F;
+  
+  /* Shopify Grays */
+  --shopify-gray-50: #FAFBFB;
+  --shopify-gray-100: #F1F2F3;
+  --shopify-gray-200: #E4E5E7;
+  --shopify-gray-300: #C9CCCF;
+  --shopify-gray-400: #9CA3AF;
+  --shopify-gray-500: #6D7175;
+  --shopify-gray-600: #5C5F62;
+  --shopify-gray-700: #303030;
+  --shopify-gray-800: #1A1A1A;
+  --shopify-gray-900: #0A0A0A;
+  
+  /* Shopify Semantic Colors */
+  --shopify-success: #008060;
+  --shopify-warning: #FFD60A;
+  --shopify-error: #D72C0D;
+  --shopify-info: #006FBB;
+  
+  /* Typography */
+  --shopify-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --shopify-font-size-sm: 0.875rem;
+  --shopify-font-size-base: 1rem;
+  --shopify-font-size-lg: 1.125rem;
+  --shopify-font-size-xl: 1.25rem;
+  --shopify-font-size-2xl: 1.5rem;
+  
+  /* Spacing */
+  --shopify-space-1: 0.25rem;
+  --shopify-space-2: 0.5rem;
+  --shopify-space-3: 0.75rem;
+  --shopify-space-4: 1rem;
+  --shopify-space-5: 1.25rem;
+  --shopify-space-6: 1.5rem;
+  --shopify-space-8: 2rem;
+  --shopify-space-10: 2.5rem;
+  --shopify-space-12: 3rem;
+  
+  /* Border Radius */
+  --shopify-radius-sm: 0.25rem;
+  --shopify-radius-base: 0.375rem;
+  --shopify-radius-md: 0.5rem;
+  --shopify-radius-lg: 0.75rem;
+  
+  /* Shadows */
+  --shopify-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shopify-shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shopify-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shopify-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Shopify-style component classes */
+.shopify-card {
+  background: white;
+  border-radius: var(--shopify-radius-md);
+  box-shadow: var(--shopify-shadow-base);
+  border: 1px solid var(--shopify-gray-200);
+}
+
+.shopify-button-primary {
+  background: var(--shopify-primary);
+  color: white;
+  border: none;
+  border-radius: var(--shopify-radius-base);
+  padding: var(--shopify-space-3) var(--shopify-space-4);
+  font-family: var(--shopify-font-family);
+  font-size: var(--shopify-font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.shopify-button-primary:hover {
+  background: var(--shopify-primary-hover);
+}
+
+.shopify-button-secondary {
+  background: white;
+  color: var(--shopify-gray-700);
+  border: 1px solid var(--shopify-gray-300);
+  border-radius: var(--shopify-radius-base);
+  padding: var(--shopify-space-3) var(--shopify-space-4);
+  font-family: var(--shopify-font-family);
+  font-size: var(--shopify-font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shopify-button-secondary:hover {
+  background: var(--shopify-gray-50);
+  border-color: var(--shopify-gray-400);
+}
+
+.shopify-input {
+  width: 100%;
+  padding: var(--shopify-space-3) var(--shopify-space-4);
+  border: 1px solid var(--shopify-gray-300);
+  border-radius: var(--shopify-radius-base);
+  font-family: var(--shopify-font-family);
+  font-size: var(--shopify-font-size-base);
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shopify-input:focus {
+  outline: none;
+  border-color: var(--shopify-primary);
+  box-shadow: 0 0 0 3px rgba(0, 128, 96, 0.1);
+}
+
+.shopify-sidebar {
+  background: var(--shopify-gray-50);
+  border-right: 1px solid var(--shopify-gray-200);
+  min-height: 100vh;
+}
+
+.shopify-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--shopify-space-3);
+  padding: var(--shopify-space-3) var(--shopify-space-4);
+  color: var(--shopify-gray-700);
+  text-decoration: none;
+  border-radius: var(--shopify-radius-base);
+  margin: var(--shopify-space-1) var(--shopify-space-2);
+  transition: all 0.2s ease;
+}
+
+.shopify-nav-item:hover {
+  background: var(--shopify-primary-light);
+  color: var(--shopify-primary);
+}
+
+.shopify-nav-item.active {
+  background: var(--shopify-primary);
+  color: white;
+}
+
+.shopify-badge-success {
+  background: var(--shopify-success);
+  color: white;
+  font-size: var(--shopify-font-size-sm);
+  padding: var(--shopify-space-1) var(--shopify-space-2);
+  border-radius: var(--shopify-radius-sm);
+  font-weight: 500;
+}
+
+.shopify-badge-warning {
+  background: var(--shopify-warning);
+  color: var(--shopify-gray-900);
+  font-size: var(--shopify-font-size-sm);
+  padding: var(--shopify-space-1) var(--shopify-space-2);
+  border-radius: var(--shopify-radius-sm);
+  font-weight: 500;
+}
+
+.shopify-header {
+  background: white;
+  border-bottom: 1px solid var(--shopify-gray-200);
+  padding: var(--shopify-space-4) var(--shopify-space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shopify-main-content {
+  background: var(--shopify-gray-50);
+  min-height: calc(100vh - 64px);
+  padding: var(--shopify-space-6);
+}
+
+.shopify-page-title {
+  font-family: var(--shopify-font-family);
+  font-size: var(--shopify-font-size-2xl);
+  font-weight: 600;
+  color: var(--shopify-gray-900);
+  margin: 0 0 var(--shopify-space-4) 0;
+}
+
+.shopify-section-title {
+  font-family: var(--shopify-font-family);
+  font-size: var(--shopify-font-size-lg);
+  font-weight: 600;
+  color: var(--shopify-gray-800);
+  margin: 0 0 var(--shopify-space-3) 0;
+}
+
+.shopify-text {
+  font-family: var(--shopify-font-family);
+  font-size: var(--shopify-font-size-base);
+  color: var(--shopify-gray-700);
+  line-height: 1.5;
+}
+
+.shopify-text-muted {
+  font-family: var(--shopify-font-family);
+  font-size: var(--shopify-font-size-sm);
+  color: var(--shopify-gray-500);
+  line-height: 1.4;
+}
+'@
+
+Write-Host "✅ Creating Shopify design system CSS..." -ForegroundColor Green
+Set-Content -Path "$frontendPath\styles\shopify-design.css" -Value $shopifyDesignCSS -Encoding UTF8
+
+Write-Host "🎨 Shopify Design System restored!" -ForegroundColor Green
+Write-Host "📋 Next: Apply to components using Tailwind classes that match Shopify colors" -ForegroundColor Cyan

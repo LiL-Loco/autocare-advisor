@@ -28,8 +28,6 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import PartnerLayout from '../../../../../components/partner/layout/PartnerLayout';
-
 interface BulkOperation {
   id: string;
   type:
@@ -161,8 +159,7 @@ export default function BulkOperationsPage() {
   };
 
   return (
-    <PartnerLayout>
-      <div className="p-6 space-y-6">
+    <div className="space-y-6">
         {/* Shopify-Style Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -286,7 +283,7 @@ export default function BulkOperationsPage() {
                           className="flex items-center justify-between text-sm"
                         >
                           <div className="flex items-center gap-2">
-                            <Checkbox checked readOnly />
+                            <Checkbox checked disabled />
                             <span>{product.name}</span>
                           </div>
                           <Badge variant="outline" className="text-xs">
@@ -584,6 +581,5 @@ export default function BulkOperationsPage() {
           </Card>
         </div>
       </div>
-    </PartnerLayout>
   );
 }

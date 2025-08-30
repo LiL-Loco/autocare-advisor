@@ -1,0 +1,148 @@
+/* Theme CSS Variables */
+
+:root {
+  /* Standard Theme Variables */
+  --sidebar-width: 240px;
+  --header-height: 56px;
+  --content-padding: 24px;
+  --text-base-size: 16px;
+  --text-sm-size: 14px;
+  --text-xs-size: 12px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --button-height: 40px;
+  --input-height: 40px;
+}
+
+/* Compact Theme Override */
+body.theme-compact {
+  --sidebar-width: 208px;
+  --header-height: 48px;
+  --content-padding: 8px;
+  --text-base-size: 14px;
+  --text-sm-size: 12px;
+  --text-xs-size: 11px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --icon-sm: 14px;
+  --icon-md: 16px;
+  --button-height: 32px;
+  --input-height: 32px;
+}
+
+/* Standard Theme Body Class - uses :root defaults */
+body.theme-standard {
+  /* Explicitly set standard theme variables for clarity */
+  --sidebar-width: 240px;
+  --header-height: 56px;
+  --content-padding: 24px;
+}
+
+/* Theme Transition Animations */
+.theme-transition {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Theme-aware component base styles */
+.theme-aware-sidebar {
+  width: var(--sidebar-width);
+  transition: width 0.2s ease-in-out;
+}
+
+.theme-aware-header {
+  height: var(--header-height);
+  transition: height 0.2s ease-in-out;
+}
+
+.theme-aware-content {
+  padding: var(--content-padding);
+  transition: padding 0.2s ease-in-out;
+}
+
+/* Responsive theme adjustments */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 208px;
+    --header-height: 48px;
+    --content-padding: 12px;
+    --spacing-lg: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 200px;
+    --header-height: 44px;
+    --content-padding: 8px;
+    --text-base-size: 14px;
+    --text-sm-size: 12px;
+    --spacing-sm: 6px;
+    --spacing-md: 10px;
+    --spacing-lg: 12px;
+  }
+}
+
+/* Enhanced focus states for compact theme */
+body.theme-compact .focus\:ring-2:focus {
+  --tw-ring-offset-width: 1px;
+}
+
+body.theme-standard .focus\:ring-2:focus {
+  --tw-ring-offset-width: 2px;
+}
+
+/* Custom scrollbar styling for compact theme */
+body.theme-compact .scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+body.theme-compact .scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Print styles - always use compact for printing */
+@media print {
+  :root {
+    --sidebar-width: 0px;
+    --header-height: 0px;
+    --content-padding: 8px;
+    --text-base-size: 12px;
+    --text-sm-size: 10px;
+    --text-xs-size: 9px;
+    --spacing-xs: 2px;
+    --spacing-sm: 4px;
+    --spacing-md: 6px;
+    --spacing-lg: 8px;
+    --spacing-xl: 12px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --tw-ring-offset-width: 2px;
+  }
+  
+  body.theme-compact {
+    --tw-ring-offset-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .theme-transition,
+  .theme-aware-sidebar,
+  .theme-aware-header,
+  .theme-aware-content {
+    transition: none;
+  }
+}

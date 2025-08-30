@@ -28,8 +28,6 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { AdvancedChart } from '../../../../../components/partner/analytics/AdvancedCharts';
-import PartnerLayout from '../../../../../components/partner/layout/PartnerLayout';
-
 interface ReportConfig {
   name: string;
   description: string;
@@ -169,8 +167,7 @@ export default function ReportsPage() {
   };
 
   return (
-    <PartnerLayout>
-      <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -615,6 +612,7 @@ export default function ReportsPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </PartnerLayout>
   );
 }
+
+
